@@ -340,3 +340,26 @@ textarea { padding: 7px 9px; border: 1px solid var(--borda); border-radius: 5px;
 /* 11.2: selo do modo offline */
 .selo-offline { display: inline-block; padding: 1px 8px; border-radius: 10px; background: #e6f4ea; color: #1e6b34; border: 1px solid #1e6b34; font-size: 12px; font-weight: 600; margin-left: 6px; }
 .selo-offline[hidden] { display: none; }
+
+/* Frente 17: coleta guiada por protocolo */
+.cg-sub[hidden] { display: none; }
+#cg-tab-protocolo td { vertical-align: top; }
+#cg-tab-protocolo textarea, #cg-tab-protocolo input:not([type=checkbox]):not([type=number]) { max-width: 100%; box-sizing: border-box; font: inherit; }
+#cg-tab-protocolo textarea { padding: 5px 7px; border: 1px solid var(--borda); border-radius: 5px; background: var(--fundo); color: var(--texto); resize: vertical; min-width: 14em; }
+.cg-cont { font-size: 12px; margin-top: 2px; }
+.cg-cont .erro, .cg-linha-erro-msg .erro { color: var(--erro); font-weight: 600; }
+tr.cg-linha-erro > td { background: rgba(198,40,40,.07); }
+.cg-acoes { white-space: nowrap; }
+.cg-cel { cursor: pointer; min-width: 7em; max-width: 14em; font-size: 13px; }
+.cg-cel:hover { outline: 2px solid var(--destaque); outline-offset: -2px; }
+.co-st-sugerido { background: rgba(200,150,40,.20); }
+.co-st-aceito { background: rgba(60,160,90,.22); }
+.co-st-editado { background: rgba(60,120,200,.20); }
+.co-st-rejeitado { background: rgba(198,40,40,.18); }
+.co-st-nao_encontrado { background: rgba(128,128,128,.12); color: var(--suave); }
+.co-st-nao_se_aplica { background: rgba(128,128,128,.28); }
+.co-st-vazio { background: transparent; }
+.selo.co-st-sugerido, .selo.co-st-aceito, .selo.co-st-editado, .selo.co-st-rejeitado, .selo.co-st-nao_encontrado, .selo.co-st-nao_se_aplica { padding: 1px 8px; border-radius: 10px; }
+.cg-trechos li { margin-bottom: 8px; }
+@media (max-width: 600px) { .cg-cel { min-width: 5em; } }
+.erro { color: var(--erro); }

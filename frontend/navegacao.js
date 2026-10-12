@@ -2,7 +2,7 @@
 // (polling de 1 s em /progresso) e lembrança do último projeto/aba no localStorage.
 // Usa $, esc, api, mensagem, fmtNum, carregarProjetos, abrirProjeto (app.js) e redesenharPaineis (analises.js).
 
-const ABAS = ['geral', 'executar', 'analises', 'comentarios', 'codificacao', 'perguntar', 'corpus', 'paragrafos', 'laudo'];
+const ABAS = ['geral', 'executar', 'analises', 'comentarios', 'codificacao', 'perguntar', 'corpus', 'coleta', 'paragrafos', 'laudo'];
 const CHAVE_PROJETO = 'raiox.projeto', CHAVE_ABA = 'raiox.aba', CHAVE_VISTA = 'raiox.vista';
 
 function lembrar(chave, valor) {
@@ -42,6 +42,7 @@ function mostrarAba(aba) {
   if (aba === 'codificacao' && typeof carregarCodificacao === 'function') carregarCodificacao();
   if (aba === 'perguntar' && typeof carregarPerguntar === 'function') carregarPerguntar();
   if (aba === 'corpus' && typeof carregarCorpus === 'function') carregarCorpus();
+  if (aba === 'coleta' && typeof carregarColeta === 'function') carregarColeta();
 }
 
 async function entrarNoProjeto(slug, nome, aba) {
@@ -56,6 +57,7 @@ async function entrarNoProjeto(slug, nome, aba) {
   if (abaAtual === 'paragrafos') carregarParagrafos();
   if (abaAtual === 'codificacao' && typeof carregarCodificacao === 'function') carregarCodificacao();
   if (abaAtual === 'corpus' && typeof carregarCorpus === 'function') carregarCorpus();
+  if (abaAtual === 'coleta' && typeof carregarColeta === 'function') carregarColeta();
 }
 
 $('#nav-principal').addEventListener('click', (ev) => {

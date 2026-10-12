@@ -127,6 +127,9 @@ referencias:
 
   # ---------- Frente 16 (compilada de memória: conferir antes de citar) ----------
   aria2017: {autores: ["Aria, M.", "Cuccurullo, C."], ano: 2017, titulo: "bibliometrix: An R-tool for comprehensive science mapping analysis", tipo: artigo, veiculo: "Journal of Informetrics", detalhes: {volume: "11", numero: "4", paginas: "959-975"}, nota: "conferir antes de citar"}
+  # ---------- Frente 17 (compiladas de memória: conferir antes de citar) ----------
+  kitchenham2007: {autores: ["Kitchenham, B.", "Charters, S."], ano: 2007, titulo: "Guidelines for performing systematic literature reviews in software engineering", tipo: relatorio, veiculo: "EBSE Technical Report EBSE-2007-01", nota: "conferir antes de citar"}
+  garousi2019: {autores: ["Garousi, V.", "Felderer, M.", "Mäntylä, M. V."], ano: 2019, titulo: "Guidelines for including grey literature and conducting multivocal literature reviews in software engineering", tipo: artigo, veiculo: "Information and Software Technology", detalhes: {volume: "106", paginas: "101-121"}, nota: "conferir antes de citar"}
 
 analises:
   # =====================================================================================================
@@ -1051,6 +1054,30 @@ analises:
       - "O arquivo gerado é novo: a planilha do usuário nunca é alterada. Os IDs de registro 'RX-...' são provisórios e devem ser renumerados ao colar na coleta."
       - "A coluna 'Sentença verificada (auto)' só diz se o trecho foi achado no texto do documento; a conferência continua sendo do revisor."
     referencias: []
+    deteccao: {}
+
+  # =====================================================================================================
+  # Frente 17: coleta guiada por protocolo
+  # =====================================================================================================
+  - id: coleta_protocolo
+    nome: "Coleta guiada por protocolo (extração de dados por item)"
+    familia: "Coleta de dados"
+    status: implementado
+    eap_id: "17.1, 17.2, 17.3"
+    modulo: "app/services/coleta/motor.py"
+    o_que_mede: "Não mede: preenche, para cada documento e cada item de um protocolo de coleta (id, nome, definição de até 2 frases, tipo de resposta, categorias, onde procurar, palavras-chave), um valor com trechos literais, página e origem, para revisão humana."
+    metrica: "Candidatos: frases das seções indicadas e frases que casam as palavras-chave (por lema, com curinga, frases e expressões regulares). Extratores por tipo: número (n = 312, 1.200 empresas, sample of 1,200 firms; separador de milhar pt/en), sim/não (presença da palavra-chave e negação próxima), data/ano, categoria (palavras-chave por categoria; empate vira 'ambíguo') e texto (frases de maior nota). Itens ligados a uma parte da planilha do corpus usam as regras da 16.1. Opcional (LLM desligado por padrão): o modelo devolve JSON com valor e frases copiadas; cada frase é conferida literalmente no documento (com a página), categoria fora da lista e número que não aparece no trecho são recusados. Sem evidência, 'não encontrado'. Cada célula guarda valor, trechos, origem (regra, padrão, LLM, humano), confiança, status (sugerido, aceito, editado, rejeitado, não encontrado) e justificativa; a execução é incremental e nunca sobrescreve o que o revisor decidiu. Concordância por item: kappa de Cohen e alfa de Krippendorff (15.1)."
+    parametros_padrao:
+      - {nome: "Frases por definição", valor: "no máximo 2 (aviso acima de ~40 palavras)"}
+      - {nome: "Trechos por célula", valor: "3 (por item)"}
+      - {nome: "LLM", valor: "desligado (faltantes ou todos os itens, se ligado em Configurações)"}
+    equivale_a: "Formulário de extração de dados de uma revisão sistemática ou multivocal (protocolo de coleta), preenchido por regras e revisado por duas pessoas."
+    nao_e_igual_a: "Codificação temática nem resumo automático: o valor sai de trechos literais do documento; sem trecho, fica 'não encontrado'."
+    cuidados:
+      - "As regras são heurísticas (palavras-chave, padrões de número e data): um valor sugerido pode vir de outro estudo citado no texto; a revisão humana de cada célula é obrigatória antes de usar."
+      - "O LLM, quando ligado, só vale com frases literais do documento (verificadas); 'não encontrado' não prova que o documento não trata do item."
+      - "A concordância (kappa, alfa) com a sugestão automática mede o acerto da coleta, não a validade do protocolo; informe a faixa e o número de pares."
+    referencias: [kitchenham2007, garousi2019, cohen1960, krippendorff2018]
     deteccao: {}
 
   # =====================================================================================================

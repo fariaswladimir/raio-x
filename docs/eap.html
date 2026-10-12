@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EAP do Raio-X</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1d1d1b;--mut:#6b6a66;--line:#e3e1da;--soft:#efede8;
+--ok:#1a7f4b;--okbg:#e1f5ee;--warn:#a1610b;--warnbg:#faeeda;--plan:#8a8984;
+--mvp:#185fa5;--mvpbg:#e6f1fb;--v2:#534ab7;--v2bg:#eeedfe;--v3:#0f6e56;--v3bg:#e1f5ee;--v1:#854f0b;--v1bg:#faeeda}
+@media (prefers-color-scheme:dark){:root{--bg:#141516;--card:#1e1f21;--ink:#ebe9e4;--mut:#9a988f;--line:#323338;--soft:#26272a;
+--ok:#5dcaa5;--okbg:#0f3328;--warn:#ef9f27;--warnbg:#3a2a10;--plan:#888780;
+--mvp:#85b7eb;--mvpbg:#0c2a48;--v2:#afa9ec;--v2bg:#26215c;--v3:#5dcaa5;--v3bg:#0f3328;--v1:#ef9f27;--v1bg:#3a2a10}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,"Segoe UI",sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;margin:0 0 4px;font-weight:600}
+.sub{color:var(--mut);font-size:14px;margin:0 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:0 0 14px}
+.kpi{background:var(--soft);border-radius:8px;padding:10px 14px}.kpi span{font-size:13px;color:var(--mut)}.kpi b{display:block;font-size:22px;font-weight:600}
+.bar{height:6px;background:var(--soft);border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}
+.rel{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:0 0 16px;font-size:13px;color:var(--mut)}.rel b{color:var(--ink)}
+.filtros{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 14px;font-size:13px;color:var(--mut)}
+.filtros button{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:3px 10px;cursor:pointer}
+.filtros button.on{background:var(--soft);border-color:var(--mut)}
+.filtros input{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:3px 8px;min-width:180px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+.fr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.fr h2{font-size:14px;margin:0 0 4px;font-weight:600;display:flex;justify-content:space-between;gap:8px}.fr h2 span{font-weight:400;font-size:12px;color:var(--mut);white-space:nowrap}
+.fr .bar{height:4px;margin:0 0 8px}
+.it{display:flex;gap:8px;align-items:baseline;font-size:13px;padding:3px 0;border-top:1px solid transparent}
+.it .st{width:14px;text-align:center}.s2{color:var(--ok)}.s1{color:var(--warn)}.s0{color:var(--plan)}
+.it .id{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--mut);min-width:40px}
+.it .nm{flex:1}.it .nota{display:block;font-size:12px;color:var(--warn)}
+.pl{font-size:11px;padding:1px 7px;border-radius:6px;white-space:nowrap}
+.MVP{background:var(--mvpbg);color:var(--mvp)}.v02{background:var(--v2bg);color:var(--v2)}.v03{background:var(--v3bg);color:var(--v3)}.v10{background:var(--v1bg);color:var(--v1)}
+.leg{font-size:12px;color:var(--mut);margin:14px 0 0}
+a{color:var(--mvp)}
+@media print{.filtros{display:none}.fr{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main>
+<h1>EAP do Raio-X de Textos</h1>
+<p class="sub">Situação em 12/10/2026 · 16 frentes · 71 entregáveis · 748 testes. Detalhes de cada item no <a href="dicionario_eap.md">dicionário da EAP</a>; plano completo em <a href="../EAP.md">EAP.md</a>.</p>
+<div class="kpis">
+<div class="kpi"><span>Concluídos</span><b id="k-ok"></b></div>
+<div class="kpi"><span>Falta conferência externa</span><b id="k-par"></b></div>
+<div class="kpi"><span>Pendentes</span><b id="k-pen"></b></div>
+<div class="kpi"><span>Progresso</span><b id="k-pct"></b></div>
+</div>
+<div class="rel" id="rel"></div>
+<div class="filtros">
+<span>Versão:</span><button data-f="r" data-v="all" class="on">Todas</button><button data-f="r" data-v="MVP">MVP</button><button data-f="r" data-v="v0.2">v0.2</button><button data-f="r" data-v="v0.3">v0.3</button><button data-f="r" data-v="v1.0">v1.0</button>
+<span style="margin-left:8px">Situação:</span><button data-f="s" data-v="all" class="on">Todas</button><button data-f="s" data-v="2">Concluído</button><button data-f="s" data-v="1">Falta conferir</button><button data-f="s" data-v="0">Pendente</button>
+<input id="busca" type="search" placeholder="buscar entregável…" aria-label="Buscar entregável">
+</div>
+<div class="grid" id="grid"></div>
+<p class="leg">● concluído · ◐ implementado, falta conferência externa pelo usuário · ○ pendente (depende do usuário).</p>
+</main>
+<script>
+const D=[
+["1. Fundação",[["1.1","Estrutura do repositório e iniciar.bat","MVP",2],["1.2","Modelo de dados SQLite e projeto por pasta","MVP",2],["1.3","Orquestrador com cache por hash","MVP",2],["1.4","Parâmetros versionados","MVP",2]]],
+["2. Varredura e conversão",[["2.1","Varredura da pasta (só leitura)","MVP",2],["2.2","Metadados pelo nome + edição manual","MVP",2],["2.3","Grupos (tela e documentos.csv)","MVP",2],["2.4","Conversão Docling com página","MVP",2],["2.5","Controle de qualidade + quase-duplicatas","MVP",2],["2.6","OCR por documento","v0.2",2]]],
+["3. Limpeza e estrutura",[["3.1","Detecção de seções","MVP",2],["3.2","Exclusão das referências","MVP",2],["3.3","Cabeçalhos, URLs, hifenização","v0.2",2],["3.4","Detector de segmentos de ruído","v0.2",2]]],
+["4. Processamento linguístico",[["4.1","Lematização (simplemma)","MVP",2],["4.2","Palavras vazias configuráveis","MVP",2],["4.3","Termos compostos","v0.2",2],["4.4","Segmentos de ~40 palavras","v0.2",2],["4.5","Classes gramaticais e entidades (spaCy)","v0.3",2]]],
+["5. Raio-x descritivo",[["5.1","Resumo do corpus (MATTR)","MVP",2],["5.2","Frequências, nuvem e tendências","MVP",2],["5.3","KWIC com página e citação","MVP",2],["5.4","Colocados LL e MI","MVP",1,"falta conferir no AntConc"],["5.5","N-gramas","v0.2",2]]],
+["6. Raio-x comparativo",[["6.1","Keyness entre grupos","MVP",2],["6.2","Especificidades (Lafon)","v0.2",1,"falta conferir no TXM"],["6.3","Similaridade entre documentos","v0.2",2],["6.4","Dicionário / codebook","v0.2",2]]],
+["7. Raio-x temático",[["7.1","CHD de Reinert","v0.2",2],["7.2","Similitude e rede","v0.2",2],["7.3","AFC","v0.2",2],["7.4","Tópicos LDA","v0.3",2]]],
+["8. Comentários e revisão",[["8.1","Catálogo de regras","MVP",2],["8.2","Tela de revisão","MVP",2],["8.3","Checagem de evidência","v0.2",2]]],
+["9. Laudo e exportação",[["9.1","Laudo HTML","MVP",2],["9.2","CSV e pacote .zip","MVP",2],["9.3","Laudo DOCX","v0.2",2],["9.4","Texto de Métodos para o artigo","v0.2",2],["9.5","Exportação para a planilha de coleta","v0.3",2]]],
+["10. Interface",[["10.1","Projetos e progresso","MVP",2],["10.2","Painéis de análise","MVP",2],["10.3","Sub-abas temáticas","v0.2",2]]],
+["11. Empacotamento",[["11.1","Pacote para outra máquina","v0.2",2,"falta testar em outra máquina"],["11.2","Modo totalmente offline","v1.0",2,"falta testar sem internet de verdade"]]],
+["12. Validação",[["12.1","Corpus de referência","MVP",2],["12.2","Validação cruzada IRaMuTeQ/AntConc","v0.2",0,"depende do usuário (ou validação por R)"],["12.3","Desempenho","MVP",2]]],
+["13. Documentação",[["13.1","Guia de uso","MVP",2],["13.2","Nota metodológica","v0.2",2],["13.3","Tela de Metodologia (ABNT/APA/BibTeX)","v0.2",2]]],
+["14. LLM opcional",[["14.1","Configuração (Ollama, Claude, compatível OpenAI)","v0.2",2],["14.2","Exemplos de parágrafos","v0.2",2],["14.3","Parágrafo com LLM + checagem","v0.2",2]]],
+["15. Análises adicionais",[["15.1","Codificação LLM + kappa/alfa","v0.3",2],["15.2","Comunidades e centralidade","v0.2",2],["15.3","Legibilidade","v0.3",2],["15.4","Palavras-chave por documento","v0.3",2],["15.5","Sumarização extrativa","v0.3",2],["15.6","Estilometria (Delta)","v0.3",2],["15.7","Tópicos LSA/NMF/LDA + coerência","v0.3",2],["15.8","Keyness com corpus externo","v0.3",2],["15.9","k-means, espectral, PCA","v0.3",2],["15.10","Sentimento por léxico","v0.3",2],["15.11","Classificação zero-shot por LLM","v0.3",2],["15.12","Embeddings via Ollama","v0.3",2],["15.13","Perguntar ao corpus (BM25/RAG)","v0.3",2]]],
+["16. Planilha do corpus e .bib",[["16.1","Planilha: coluna por parte do artigo","v0.3",2],["16.2","Extração assistida por LLM","v0.3",2],["16.3",".bib para o bibliometrix","v0.3",2],["16.4","Metadados enriquecidos","v0.3",2]]]
+];
+const sym=["○","◐","●"], cls=r=>r.replace(".","");
+let fr="all", fs="all", q="";
+const all=D.flatMap(f=>f[1]);
+const ok=all.filter(x=>x[3]===2).length, par=all.filter(x=>x[3]===1).length, pen=all.filter(x=>x[3]===0).length;
+document.getElementById("k-ok").textContent=`${ok} / ${all.length}`;
+document.getElementById("k-par").textContent=par;
+document.getElementById("k-pen").textContent=pen;
+document.getElementById("k-pct").textContent=Math.round(ok/all.length*100)+"%";
+document.getElementById("rel").innerHTML=["MVP","v0.2","v0.3","v1.0"].map(r=>{const it=all.filter(x=>x[2]===r),d=it.filter(x=>x[3]===2).length;return `<div><b>${r}</b> · ${d} de ${it.length}<div class="bar" style="margin-top:4px"><i style="width:${Math.round(d/it.length*100)}%"></i></div></div>`}).join("");
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function render(){
+  document.getElementById("grid").innerHTML=D.map(([t,its])=>{
+    const vis=its.filter(x=>(fr==="all"||x[2]===fr)&&(fs==="all"||String(x[3])===fs)&&(!q||(x[0]+" "+x[1]+" "+(x[4]||"")).toLowerCase().includes(q)));
+    if(!vis.length) return "";
+    const d=its.filter(x=>x[3]===2).length, h=its.filter(x=>x[3]===1).length, pct=Math.round((d+h/2)/its.length*100);
+    return `<section class="fr"><h2>${esc(t)}<span>${d}/${its.length} · ${pct}%</span></h2><div class="bar"><i style="width:${pct}%"></i></div>`+
+      vis.map(([id,n,r,s,nota])=>`<div class="it"><span class="st s${s}">${sym[s]}</span><span class="id">${id}</span><span class="nm">${esc(n)}${nota?`<span class="nota">${esc(nota)}</span>`:""}</span><span class="pl ${cls(r)}">${r}</span></div>`).join("")+`</section>`;
+  }).join("") || `<p class="sub">Nenhum entregável com esses filtros.</p>`;
+}
+document.querySelectorAll(".filtros button").forEach(b=>b.onclick=()=>{const f=b.dataset.f;document.querySelectorAll(`.filtros button[data-f="${f}"]`).forEach(x=>x.classList.toggle("on",x===b));if(f==="r")fr=b.dataset.v;else fs=b.dataset.v;render()});
+document.getElementById("busca").oninput=e=>{q=e.target.value.trim().toLowerCase();render()};
+render();
+</script>
+</body>
+</html>

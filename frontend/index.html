@@ -31,6 +31,7 @@
       <button type="button" data-aba="codificacao">Codificação</button>
       <button type="button" data-aba="perguntar">Perguntar ao corpus</button>
       <button type="button" data-aba="corpus">Corpus</button>
+      <button type="button" data-aba="coleta">Coleta</button>
       <button type="button" data-aba="paragrafos">Exemplos de parágrafos</button>
       <button type="button" data-aba="laudo">Laudo e exportação</button>
     </nav>
@@ -763,6 +764,93 @@
         <div id="cp-detalhe"></div>
       </section>
 
+      <section id="aba-coleta" class="aba" hidden>
+        <h3>Coleta guiada por protocolo <span class="discreto">(Frente 17)</span></h3>
+        <p class="discreto">Cada item do protocolo é uma linha: nome, <b>definição de no máximo 2 frases</b>, tipo de resposta, onde procurar e palavras-chave. A coleta automática só preenche com trechos
+          literais do documento (com página); o que ela sugere precisa de revisão humana.</p>
+        <div class="abas-sub" id="cg-subabas" role="tablist">
+          <button type="button" data-sub="protocolo" class="on">1. Protocolo</button>
+          <button type="button" data-sub="coletar">2. Coletar</button>
+          <button type="button" data-sub="revisar">3. Revisar</button>
+          <button type="button" data-sub="exportar">4. Exportar e concordância</button>
+        </div>
+
+        <div class="cg-sub" data-sub="protocolo">
+          <p class="barra">
+            <label class="inline">Modelo pronto <select id="cg-modelo"></select></label>
+            <button type="button" id="cg-carregar-modelo" class="sec">Carregar modelo</button>
+            <label class="inline">Importar (CSV, XLSX ou tabela Markdown) <input type="file" id="cg-importar" accept=".csv,.xlsx,.md,.markdown,.txt"></label>
+            <a class="botao sec" id="cg-exp-csv" download="protocolo_coleta.csv" href="#">Exportar CSV</a>
+            <a class="botao sec" id="cg-exp-xlsx" download="protocolo_coleta.xlsx" href="#">Exportar XLSX</a>
+          </p>
+          <p class="barra">
+            <button type="button" id="cg-adicionar" class="sec">+ Adicionar item</button>
+            <button type="button" id="cg-salvar">Salvar protocolo</button>
+            <label class="inline">Versões <select id="cg-versoes"></select></label>
+            <button type="button" id="cg-restaurar" class="sec">Restaurar versão</button>
+            <span id="cg-versao" class="selo"></span>
+            <span id="cg-msg" class="discreto" role="status"></span>
+          </p>
+          <div id="cg-erros" class="vazio" hidden></div>
+          <div class="rolagem alta"><table id="cg-tab-protocolo">
+            <thead><tr><th>#</th><th>id</th><th>Nome</th><th>Definição (até 2 frases)</th><th>Tipo</th><th>Categorias (uma por linha: valor [palavras]: definição)</th>
+              <th>Onde procurar</th><th>Palavras-chave</th><th>Obr.</th><th>Máx.</th><th>Parte 16.1</th><th>Ações</th></tr></thead><tbody></tbody></table></div>
+          <p class="discreto">Palavras-chave: <code>agent*</code> (curinga), <code>"sample size"</code> (frase), <code>/n\s*=\s*\d+/</code> (expressão regular); casam também o lema (<i>agents</i> = <i>agent</i>), sem diferenciar caixa e acentos.
+            Onde procurar: <code>resumo</code>, <code>introducao</code>, <code>referencial</code>, <code>metodos</code>, <code>resultados</code>, <code>discussao</code>, <code>conclusao</code>, <code>agradecimentos</code>, <code>declaracoes</code> ou <code>qualquer</code>.
+            Item ligado a uma parte da planilha do corpus (16.1) usa as regras da 16.1; palavras-chave e seções só valem se a ligação for removida.</p>
+        </div>
+
+        <div class="cg-sub" data-sub="coletar" hidden>
+          <p class="barra">
+            <label class="inline">LLM <select id="cg-llm"><option value="desligado">desligado (só regras)</option><option value="faltantes">só itens sem valor/ambíguos</option><option value="todos">todos os itens</option></select></label>
+            <label class="inline check"><input type="checkbox" id="cg-forcar"> recalcular tudo (menos o que você decidiu)</label>
+            <button type="button" id="cg-executar">Executar coleta</button>
+            <span id="cg-msg-exec" class="discreto" role="status"></span>
+          </p>
+          <p class="discreto">Incremental: só recalcula as células cujo documento ou item mudou; nunca sobrescreve o que você aceitou, editou ou rejeitou. O LLM exige "Permitir geração com LLM" em Configurações e só entra com frases literais do documento.</p>
+          <div class="barra-prog" id="cg-barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progresso da coleta" hidden><i style="width:0%"></i></div>
+          <div id="cg-resumo" class="chips"></div>
+        </div>
+
+        <div class="cg-sub" data-sub="revisar" hidden>
+          <p class="barra">
+            <label class="inline">Status <select id="cg-f-status"><option value="">todos</option></select></label>
+            <label class="inline">Item <select id="cg-f-item"><option value="">todos</option></select></label>
+            <label class="inline">Grupo <select id="cg-f-grupo"><option value="">todos</option></select></label>
+            <button type="button" id="cg-atualizar" class="sec">Atualizar</button>
+            <span id="cg-msg-rev" class="discreto" role="status"></span>
+          </p>
+          <div class="rolagem"><table id="cg-tab-contadores"></table></div>
+          <div class="rolagem alta"><table id="cg-matriz"></table></div>
+          <div id="cg-detalhe"></div>
+        </div>
+
+        <div class="cg-sub" data-sub="exportar" hidden>
+          <h4>Exportação</h4>
+          <p class="barra">
+            <label class="inline">Formato <select id="cg-x-formato"><option value="larga">larga (uma linha por documento)</option><option value="longa">longa (documento × item × trecho)</option></select></label>
+            <label class="inline">Versão <select id="cg-x-versao"><option value="final">final (só aceitos/editados)</option><option value="auditoria">auditoria (todos os valores)</option></select></label>
+            <label class="inline">Arquivo <select id="cg-x-ext"><option value="xlsx">.xlsx</option><option value="csv">.csv</option></select></label>
+            <button type="button" id="cg-x-baixar">Baixar</button>
+          </p>
+          <p class="barra">
+            <label class="inline">Planilha de coleta da MLR (caminho, só leitura) <input type="text" id="cg-mlr-ref" size="44" placeholder="C:\...\Coleta_Dados_MLR.xlsx (opcional)"></label>
+            <label class="inline check"><input type="checkbox" id="cg-mlr-omitir"> omitir duplicados</label>
+            <button type="button" id="cg-mlr-enviar" class="sec">Enviar aceitos à planilha de coleta da MLR (.xlsx novo)</button>
+            <span id="cg-msg-exp" class="discreto" role="status"></span>
+          </p>
+          <h4>Concordância (kappa e alfa)</h4>
+          <p class="barra">
+            <label class="inline">Comparar <select id="cg-c-fonte"><option value="revisao">sugestão automática × valor revisado</option><option value="segundo">revisor principal × segundo codificador</option></select></label>
+            <label class="inline">Faixas p/ números (cortes) <input id="cg-c-bandas" size="14" placeholder="100,500,1000"></label>
+            <label class="inline">Segundo codificador (CSV/XLSX; cabeçalho = id do item) <input type="file" id="cg-c-arquivo" accept=".csv,.xlsx"></label>
+            <button type="button" id="cg-c-calcular">Calcular</button>
+            <span id="cg-msg-conc" class="discreto" role="status"></span>
+          </p>
+          <div class="rolagem"><table id="cg-tab-conc"></table></div>
+        </div>
+      </section>
+
       <section id="aba-codificacao" class="aba" hidden>
         <h3>Codificação: LLM como segundo codificador e concordância <span id="cd-info" class="discreto"></span></h3>
         <div class="cd-subabas" id="cl-subabas" role="tablist" aria-label="Seções da codificação">
@@ -969,6 +1057,7 @@
   <script src="busca.js"></script>
   <script src="corpus.js"></script>
   <script src="coleta_mlr.js"></script>
+  <script src="coleta.js"></script>
   <script src="navegacao.js"></script>
 </body>
 </html>

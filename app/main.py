@@ -15,6 +15,7 @@ from app.routers import estilometria as rotas_estilometria
 from app.routers import lote_t1 as rotas_lote_t1
 from app.routers import busca as rotas_busca
 from app.routers import classificacao as rotas_classificacao
+from app.routers import coleta_protocolo as rotas_coleta_protocolo
 import app.services.etapas  # noqa: F401  (registra as etapas do pipeline)
 
 # Não há banco global: cada projeto cria o próprio projeto.sqlite sob demanda
@@ -45,6 +46,7 @@ app.include_router(rotas_codificacao.router)
 app.include_router(rotas_corpus.router)
 app.include_router(rotas_corpus.router_config)
 app.include_router(rotas_classificacao.router)  # 15.11
+app.include_router(rotas_coleta_protocolo.router)  # 17 coleta guiada por protocolo
 app.include_router(rotas_busca.router)  # 15.12/15.13
 app.include_router(rotas_busca.router_config)  # preços do LLM
 for _r in rotas_lote_t1.ROUTERS:

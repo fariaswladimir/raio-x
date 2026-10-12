@@ -183,6 +183,11 @@ def _elegivel(f: dict) -> bool:
             and sumarizacao.elegivel(f["texto"], MIN_PALAVRAS_FRASE, MAX_PALAVRAS_FRASE))
 
 
+def elegivel(f: dict) -> bool:
+    """Frase elegível da 16.1 (6 a 90 palavras, terminada em pontuação, sem URL/DOI, fora de legendas, listas e checklists). Usada também pela coleta (17.2)."""
+    return _elegivel(f)
+
+
 def paginas_de_checklist(frases: list[dict]) -> set:
     """Páginas com >= 2 frases de texto-padrão de checklist de conferência (todas as frases delas são ignoradas nos padrões)."""
     cont: dict = {}
