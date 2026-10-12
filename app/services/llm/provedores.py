@@ -8,6 +8,7 @@ import time
 import anthropic
 import httpx
 
+from app import offline
 from app.services.llm import config
 from app.services.llm.cache_prompt import system_como_texto
 
