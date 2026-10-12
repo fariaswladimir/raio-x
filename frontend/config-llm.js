@@ -24,6 +24,12 @@ function cfMostrarPainel() {
 
 function cfRender(cfg) {
   cf.cfg = cfg;
+  // 11.2: no modo offline os provedores remotos ficam bloqueados (o Ollama local segue permitido).
+  document.querySelectorAll('input[name="cf-prov"]').forEach((r) => {
+    if (r.value === 'anthropic' || r.value === 'openai_compativel') { r.disabled = !!cfg.modo_offline; r.title = cfg.modo_offline ? 'Modo offline: provedor remoto desativado' : ''; }
+  });
+  const avisoOff = $('#cf-offline');
+  if (avisoOff) { avisoOff.hidden = !cfg.modo_offline; avisoOff.textContent = cfg.aviso_offline || ''; }
   $('#cf-hab').checked = !!cfg.habilitado;
   document.querySelectorAll('input[name="cf-prov"]').forEach((r) => { r.checked = r.value === cfg.provedor; });
   $('#cf-ol-url').value = cfg.ollama.base_url || '';

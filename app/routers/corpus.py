@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app import offline
 from app.database import get_db, pasta_do_projeto
 from app.models import Documento
 from app.services import parametros as svc_parametros
@@ -81,6 +82,8 @@ def extrair_metadados(slug: str, online: bool = Query(False, description="Consul
     """Extrai os metadados das primeiras páginas de cada documento (origem ``texto``). Com ``online=true``, consulta também o DOI
     (exige e-mail de contato configurado; 409 sem ele)."""
     pasta = pasta_do_projeto(slug)
+    if online and offline.modo_offline():
+        raise HTTPException(status_code=409, detail=offline.MSG_ONLINE)
     if online and not svc_online.carregar_config()["email_contato"]:
         raise HTTPException(status_code=409, detail="Configure um e-mail de contato (Crossref/OpenAlex) antes de usar a consulta online.")
     r = svc_projeto.extrair_textos(db, pasta)
@@ -102,7 +105,7 @@ def consultar_online(slug: str, corpo: OnlineIn | None = None, db: Session = Dep
     fontes = ("crossref", "openalex") if corpo.fonte == "ambos" else (corpo.fonte,)
     try:
         return svc_projeto.consultar_online(db, pasta_do_projeto(slug), fontes, corpo.documento_ids)
-    except svc_online.SemEmail as exc:
+    except (svc_online.SemEmail, offline.ModoOffline) as exc:
         raise HTTPException(status_code=409, detail=str(exc))
 
 

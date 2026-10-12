@@ -27,8 +27,11 @@ EXTENSOES_DOCS = {".md", ".html", ".png"}
 ARQUIVOS_RAIZ = [
     "iniciar.bat",
     "instalar_docling.bat",
+    "instalar_spacy.bat",
+    "instalar_offline.bat",
     "requirements.txt",
     "requirements-docling.txt",
+    "requirements-spacy.txt",
     "README.md",
     "EAP.md",
 ]
@@ -64,7 +67,9 @@ def _pasta_excluida(nome: str) -> bool:
 # Frente 14: configuração do LLM e segredos (chave de API) nunca vão no pacote, onde quer que estejam;
 # llm_log.jsonl traz trechos do corpus do usuário.
 ARQUIVOS_EXCLUIDOS = {"exemplo_laudo_mlr.html", "revisao_limpeza.md", "desempenho.md",
-                      "config_llm.json", "segredos.json", "llm_log.jsonl"}
+                      "config_llm.json", "segredos.json", "llm_log.jsonl",
+                      # 11.2: o instalar_offline.bat cria o arquivo na máquina de destino; o da máquina de origem não viaja
+                      "raiox_offline.flag"}
 
 
 def _arquivo_excluido(nome: str) -> bool:

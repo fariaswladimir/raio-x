@@ -301,4 +301,12 @@ $('#form-projeto').addEventListener('submit', async (ev) => {
   }
 });
 
-api('/api').then((i) => { $('#versao').textContent = `${i.sistema} ${i.versao}`; }).catch(() => {});
+api('/api').then((i) => {
+  $('#versao').textContent = `${i.sistema} ${i.versao}`;
+  const selo = $('#selo-offline');
+  if (selo) selo.hidden = !i.offline;
+  if (i.offline) {  // 11.2: recursos que precisam de internet ficam desativados
+    const online = $('#cp-online');
+    if (online) { online.checked = false; online.disabled = true; online.title = 'Modo offline: consulta online desativada'; }
+  }
+}).catch(() => {});

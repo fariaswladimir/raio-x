@@ -15,6 +15,7 @@
     <div class="topo">
       <h1>Raio-X de Textos</h1>
       <span id="versao" class="discreto"></span>
+      <span id="selo-offline" class="selo-offline" hidden title="Modo offline: nada sai deste computador. Consulta online de metadados e LLM remoto (Anthropic, OpenAI-compatível) ficam desativados; o Ollama local continua disponível.">Offline</span>
       <nav id="nav-principal" aria-label="Navegação principal">
         <button type="button" class="nav-item on" data-vista="projetos">Projetos</button>
         <button type="button" class="nav-item" data-vista="config">Configurações</button>
@@ -99,6 +100,7 @@
           <span id="cf-msg" class="discreto" role="status"></span>
         </p>
         <p id="cf-cofre" class="cm-aviso" hidden></p>
+        <p id="cf-offline" class="cm-aviso" hidden></p>
         <p class="discreto">A chave fica no cofre de credenciais do Windows e nunca aparece aqui (só os 4 últimos caracteres), nos logs, nos projetos, nas exportações nem no pacote zip.
           O pedido enviado ao LLM e a resposta (com a conferência) ficam em <code>projetos/&lt;projeto&gt;/saidas/llm_log.jsonl</code>: contêm só os dados do seu projeto.</p>
       </section>

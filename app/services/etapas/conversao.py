@@ -30,6 +30,7 @@ import time
 from pathlib import Path
 from threading import Lock
 
+from app import offline
 from app.models import Documento
 from app.services.orquestrador import ContextoExecucao, Etapa, registrar_etapa
 from app.services.texto import MARCADOR_PAGINA, contar_caracteres, gravar_qualidade, ler_qualidade, paginar
@@ -92,7 +93,9 @@ def _obter_conversor(ocr: bool, pagina_inteira: bool = False, idioma: str = "en"
                 torch.set_num_threads(4)
             except Exception:
                 pass
-            opcoes = d["PdfPipelineOptions"]()
+            offline.aplicar_ambiente()  # 11.2: HF/transformers sem rede (vale se o Docling ainda não foi importado)
+            artefatos = offline.pasta_artefatos_docling()
+            opcoes = d["PdfPipelineOptions"](artifacts_path=artefatos) if artefatos else d["PdfPipelineOptions"]()
             opcoes.do_ocr = bool(ocr)
             if ocr:
                 opcoes.ocr_options = d["RapidOcrOptions"](

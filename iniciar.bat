@@ -11,6 +11,15 @@ rem Passo 2: versao 3.11 ou mais nova.
 python -c "import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)" >nul 2>&1
 if errorlevel 1 goto versao_antiga
 
+rem Modo offline (EAP 11.2): o instalar_offline.bat criou o arquivo raiox_offline.flag. Nao toca a internet.
+if exist "%~dp0raiox_offline.flag" (
+    if not exist "%~dp0.venv\Scripts\python.exe" goto sem_instalacao_offline
+    set "HF_HUB_OFFLINE=1"
+    set "TRANSFORMERS_OFFLINE=1"
+    echo [Raio-X] Modo offline: dependencias e modelos locais, sem internet.
+    goto iniciar_servidor
+)
+
 if not exist "%~dp0.venv\Scripts\python.exe" (
     echo [Raio-X] Criando ambiente virtual em .venv ...
     python -m venv "%~dp0.venv"
@@ -21,11 +30,18 @@ echo [Raio-X] Verificando dependencias ...
 "%~dp0.venv\Scripts\python.exe" -m pip install -q -r "%~dp0requirements.txt"
 if errorlevel 1 goto erro
 
+:iniciar_servidor
 rem Abre o navegador depois de alguns segundos (o servidor leva um instante para subir).
 start "" /b cmd /c "timeout /t 3 /nobreak >nul & start "" http://localhost:8800"
 
 echo [Raio-X] Servidor em http://localhost:8800  (Ctrl+C para encerrar)
 "%~dp0.venv\Scripts\python.exe" -m uvicorn app.main:app --host 127.0.0.1 --port 8800
+goto fim
+
+:sem_instalacao_offline
+echo.
+echo [Raio-X] Modo offline ligado (raiox_offline.flag), mas o ambiente .venv nao existe.
+echo   Rode instalar_offline.bat (o pacote offline traz tudo, nao precisa de internet).
 goto fim
 
 :sem_python

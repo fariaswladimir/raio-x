@@ -336,3 +336,7 @@ textarea { padding: 7px 9px; border: 1px solid var(--borda); border-radius: 5px;
 .cp-padrao { background: rgba(60,160,90,.12); }
 .cp-llm, .cp-misto { background: rgba(200,150,40,.18); }
 .cp-nao { background: transparent; }
+
+/* 11.2: selo do modo offline */
+.selo-offline { display: inline-block; padding: 1px 8px; border-radius: 10px; background: #e6f4ea; color: #1e6b34; border: 1px solid #1e6b34; font-size: 12px; font-weight: 600; margin-left: 6px; }
+.selo-offline[hidden] { display: none; }

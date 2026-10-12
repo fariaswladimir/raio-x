@@ -7,6 +7,7 @@ from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app import offline
 from app.models import Documento
 from app.services.analises import dados as svc_dados
 from app.services.corpus import indice as svc_indice
@@ -107,7 +108,9 @@ def aplicar_grupos(db: Session, pasta: Path, documento_ids: list[int] | None) ->
 
 def consultar_online(db: Session, pasta: Path, fontes: tuple[str, ...] = ("crossref",), documento_ids: list[int] | None = None,
                      email: str | None = None, cliente=None) -> dict:
-    """Consulta Crossref/OpenAlex pelo DOI efetivo de cada documento. Levanta ``SemEmail`` sem e-mail configurado."""
+    """Consulta Crossref/OpenAlex pelo DOI efetivo de cada documento. Levanta ``SemEmail`` sem e-mail configurado
+    e ``ModoOffline`` com o modo offline ligado."""
+    offline.exigir_internet()
     if not (email if email is not None else svc_online.carregar_config()["email_contato"]).strip():
         raise svc_online.SemEmail("Configure um e-mail de contato antes de usar a consulta online.")
     dados = M.carregar(pasta)

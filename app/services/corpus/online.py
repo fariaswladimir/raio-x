@@ -15,6 +15,7 @@ from pathlib import Path
 
 import httpx
 
+from app import offline
 from app.services.llm import config as cfg_llm
 
 CROSSREF = "https://api.crossref.org/works/"
@@ -159,6 +160,7 @@ def de_openalex(obra: dict) -> dict:
 
 def consultar(doi: str, fonte: str = "crossref", email: str | None = None, cliente: httpx.Client | None = None) -> dict:
     """Metadados do DOI: ``{"campos": {...}, "fonte": "crossref"|"openalex", "erro": None|str}``. Sem e-mail: levanta ``SemEmail``."""
+    offline.exigir_internet()  # 11.2
     email = (email if email is not None else carregar_config()["email_contato"]).strip()
     if not email:
         raise SemEmail("Configure um e-mail de contato (Crossref/OpenAlex pedem identificação) antes de usar a consulta online.")

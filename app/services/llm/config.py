@@ -183,4 +183,7 @@ def como_publico() -> dict:
     cfg["chaves"] = {p: mascarar(ler_chave(p)) for p in PROVEDORES_COM_CHAVE}
     cfg["armazenamento_chave"] = armazenamento()
     cfg["modelos_anthropic"] = list(MODELOS_ANTHROPIC)
+    from app import offline
+    cfg["modo_offline"] = offline.modo_offline()  # 11.2: a tela avisa que provedores remotos ficam desativados
+    cfg["aviso_offline"] = offline.MSG_LLM_REMOTO if cfg["modo_offline"] else None
     return cfg

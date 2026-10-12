@@ -83,6 +83,8 @@ class ProvedorOpenAICompativel:
         self.chave = chave
 
     def gerar(self, system: str, user: str) -> dict:
+        if offline.modo_offline():
+            raise ErroLLM(offline.MSG_LLM_REMOTO, "offline")
         if not self.base or not self.modelo:
             raise ErroLLM("Informe a URL base e o nome do modelo.", "config")
         cab = {"Content-Type": "application/json"}
@@ -138,6 +140,8 @@ class ProvedorAnthropic:
         return {"model": self.modelo, "max_tokens": MAX_TOKENS, "system": system, "messages": [{"role": "user", "content": user}]}
 
     def gerar(self, system: str, user: str) -> dict:
+        if offline.modo_offline():
+            raise ErroLLM(offline.MSG_LLM_REMOTO, "offline")
         if not self.chave:
             raise ErroLLM("Chave de API da Anthropic não configurada.", "chave")
         cliente = anthropic.Anthropic(api_key=self.chave, timeout=TIMEOUT_NUVEM)

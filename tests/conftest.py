@@ -45,3 +45,19 @@ def projeto(client, pasta_origem):
     r = client.post("/api/projetos", json={"nome": "Meu Projeto", "pasta_origem": str(pasta_origem)})
     assert r.status_code == 201, r.text
     return r.json()["slug"]
+
+
+@pytest.fixture()
+def sem_rede():
+    """EAP 11.2: qualquer conexão para fora do loopback levanta ``RedeBloqueada``; ``sem_rede.tentativas`` lista as barradas."""
+    from tests.guarda_rede import GuardaRede
+
+    with GuardaRede() as guarda:
+        yield guarda
+
+
+@pytest.fixture()
+def modo_offline(monkeypatch, sem_rede):
+    """Modo offline ligado (RAIOX_OFFLINE=1) e rede bloqueada."""
+    monkeypatch.setenv("RAIOX_OFFLINE", "1")
+    return sem_rede

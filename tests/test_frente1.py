@@ -222,7 +222,7 @@ def test_hash_parametros_estavel_e_sensivel_ao_conteudo(tmp_path):
 # ---------- API ----------
 
 def test_api_raiz(client):
-    assert client.get("/api").json() == {"status": "ok", "sistema": "Raio-X", "versao": "0.1.0-dev"}
+    assert client.get("/api").json() == {"status": "ok", "sistema": "Raio-X", "versao": "0.1.0-dev", "offline": False}
 
 
 def test_api_projetos_listar_obter_404(client, projeto):
