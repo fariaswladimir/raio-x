@@ -1,0 +1,1074 @@
+# Catálogo de metodologia do Raio-X: FONTE ÚNICA das análises, métodos e referências bibliográficas.
+#
+# Lido por app/services/metodologia/__init__.py (validação no carregamento), exposto em /api/metodologia e
+# mostrado na tela "Metodologia" (frontend/metodologia.html). A seção 11 do EAP.md é um espelho desta lista.
+#
+# Estrutura
+#   referencias:   pool de referências, indexado por chave (a chave só serve para reusar a mesma referência
+#                  em várias análises; a chave BibTeX é calculada: sobrenome + ano + 1ª palavra do título).
+#       autores    lista "Sobrenome, Iniciais" (et_al: true quando só o 1º autor é conhecido/usado)
+#       ano, titulo, tipo (livro | artigo | congresso | capitulo | tese | software | relatorio | web | preprint)
+#       veiculo    periódico, anais, livro (capítulo), instituição ou repositório
+#       detalhes   volume, numero, paginas, edicao, local, editora, organizadores, evento (todos opcionais)
+#       doi_ou_url, nota (opcionais)
+#   analises:      uma entrada por análise/procedimento (campos em app/services/metodologia/__init__.py)
+#       parametros_padrao   lista de {nome, valor, parametro?}; "parametro" = chave em parametros.json do projeto
+#       deteccao            como saber se o projeto usou a análise: snapshots (tabela analise), arquivos (cache), tabelas
+#
+# Referências marcadas com nota "conferir antes de citar" foram compiladas de memória (Frente 15) e precisam
+# de verificação de DOI, páginas e edição.
+
+referencias:
+  # ---------- EAP 11.1 ----------
+  auer2024: {autores: ["Auer, C."], et_al: true, ano: 2024, titulo: "Docling Technical Report", tipo: preprint, veiculo: "arXiv", detalhes: {numero: "arXiv:2408.09869"}, doi_ou_url: "https://arxiv.org/abs/2408.09869"}
+  honnibal2020: {autores: ["Honnibal, M.", "Montani, I.", "Van Landeghem, S.", "Boyd, A."], ano: 2020, titulo: "spaCy: Industrial-strength Natural Language Processing in Python", tipo: software, veiculo: "Zenodo", doi_ou_url: "10.5281/zenodo.1212303"}
+  denny2018: {autores: ["Denny, M. J.", "Spirling, A."], ano: 2018, titulo: "Text preprocessing for unsupervised learning: why it matters, when it misleads, and what to do about it", tipo: artigo, veiculo: "Political Analysis", detalhes: {volume: "26", numero: "2", paginas: "168-189"}}
+  # ---------- EAP 11.2 ----------
+  lebart1998: {autores: ["Lebart, L.", "Salem, A.", "Berry, L."], ano: 1998, titulo: "Exploring Textual Data", tipo: livro, detalhes: {local: "Dordrecht", editora: "Kluwer"}}
+  rockwell2016: {autores: ["Rockwell, G.", "Sinclair, S."], ano: 2016, titulo: "Hermeneutica: Computer-Assisted Interpretation in the Humanities", tipo: livro, detalhes: {local: "Cambridge, MA", editora: "MIT Press"}}
+  sinclair2016voyant: {autores: ["Sinclair, S.", "Rockwell, G."], ano: 2016, titulo: "Voyant Tools", tipo: software, doi_ou_url: "https://voyant-tools.org"}
+  # ---------- EAP 11.3 ----------
+  covington2010: {autores: ["Covington, M. A.", "McFall, J. D."], ano: 2010, titulo: "Cutting the Gordian knot: the moving-average type-token ratio (MATTR)", tipo: artigo, veiculo: "Journal of Quantitative Linguistics", detalhes: {volume: "17", numero: "2", paginas: "94-100"}}
+  mccarthy2010: {autores: ["McCarthy, P. M.", "Jarvis, S."], ano: 2010, titulo: "MTLD, vocd-D, and HD-D: a validation study of sophisticated approaches to lexical diversity assessment", tipo: artigo, veiculo: "Behavior Research Methods", detalhes: {volume: "42", numero: "2", paginas: "381-392"}}
+  # ---------- EAP 11.4 ----------
+  luhn1960: {autores: ["Luhn, H. P."], ano: 1960, titulo: "Key word-in-context index for technical literature (KWIC index)", tipo: artigo, veiculo: "American Documentation", detalhes: {volume: "11", numero: "4", paginas: "288-295"}}
+  sinclair1991: {autores: ["Sinclair, J."], ano: 1991, titulo: "Corpus, Concordance, Collocation", tipo: livro, detalhes: {local: "Oxford", editora: "Oxford University Press"}}
+  anthony2024: {autores: ["Anthony, L."], ano: 2024, titulo: "AntConc", tipo: software, detalhes: {edicao: "versão 4", local: "Tokyo", editora: "Waseda University"}}
+  # ---------- EAP 11.5 ----------
+  church1990: {autores: ["Church, K. W.", "Hanks, P."], ano: 1990, titulo: "Word association norms, mutual information, and lexicography", tipo: artigo, veiculo: "Computational Linguistics", detalhes: {volume: "16", numero: "1", paginas: "22-29"}}
+  dunning1993: {autores: ["Dunning, T."], ano: 1993, titulo: "Accurate methods for the statistics of surprise and coincidence", tipo: artigo, veiculo: "Computational Linguistics", detalhes: {volume: "19", numero: "1", paginas: "61-74"}}
+  evert2005: {autores: ["Evert, S."], ano: 2005, titulo: "The Statistics of Word Cooccurrences: Word Pairs and Collocations", tipo: tese, veiculo: "Universität Stuttgart", detalhes: {local: "Stuttgart", grau: "Doutorado"}}
+  evert2008: {autores: ["Evert, S."], ano: 2008, titulo: "Corpora and collocations", tipo: capitulo, veiculo: "Corpus Linguistics: An International Handbook", detalhes: {organizadores: ["Lüdeling, A.", "Kytö, M."], volume: "2", local: "Berlin", editora: "Mouton de Gruyter", paginas: "1212-1248"}, nota: "Coocorrência de superfície: união das janelas sobrepostas."}
+  rychly2008: {autores: ["Rychlý, P."], ano: 2008, titulo: "A lexicographer-friendly association score", tipo: congresso, veiculo: "Proceedings of Recent Advances in Slavonic Natural Language Processing (RASLAN 2008)", detalhes: {paginas: "6-9"}, nota: "logDice."}
+  # ---------- EAP 11.6 ----------
+  scott1997: {autores: ["Scott, M."], ano: 1997, titulo: "PC analysis of key words — and key key words", tipo: artigo, veiculo: "System", detalhes: {volume: "25", numero: "2", paginas: "233-245"}}
+  rayson2000: {autores: ["Rayson, P.", "Garside, R."], ano: 2000, titulo: "Comparing corpora using frequency profiling", tipo: congresso, veiculo: "Proceedings of the Workshop on Comparing Corpora (ACL 2000)", detalhes: {paginas: "1-6"}}
+  hardie2014: {autores: ["Hardie, A."], ano: 2014, titulo: "Log Ratio – an informal introduction", tipo: web, veiculo: "ESRC Centre for Corpus Approaches to Social Science (CASS), Lancaster University [blog]"}
+  gabrielatos2012: {autores: ["Gabrielatos, C.", "Marchi, A."], ano: 2012, titulo: "Keyness: appropriate metrics and practical issues", tipo: congresso, veiculo: "CADS International Conference, University of Bologna"}
+  gabrielatos2018: {autores: ["Gabrielatos, C."], ano: 2018, titulo: "Keyness analysis: nature, metrics and techniques", tipo: capitulo, veiculo: "Corpus Approaches to Discourse: A Critical Review", detalhes: {organizadores: ["Taylor, C.", "Marchi, A."], local: "London", editora: "Routledge", paginas: "225-258"}}
+  # ---------- EAP 11.7 ----------
+  lafon1980: {autores: ["Lafon, P."], ano: 1980, titulo: "Sur la variabilité de la fréquence des formes dans un corpus", tipo: artigo, veiculo: "Mots", detalhes: {numero: "1", paginas: "127-165"}}
+  heiden2010: {autores: ["Heiden, S.", "Magué, J.-P.", "Pincemin, B."], ano: 2010, titulo: "TXM : une plateforme logicielle open-source pour la textométrie", tipo: congresso, veiculo: "Actes des JADT 2010"}
+  lafon1984: {autores: ["Lafon, P."], ano: 1984, titulo: "Dépouillements et statistiques en lexicométrie", tipo: livro, detalhes: {local: "Genève/Paris", editora: "Slatkine-Champion"}, nota: "Modelo hipergeométrico e uso do score log10; o pacote R textometry do TXM decide o lado pela moda, a 6.2 pela média: só difere na zona banal."}
+  # ---------- EAP 11.8 ----------
+  sparckjones1972: {autores: ["Spärck Jones, K."], ano: 1972, titulo: "A statistical interpretation of term specificity and its application in retrieval", tipo: artigo, veiculo: "Journal of Documentation", detalhes: {volume: "28", numero: "1", paginas: "11-21"}}
+  salton1988: {autores: ["Salton, G.", "Buckley, C."], ano: 1988, titulo: "Term-weighting approaches in automatic text retrieval", tipo: artigo, veiculo: "Information Processing & Management", detalhes: {volume: "24", numero: "5", paginas: "513-523"}}
+  manning2008: {autores: ["Manning, C. D.", "Raghavan, P.", "Schütze, H."], ano: 2008, titulo: "Introduction to Information Retrieval", tipo: livro, detalhes: {local: "Cambridge", editora: "Cambridge University Press"}}
+  # ---------- EAP 11.9 ----------
+  reinert1983: {autores: ["Reinert, M."], ano: 1983, titulo: "Une méthode de classification descendante hiérarchique : application à l'analyse lexicale par contexte", tipo: artigo, veiculo: "Les Cahiers de l'Analyse des Données", detalhes: {volume: "8", numero: "2", paginas: "187-198"}}
+  reinert1990: {autores: ["Reinert, M."], ano: 1990, titulo: "Alceste, une méthodologie d'analyse des données textuelles et une application : Aurélia de Gérard de Nerval", tipo: artigo, veiculo: "Bulletin de Méthodologie Sociologique", detalhes: {volume: "26", paginas: "24-54"}}
+  camargo2013: {autores: ["Camargo, B. V.", "Justo, A. M."], ano: 2013, titulo: "IRAMUTEQ: um software gratuito para análise de dados textuais", tipo: artigo, veiculo: "Temas em Psicologia", detalhes: {volume: "21", numero: "2", paginas: "513-518"}}
+  ratinaud2009: {autores: ["Ratinaud, P."], ano: 2009, titulo: "IRAMUTEQ: Interface de R pour les Analyses Multidimensionnelles de Textes et de Questionnaires", tipo: software, doi_ou_url: "http://www.iramuteq.org"}
+  # ---------- EAP 11.10 ----------
+  flament1981: {autores: ["Flament, C."], ano: 1981, titulo: "L'analyse de similitude : une technique pour les recherches sur les représentations sociales", tipo: artigo, veiculo: "Cahiers de Psychologie Cognitive", detalhes: {volume: "1", numero: "4", paginas: "375-395"}}
+  marchand2012: {autores: ["Marchand, P.", "Ratinaud, P."], ano: 2012, titulo: "L'analyse de similitude appliquée aux corpus textuels : les primaires socialistes pour l'élection présidentielle française", tipo: congresso, veiculo: "Actes des JADT 2012", detalhes: {paginas: "687-699"}}
+  # ---------- EAP 11.11 ----------
+  jaccard1912: {autores: ["Jaccard, P."], ano: 1912, titulo: "The distribution of the flora in the alpine zone", tipo: artigo, veiculo: "New Phytologist", detalhes: {volume: "11", numero: "2", paginas: "37-50"}}
+  higuchi2016: {autores: ["Higuchi, K."], ano: 2016, titulo: "A two-step approach to quantitative content analysis: KH Coder tutorial using Anne of Green Gables (Part I)", tipo: artigo, veiculo: "Ritsumeikan Social Sciences Review", detalhes: {volume: "52", numero: "3", paginas: "77-91"}}
+  brezina2015: {autores: ["Brezina, V.", "McEnery, T.", "Wattam, S."], ano: 2015, titulo: "Collocations in context: a new perspective on collocation networks", tipo: artigo, veiculo: "International Journal of Corpus Linguistics", detalhes: {volume: "20", numero: "2", paginas: "139-173"}}
+  # ---------- EAP 11.12 ----------
+  benzecri1973: {autores: ["Benzécri, J.-P."], ano: 1973, titulo: "L'analyse des données. Tome 2 : L'analyse des correspondances", tipo: livro, detalhes: {local: "Paris", editora: "Dunod"}}
+  greenacre2017: {autores: ["Greenacre, M."], ano: 2017, titulo: "Correspondence Analysis in Practice", tipo: livro, detalhes: {edicao: "3. ed.", local: "Boca Raton", editora: "CRC Press"}, nota: "Exemplo smoke (5 categorias de funcionários x 4 níveis de fumo), usado como teste de referência da 7.3."}
+  # ---------- EAP 11.13 ----------
+  blei2003: {autores: ["Blei, D. M.", "Ng, A. Y.", "Jordan, M. I."], ano: 2003, titulo: "Latent Dirichlet allocation", tipo: artigo, veiculo: "Journal of Machine Learning Research", detalhes: {volume: "3", paginas: "993-1022"}}
+  roder2015: {autores: ["Röder, M.", "Both, A.", "Hinneburg, A."], ano: 2015, titulo: "Exploring the space of topic coherence measures", tipo: congresso, veiculo: "Proceedings of WSDM 2015", detalhes: {paginas: "399-408"}}
+  griffiths2004: {autores: ["Griffiths, T. L.", "Steyvers, M."], ano: 2004, titulo: "Finding scientific topics", tipo: artigo, veiculo: "Proceedings of the National Academy of Sciences", detalhes: {volume: "101", numero: "suppl. 1", paginas: "5228-5235"}}
+  # ---------- EAP 11.14 ----------
+  biber2004: {autores: ["Biber, D.", "Conrad, S.", "Cortes, V."], ano: 2004, titulo: "If you look at...: lexical bundles in university teaching and textbooks", tipo: artigo, veiculo: "Applied Linguistics", detalhes: {volume: "25", numero: "3", paginas: "371-405"}}
+  # ---------- EAP 11.15 ----------
+  grimmer2013: {autores: ["Grimmer, J.", "Stewart, B. M."], ano: 2013, titulo: "Text as data: the promise and pitfalls of automatic content analysis methods for political texts", tipo: artigo, veiculo: "Political Analysis", detalhes: {volume: "21", numero: "3", paginas: "267-297"}}
+  benoit2018: {autores: ["Benoit, K."], et_al: true, ano: 2018, titulo: "quanteda: an R package for the quantitative analysis of textual data", tipo: artigo, veiculo: "Journal of Open Source Software", detalhes: {volume: "3", numero: "30", paginas: "774"}}
+
+  # ---------- Frente 15 (compiladas de memória: conferir antes de citar) ----------
+  burrows2002: {autores: ["Burrows, J."], ano: 2002, titulo: "'Delta': a measure of stylistic difference and a guide to likely authorship", tipo: artigo, veiculo: "Literary and Linguistic Computing", detalhes: {volume: "17", numero: "3", paginas: "267-287"}, nota: "conferir antes de citar"}
+  evert2017: {autores: ["Evert, S.", "Proisl, T.", "Jannidis, F.", "Reger, I.", "Pielström, S.", "Schöch, C.", "Vitt, T."], ano: 2017, titulo: "Understanding and explaining Delta measures for authorship attribution", tipo: artigo, veiculo: "Digital Scholarship in the Humanities", detalhes: {volume: "32", numero: "suppl. 2", paginas: "ii4-ii16"}, nota: "conferir antes de citar"}
+  eder2016: {autores: ["Eder, M.", "Rybicki, J.", "Kestemont, M."], ano: 2016, titulo: "Stylometry with R: a package for computational text analysis", tipo: artigo, veiculo: "The R Journal", detalhes: {volume: "8", numero: "1", paginas: "107-121"}, nota: "conferir antes de citar"}
+  smith2011: {autores: ["Smith, P. W. H.", "Aldridge, W."], ano: 2011, titulo: "Improving authorship attribution: optimizing Burrows' Delta method", tipo: artigo, veiculo: "Journal of Quantitative Linguistics", detalhes: {volume: "18", numero: "1", paginas: "63-88"}, nota: "conferir antes de citar"}
+  argamon2008: {autores: ["Argamon, S."], ano: 2008, titulo: "Interpreting Burrows's Delta: geometric and probabilistic foundations", tipo: artigo, veiculo: "Literary and Linguistic Computing", detalhes: {volume: "23", numero: "2", paginas: "131-147"}, nota: "conferir antes de citar"}
+  eder2017: {autores: ["Eder, M."], ano: 2017, titulo: "Visualization in stylometry: cluster analysis using networks", tipo: artigo, veiculo: "Digital Scholarship in the Humanities", detalhes: {volume: "32", numero: "1", paginas: "50-64"}, nota: "conferir antes de citar"}
+  flesch1948: {autores: ["Flesch, R."], ano: 1948, titulo: "A new readability yardstick", tipo: artigo, veiculo: "Journal of Applied Psychology", detalhes: {volume: "32", numero: "3", paginas: "221-233"}, nota: "conferir antes de citar"}
+  martins1996: {autores: ["Martins, T. B. F.", "Ghiraldelo, C. M.", "Nunes, M. G. V.", "Oliveira Jr., O. N."], ano: 1996, titulo: "Readability formulas applied to textbooks in Brazilian Portuguese", tipo: relatorio, veiculo: "Notas do ICMSC, n. 28", detalhes: {local: "São Carlos", editora: "ICMSC-USP"}, nota: "conferir antes de citar"}
+  gunning1952: {autores: ["Gunning, R."], ano: 1952, titulo: "The Technique of Clear Writing", tipo: livro, detalhes: {local: "New York", editora: "McGraw-Hill"}, nota: "conferir antes de citar"}
+  coleman1975: {autores: ["Coleman, M.", "Liau, T. L."], ano: 1975, titulo: "A computer readability formula designed for machine scoring", tipo: artigo, veiculo: "Journal of Applied Psychology", detalhes: {volume: "60", numero: "2", paginas: "283-284"}, nota: "conferir antes de citar"}
+  mclaughlin1969: {autores: ["McLaughlin, G. H."], ano: 1969, titulo: "SMOG grading: a new readability formula", tipo: artigo, veiculo: "Journal of Reading", detalhes: {volume: "12", numero: "8", paginas: "639-646"}, nota: "conferir antes de citar"}
+  rose2010: {autores: ["Rose, S.", "Engel, D.", "Cramer, N.", "Cowley, W."], ano: 2010, titulo: "Automatic keyword extraction from individual documents", tipo: capitulo, veiculo: "Text Mining: Applications and Theory", detalhes: {organizadores: ["Berry, M. W.", "Kogan, J."], editora: "Wiley", paginas: "1-20"}, nota: "conferir antes de citar"}
+  campos2020: {autores: ["Campos, R.", "Mangaravite, V.", "Pasquali, A.", "Jorge, A.", "Nunes, C.", "Jatowt, A."], ano: 2020, titulo: "YAKE! Keyword extraction from single documents using multiple local features", tipo: artigo, veiculo: "Information Sciences", detalhes: {volume: "509", paginas: "257-289"}, nota: "conferir antes de citar"}
+  mihalcea2004: {autores: ["Mihalcea, R.", "Tarau, P."], ano: 2004, titulo: "TextRank: bringing order into texts", tipo: congresso, veiculo: "Proceedings of EMNLP 2004", detalhes: {paginas: "404-411"}, nota: "conferir antes de citar"}
+  erkan2004: {autores: ["Erkan, G.", "Radev, D. R."], ano: 2004, titulo: "LexRank: graph-based lexical centrality as salience in text summarization", tipo: artigo, veiculo: "Journal of Artificial Intelligence Research", detalhes: {volume: "22", paginas: "457-479"}, nota: "conferir antes de citar"}
+  carbonell1998: {autores: ["Carbonell, J.", "Goldstein, J."], ano: 1998, titulo: "The use of MMR, diversity-based reranking for reordering documents and producing summaries", tipo: congresso, veiculo: "Proceedings of SIGIR 1998", detalhes: {paginas: "335-336"}, nota: "conferir antes de citar"}
+  deerwester1990: {autores: ["Deerwester, S.", "Dumais, S. T.", "Furnas, G. W.", "Landauer, T. K.", "Harshman, R."], ano: 1990, titulo: "Indexing by latent semantic analysis", tipo: artigo, veiculo: "Journal of the American Society for Information Science", detalhes: {volume: "41", numero: "6", paginas: "391-407"}, nota: "conferir antes de citar"}
+  lee1999: {autores: ["Lee, D. D.", "Seung, H. S."], ano: 1999, titulo: "Learning the parts of objects by non-negative matrix factorization", tipo: artigo, veiculo: "Nature", detalhes: {volume: "401", paginas: "788-791"}, nota: "conferir antes de citar"}
+  blondel2008: {autores: ["Blondel, V. D.", "Guillaume, J.-L.", "Lambiotte, R.", "Lefebvre, E."], ano: 2008, titulo: "Fast unfolding of communities in large networks", tipo: artigo, veiculo: "Journal of Statistical Mechanics", detalhes: {paginas: "P10008"}, nota: "conferir antes de citar"}
+  traag2019: {autores: ["Traag, V. A.", "Waltman, L.", "van Eck, N. J."], ano: 2019, titulo: "From Louvain to Leiden: guaranteeing well-connected communities", tipo: artigo, veiculo: "Scientific Reports", detalhes: {volume: "9", paginas: "5233"}, nota: "conferir antes de citar"}
+  fruchterman1991: {autores: ["Fruchterman, T. M. J.", "Reingold, E. M."], ano: 1991, titulo: "Graph drawing by force-directed placement", tipo: artigo, veiculo: "Software: Practice and Experience", detalhes: {volume: "21", numero: "11", paginas: "1129-1164"}, nota: "conferir antes de citar"}
+  freeman1977: {autores: ["Freeman, L. C."], ano: 1977, titulo: "A set of measures of centrality based on betweenness", tipo: artigo, veiculo: "Sociometry", detalhes: {volume: "40", numero: "1", paginas: "35-41"}, nota: "conferir antes de citar"}
+  page1999: {autores: ["Page, L.", "Brin, S.", "Motwani, R.", "Winograd, T."], ano: 1999, titulo: "The PageRank citation ranking: bringing order to the web", tipo: relatorio, veiculo: "Stanford InfoLab Technical Report", nota: "conferir antes de citar"}
+  ward1963: {autores: ["Ward, J. H."], ano: 1963, titulo: "Hierarchical grouping to optimize an objective function", tipo: artigo, veiculo: "Journal of the American Statistical Association", detalhes: {volume: "58", numero: "301", paginas: "236-244"}, nota: "conferir antes de citar"}
+  lloyd1982: {autores: ["Lloyd, S."], ano: 1982, titulo: "Least squares quantization in PCM", tipo: artigo, veiculo: "IEEE Transactions on Information Theory", detalhes: {volume: "28", numero: "2", paginas: "129-137"}, nota: "conferir antes de citar"}
+  luxburg2007: {autores: ["von Luxburg, U."], ano: 2007, titulo: "A tutorial on spectral clustering", tipo: artigo, veiculo: "Statistics and Computing", detalhes: {volume: "17", numero: "4", paginas: "395-416"}, nota: "conferir antes de citar"}
+  jolliffe2016: {autores: ["Jolliffe, I. T.", "Cadima, J."], ano: 2016, titulo: "Principal component analysis: a review and recent developments", tipo: artigo, veiculo: "Philosophical Transactions of the Royal Society A", detalhes: {volume: "374", paginas: "20150202"}, nota: "conferir antes de citar"}
+  kincaid1975: {autores: ["Kincaid, J. P.", "Fishburne, R. P.", "Rogers, R. L.", "Chissom, B. S."], ano: 1975, titulo: "Derivation of new readability formulas (Automated Readability Index, Fog Count and Flesch Reading Ease Formula) for Navy enlisted personnel", tipo: relatorio, veiculo: "Research Branch Report 8-75", detalhes: {local: "Millington, TN", editora: "Naval Technical Training Command"}, nota: "conferir antes de citar"}
+  arthur2007: {autores: ["Arthur, D.", "Vassilvitskii, S."], ano: 2007, titulo: "k-means++: the advantages of careful seeding", tipo: congresso, veiculo: "Proceedings of SODA 2007", detalhes: {paginas: "1027-1035"}, nota: "conferir antes de citar"}
+  ng2002: {autores: ["Ng, A. Y.", "Jordan, M. I.", "Weiss, Y."], ano: 2002, titulo: "On spectral clustering: analysis and an algorithm", tipo: congresso, veiculo: "Advances in Neural Information Processing Systems 14", detalhes: {paginas: "849-856"}, nota: "conferir antes de citar"}
+  hubert1985: {autores: ["Hubert, L.", "Arabie, P."], ano: 1985, titulo: "Comparing partitions", tipo: artigo, veiculo: "Journal of Classification", detalhes: {volume: "2", numero: "1", paginas: "193-218"}, nota: "conferir antes de citar"}
+  hutto2014: {autores: ["Hutto, C. J.", "Gilbert, E."], ano: 2014, titulo: "VADER: a parsimonious rule-based model for sentiment analysis of social media text", tipo: congresso, veiculo: "Proceedings of ICWSM 2014", nota: "conferir antes de citar"}
+  souza2011: {autores: ["Souza, M.", "Vieira, R.", "Busetti, D.", "Chishman, R.", "Alves, I. M."], ano: 2011, titulo: "Construction of a Portuguese opinion lexicon from multiple resources", tipo: congresso, veiculo: "Proceedings of STIL 2011", nota: "conferir antes de citar"}
+  silva2012: {autores: ["Silva, M. J.", "Carvalho, P.", "Sarmento, L."], ano: 2012, titulo: "Building a sentiment lexicon for social judgement mining", tipo: congresso, veiculo: "PROPOR 2012, LNCS 7243", detalhes: {paginas: "218-228"}, nota: "conferir antes de citar"}
+  cohen1960: {autores: ["Cohen, J."], ano: 1960, titulo: "A coefficient of agreement for nominal scales", tipo: artigo, veiculo: "Educational and Psychological Measurement", detalhes: {volume: "20", numero: "1", paginas: "37-46"}, nota: "conferir antes de citar"}
+  krippendorff2018: {autores: ["Krippendorff, K."], ano: 2018, titulo: "Content Analysis: An Introduction to Its Methodology", tipo: livro, detalhes: {edicao: "4. ed.", local: "Thousand Oaks", editora: "SAGE"}, nota: "conferir antes de citar"}
+  hayes2007: {autores: ["Hayes, A. F.", "Krippendorff, K."], ano: 2007, titulo: "Answering the call for a standard reliability measure for coding data", tipo: artigo, veiculo: "Communication Methods and Measures", detalhes: {volume: "1", numero: "1", paginas: "77-89"}, nota: "conferir antes de citar"}
+  mimno2011: {autores: ["Mimno, D.", "Wallach, H. M.", "Talley, E.", "Leenders, M.", "McCallum, A."], ano: 2011, titulo: "Optimizing semantic coherence in topic models", tipo: congresso, veiculo: "Proceedings of EMNLP 2011", detalhes: {paginas: "262-272"}, nota: "conferir antes de citar"}
+  landis1977: {autores: ["Landis, J. R.", "Koch, G. G."], ano: 1977, titulo: "The measurement of observer agreement for categorical data", tipo: artigo, veiculo: "Biometrics", detalhes: {volume: "33", numero: "1", paginas: "159-174"}, nota: "conferir antes de citar"}
+  krippendorff2011: {autores: ["Krippendorff, K."], ano: 2011, titulo: "Computing Krippendorff's Alpha-Reliability", tipo: relatorio, veiculo: "Annenberg School for Communication, University of Pennsylvania", nota: "conferir antes de citar"}
+  fleiss1969: {autores: ["Fleiss, J. L.", "Cohen, J.", "Everitt, B. S."], ano: 1969, titulo: "Large sample standard errors of kappa and weighted kappa", tipo: artigo, veiculo: "Psychological Bulletin", detalhes: {volume: "72", numero: "5", paginas: "323-327"}, nota: "conferir antes de citar"}
+  lewis2020: {autores: ["Lewis, P."], et_al: true, ano: 2020, titulo: "Retrieval-augmented generation for knowledge-intensive NLP tasks", tipo: congresso, veiculo: "Advances in NeurIPS 33", detalhes: {paginas: "9459-9474"}, nota: "conferir antes de citar"}
+  robertson2009: {autores: ["Robertson, S.", "Zaragoza, H."], ano: 2009, titulo: "The probabilistic relevance framework: BM25 and beyond", tipo: artigo, veiculo: "Foundations and Trends in Information Retrieval", detalhes: {volume: "3", numero: "4", paginas: "333-389"}, nota: "conferir antes de citar"}
+  cormack2009: {autores: ["Cormack, G. V.", "Clarke, C. L. A.", "Büttcher, S."], ano: 2009, titulo: "Reciprocal rank fusion outperforms Condorcet and individual rank learning methods", tipo: congresso, veiculo: "Proceedings of SIGIR 2009", detalhes: {paginas: "758-759"}, nota: "conferir antes de citar"}
+
+  # ---------- Frente 16 (compilada de memória: conferir antes de citar) ----------
+  aria2017: {autores: ["Aria, M.", "Cuccurullo, C."], ano: 2017, titulo: "bibliometrix: An R-tool for comprehensive science mapping analysis", tipo: artigo, veiculo: "Journal of Informetrics", detalhes: {volume: "11", numero: "4", paginas: "959-975"}, nota: "conferir antes de citar"}
+
+analises:
+  # =====================================================================================================
+  # Preparação do corpus
+  # =====================================================================================================
+  - id: conversao_docling
+    nome: "Conversão de documentos (Docling) e OCR"
+    familia: "Preparação do corpus"
+    status: implementado
+    eap_id: "2.4, 2.6"
+    modulo: "app/services/etapas/conversao.py"
+    o_que_mede: "Não mede: transforma PDF/DOCX em Markdown com marcador de página (<!-- página N -->), para que toda citação traga a página exata."
+    metrica: "Conversão com o Docling (layout, tabelas, ordem de leitura). Arquivos .md e .txt entram sem conversão. PDFs escaneados podem passar por OCR (RapidOCR, offline), por documento."
+    parametros_padrao:
+      - {nome: "OCR", valor: "desligado (pode ser forçado por documento)", parametro: "conversao.ocr"}
+      - {nome: "Idioma do OCR", valor: "primeiro idioma de 'idioma'", parametro: "idioma"}
+    equivale_a: "Mesma saída do Corpus_Docling da MLR."
+    nao_e_igual_a: "Texto extraído por copiar e colar do PDF, que mistura colunas, cabeçalhos e rodapés."
+    cuidados:
+      - "OCR introduz ruído (por exemplo 'AI' lido como 'Al'); revise documentos escaneados antes de interpretar frequências."
+      - "O Docling pode extrair 0 caracteres de PDFs com camada de texto inútil; nesse caso use o OCR de página inteira."
+    referencias: [auer2024]
+    deteccao: {arquivos: ["cache/md"]}
+
+  - id: limpeza_estrutura
+    nome: "Limpeza do texto e detecção de seções"
+    familia: "Preparação do corpus"
+    status: implementado
+    eap_id: "3.1, 3.2, 3.3"
+    modulo: "app/services/limpeza_texto.py"
+    o_que_mede: "Não mede: separa o corpo do texto de referências, apêndices e ruído, e marca cada trecho com página e seção."
+    metrica: "Remove cabeçalho/rodapé repetidos (linhas em pelo menos 50% das páginas, em documentos com 4 ou mais páginas), números de página, URLs, e-mails, DOI e hifenização de fim de linha; detecta seções por título (EN/PT/ES) ou, sem título, por heurística; exclui as seções configuradas da contagem."
+    parametros_padrao:
+      - {nome: "Excluir referências da contagem", valor: "sim", parametro: "excluir_referencias"}
+      - {nome: "Seções excluídas", valor: "referencias, apendice, agradecimentos, declaracoes", parametro: "excluir_secoes"}
+    equivale_a: "Pré-processamento de corpus descrito em Denny e Spirling (2018); as decisões são registradas nos parâmetros do projeto."
+    nao_e_igual_a: "Limpeza do Voyant, que conta entidades HTML, títulos de seção e URLs (diferença mediana de 1,3% nos tokens por documento no corpus MLR)."
+    cuidados:
+      - "A detecção heurística de referências (sem título) acerta o tamanho certo em cerca de 73% dos casos validados; confira o painel de seções."
+      - "Decisões de pré-processamento alteram os resultados: mantenha o parâmetros.json versionado junto do relatório."
+    referencias: [denny2018]
+    deteccao: {arquivos: ["cache/limpo"]}
+
+  - id: qualidade_duplicatas
+    nome: "Controle de qualidade e duplicatas próximas"
+    familia: "Preparação do corpus"
+    status: implementado
+    eap_id: "2.5"
+    modulo: "app/services/etapas/qualidade.py"
+    o_que_mede: "Sinaliza documentos vazios, escaneados, de idioma inesperado ou duplicados, e lista pendências para decisão do usuário."
+    metrica: "Duplicata exata por sha256; por título normalizado idêntico; por similaridade de cosseno TF-IDF sobre os lemas maior ou igual a 0,95. O usuário decide excluir ou não da análise."
+    formula: "cos(d, e) = v(d) . v(e), com v = vetor TF-IDF normalizado (L2); duplicata provável se cos >= 0,95"
+    parametros_padrao:
+      - {nome: "Limiar de cosseno para duplicata próxima", valor: "0,95"}
+      - {nome: "Tamanho mínimo do documento", valor: "cerca de 200 palavras (abaixo disso o documento é sinalizado)"}
+    equivale_a: "Detecção de quase-duplicatas por cosseno TF-IDF, prática comum em recuperação de informação."
+    nao_e_igual_a: "Comparação byte a byte: documentos com bytes diferentes (outra conversão do mesmo PDF) só são pegos pelo cosseno."
+    cuidados:
+      - "O sistema apenas avisa; a exclusão é decisão do usuário e é reversível."
+    referencias: [salton1988, manning2008]
+    deteccao: {arquivos: ["cache/md"]}
+
+  - id: lematizacao
+    nome: "Tokenização e lematização"
+    familia: "Preparação do corpus"
+    status: implementado
+    eap_id: "4.1"
+    modulo: "app/services/tokenizacao.py"
+    o_que_mede: "Não mede: divide o texto em palavras e agrupa as formas flexionadas sob um lema (agents e agent contam como 'agent')."
+    metrica: "Tokenização com siglas em caixa alta preservadas; lematização por tabela de consulta (simplemma) em inglês, português e espanhol, com idioma detectado por documento e lista de exceções (lemas errados corrigidos). Cada token guarda forma, lema, página e seção."
+    parametros_padrao:
+      - {nome: "Lematização", valor: "ativa (simplemma)", parametro: "lematizacao"}
+      - {nome: "Idiomas", valor: "en, pt", parametro: "idioma"}
+    equivale_a: "Lematização do IRaMuTeQ e do TXM; o spaCy (4.5, opcional) é a alternativa para lematização e classes gramaticais."
+    nao_e_igual_a: "Contagem por forma (Voyant sem lematização): os números diferem."
+    cuidados:
+      - "Há erros conhecidos do dicionário inglês da simplemma (growing lido como 'growe'); a lista padrão de exceções corrige os mais frequentes."
+      - "Medição no corpus MLR: no máximo 0,85% dos tokens ficam com lema ausente do corpus."
+    referencias: [denny2018, honnibal2020]
+    deteccao: {arquivos: ["cache/tokens"]}
+
+  - id: palavras_vazias
+    nome: "Palavras vazias (stopwords)"
+    familia: "Preparação do corpus"
+    status: implementado
+    eap_id: "4.2"
+    modulo: "app/services/palavras_vazias.py"
+    o_que_mede: "Não mede: define quais palavras funcionais (de, the, que) saem dos rankings."
+    metrica: "Listas EN/PT/ES, lista acadêmica (et, al, fig, doi, arxiv, https) e lista própria do projeto. O filtro é aplicado na consulta, não nos tokens: mudar a lista não reprocessa o corpus."
+    parametros_padrao:
+      - {nome: "Listas ativas", valor: "en, pt, es e acadêmica", parametro: "palavras_vazias"}
+    equivale_a: "Listas do protótipo voyant-local; stoplists do AntConc e do Voyant."
+    nao_e_igual_a: "Filtro por classe gramatical (4.5, planejado)."
+    cuidados:
+      - "O tamanho do corpus (denominador das frequências por 10 mil) mantém as palavras vazias, como o Voyant."
+      - "Listas diferentes produzem rankings diferentes: registre a lista usada."
+    referencias: [denny2018]
+    deteccao: {arquivos: ["cache/vocabulario.json"]}
+
+  - id: segmentacao
+    nome: "Segmentação em segmentos de texto"
+    familia: "Preparação do corpus"
+    status: implementado
+    eap_id: "4.4"
+    modulo: "app/services/segmentacao.py"
+    o_que_mede: "Não mede: divide o corpo do texto em segmentos de cerca de 40 palavras, unidade de contexto da CHD de Reinert."
+    metrica: "Corte na melhor pontuação perto do alvo (. ? ! maior que ; : maior que vírgula), janela de 0,75 a 1,25 vezes o alvo, nunca atravessa bloco (página ou seção); cauda menor que 25% do alvo é anexada ao segmento anterior."
+    parametros_padrao:
+      - {nome: "Palavras por segmento", valor: "40", parametro: "segmento_palavras"}
+    equivale_a: "Segmentos de texto (ST) do IRaMuTeQ e do Alceste."
+    nao_e_igual_a: "Segmentos do IRaMuTeQ um a um: este sistema conta palavras do corpo com as vazias e fecha o segmento no fim da página ou seção."
+    cuidados:
+      - "A comparação com os segmentos do IRaMuTeQ fica para a validação cruzada (12.2)."
+    referencias: [reinert1983, reinert1990, camargo2013]
+    deteccao: {arquivos: ["cache/segmentos"]}
+
+  - id: segmentos_ruido
+    nome: "Detector de segmentos de ruído"
+    familia: "Preparação do corpus"
+    status: implementado
+    eap_id: "3.4"
+    modulo: "app/services/ruido.py"
+    o_que_mede: "Não mede: marca segmentos de texto que não são prosa (listas de autores e afiliações, tabelas de regressão ou estatística, texto repetitivo e cláusulas repetidas entre documentos) para tirá-los da CHD, da similitude e dos n-gramas."
+    metrica: "Regras conservadoras sobre a forma do segmento: fração de itens numéricos ou símbolos (tabela), fração de itens em maiúscula com poucas palavras de prosa e separadores de lista (autores), razão tipo/ocorrência muito baixa (repetitivo) e cobertura por sequências de 6 palavras presentes em vários documentos (cláusula repetida). Cada segmento marcado guarda o motivo."
+    parametros_padrao:
+      - {nome: "Excluir ruído das análises", valor: "sim", parametro: "limpeza.excluir_ruido"}
+      - {nome: "Fração numérica mínima (tabela)", valor: "0,45"}
+      - {nome: "Fração de maiúsculas mínima (autores)", valor: "0,60"}
+      - {nome: "Documentos mínimos da cláusula repetida", valor: "4"}
+    equivale_a: "Limpeza manual de listas de autores e tabelas antes da CHD no IRaMuTeQ."
+    nao_e_igual_a: "Remoção de texto do corpus: os segmentos continuam no KWIC, com marca, e o detector pode ser desligado."
+    cuidados:
+      - "O detector olha só a forma do texto; tabelas com muito texto nas células e listas de autores com poucas vírgulas escapam."
+      - "As contagens por documento aparecem nas pendências; confira uma amostra antes de relatar o filtro."
+    referencias: []
+    deteccao: {arquivos: ["cache/ruido"]}
+
+  - id: termos_compostos
+    nome: "Termos compostos (multiword terms)"
+    familia: "Preparação do corpus"
+    status: implementado
+    eap_id: "4.3"
+    modulo: "app/services/termos_compostos.py"
+    o_que_mede: "Detecta sequências de 2 a 3 lemas que funcionam como um só termo (agentic ai, large language model) e as passa a contar como uma unidade."
+    metrica: "Candidatos contíguos no mesmo bloco, sem palavra vazia nas bordas, pontuados pelo log-likelihood (G2 de Dunning) do par adjacente (trigramas: mínimo dos bigramas internos); filtros de frequência, documentos, concentração e regex de ruído; lista do usuário e bloqueados."
+    formula: "G2 = 2 * soma(O_ij * ln(O_ij / E_ij)) sobre a tabela 2x2 dos pares adjacentes"
+    parametros_padrao:
+      - {nome: "Tamanho máximo (n)", valor: "3", parametro: "termos_compostos.n_max"}
+      - {nome: "Frequência mínima", valor: "10", parametro: "termos_compostos.min_freq"}
+      - {nome: "Documentos mínimos", valor: "3", parametro: "termos_compostos.min_docs"}
+      - {nome: "Máximo de termos automáticos", valor: "200", parametro: "termos_compostos.max_automaticos"}
+      - {nome: "Concentração máxima em um documento", valor: "0,8", parametro: "termos_compostos.max_concentracao"}
+    equivale_a: "Extração de multiword terms; colocações de expressões do quanteda (textstat_collocations)."
+    nao_e_igual_a: "N-gramas (5.5): lista exaustiva sem teste de associação."
+    cuidados:
+      - "Há ruídos conhecidos (trigramas com 'of', resíduos de tabela, erros de lema): revise e bloqueie no painel."
+      - "A chave interna do termo é o lema; a exibição usa a forma original mais frequente."
+    referencias: [dunning1993, evert2005]
+    deteccao: {arquivos: ["cache/termos_compostos.json"]}
+
+  - id: classes_gramaticais
+    nome: "Classes gramaticais e entidades (spaCy, opcional)"
+    familia: "PLN"
+    status: implementado
+    eap_id: "4.5"
+    modulo: "app/services/spacy_nlp.py"
+    o_que_mede: "Marca cada palavra com sua classe gramatical (UPOS) e reconhece entidades nomeadas (ORG, PERSON, GPE...), para filtros como 'só substantivos' e para listar entidades por documento e no corpus, com link para o KWIC."
+    metrica: "Modelos pequenos do spaCy (en_core_web_sm, pt_core_news_sm; espanhol sem modelo), em arquivo lateral cache/spacy/<id>.json (POS, lema do spaCy e entidades) alinhado aos tokens sem alterar cache/tokens. Opções: lematização 'spacy' (padrão continua simplemma), filtro de classes nas frequências, formas ativas da CHD só com substantivos, adjetivos e verbos e termos compostos só de substantivos e adjetivos."
+    parametros_padrao:
+      - {nome: "POS e NER", valor: "ligados se o spaCy estiver instalado", parametro: "spacy.pos_ner"}
+      - {nome: "Lematização", valor: "simplemma (ou spacy)", parametro: "lematizacao.metodo"}
+      - {nome: "Formas ativas da CHD", valor: "todas as plenas (ou só as classes escolhidas)", parametro: "reinert.formas_ativas"}
+      - {nome: "Classes dos termos compostos", valor: "qualquer (ou só as escolhidas)", parametro: "termos_compostos.classes"}
+    equivale_a: "Filtros por classe gramatical do KH Coder e do IRaMuTeQ (formas ativas: substantivos, adjetivos, verbos)."
+    nao_e_igual_a: "Filtro por lista de palavras vazias."
+    cuidados:
+      - "Opcional: instalar_spacy.bat (cerca de 170 MB). Sem o spaCy, as opções aparecem como 'não instalado' e o Raio-X segue com a simplemma."
+      - "Os modelos pequenos erram em prosa acadêmica: siglas e termos técnicos viram ORG, PERSON ou GPE ('AI' como GPE); trate as entidades como pista e confira no KWIC."
+    referencias: [honnibal2020]
+    deteccao: {arquivos: ["cache/spacy"]}
+
+  # =====================================================================================================
+  # Linguística de corpus
+  # =====================================================================================================
+  - id: frequencias
+    nome: "Frequências, nuvem e tendências"
+    familia: "Linguística de corpus"
+    status: implementado
+    eap_id: "5.2"
+    modulo: "app/services/analises/frequencias.py"
+    o_que_mede: "Quantas vezes cada lema (ou forma) aparece e em quantos documentos; como a frequência varia por documento, ano ou grupo."
+    metrica: "freq = ocorrências no escopo; por 10 mil = freq / tokens contados do escopo x 10.000; documentos = quantos documentos do escopo têm o termo. Tendências somam as formas que casam com um curinga (agent*)."
+    formula: "por_10k = freq / N_tokens_contados * 10000"
+    parametros_padrao:
+      - {nome: "Unidade", valor: "lema"}
+      - {nome: "Palavras vazias", valor: "filtradas na consulta", parametro: "palavras_vazias"}
+      - {nome: "Escopo", valor: "corpus (também documento, grupo ou ano)"}
+    equivale_a: "Voyant Terms/Cirrus/Trends, IRaMuTeQ, AntConc Word list (com lematização)."
+    nao_e_igual_a: "Voyant sem lematização: os números diferem."
+    cuidados:
+      - "Frequências brutas dependem do tamanho do documento: compare pela frequência por 10 mil."
+      - "Termos concentrados em poucos documentos podem dominar o ranking; confira a coluna de documentos."
+    referencias: [lebart1998, rockwell2016, sinclair2016voyant]
+    deteccao: {snapshots: [frequencias], arquivos: ["cache/vocabulario.json"]}
+
+  - id: kwic
+    nome: "Concordância (KWIC)"
+    familia: "Linguística de corpus"
+    status: implementado
+    eap_id: "5.3"
+    modulo: "app/services/analises/kwic.py"
+    o_que_mede: "Mostra cada ocorrência de um termo ou frase com o contexto à esquerda e à direita, a página e a citação."
+    metrica: "Janela de N palavras de cada lado, lida do texto limpo do bloco (a pontuação original é preservada); consulta por lema, forma ou termo composto, com curinga e frases entre aspas."
+    parametros_padrao:
+      - {nome: "Janela", valor: "10 palavras de cada lado", parametro: "kwic_janela"}
+      - {nome: "Unidade", valor: "lema"}
+    equivale_a: "Contexts do Voyant e Concordance do AntConc."
+    nao_e_igual_a: "Busca de texto simples: casa por lema e respeita fronteira de bloco."
+    cuidados:
+      - "Se a janela atravessa uma página ou seção, os trechos são unidos por reticências para não sugerir continuidade que o texto não tem."
+    referencias: [luhn1960, sinclair1991, anthony2024]
+    deteccao: {arquivos: ["cache/tokens"]}
+
+  - id: colocacoes
+    nome: "Colocações (LL, MI, t-score, logDice)"
+    familia: "Linguística de corpus"
+    status: parcial
+    eap_id: "5.4"
+    modulo: "app/services/analises/colocacoes.py"
+    o_que_mede: "Quais palavras aparecem perto de um termo-nó mais do que o acaso esperaria."
+    metrica: "Tabela 2x2 de coocorrência de superfície (notação de Evert: O11, R1, C1, N), janelas sobrepostas unidas (cada token conta uma vez). LL = G2 com sinal; MI = log2(O11/E11); t-score; logDice."
+    formula: "G2 = 2 * soma(O_ij * ln(O_ij/E_ij)); MI = log2(O11/E11); t = (O11 - E11)/sqrt(O11); logDice = 14 + log2(2*O11/(R1 + C1))"
+    parametros_padrao:
+      - {nome: "Janela (esquerda/direita)", valor: "5 palavras de cada lado", parametro: "colocacao_janela"}
+      - {nome: "Frequência mínima do par (O11)", valor: "3"}
+      - {nome: "Frequência mínima do colocado (C1)", valor: "5"}
+      - {nome: "Fronteira", valor: "bloco (página/seção); 'documento' para comparar com o AntConc"}
+    equivale_a: "Collocates do AntConc e do LancsBox (LL, MI)."
+    nao_e_igual_a: "Voyant Collocates (só contagem) e quanteda textstat_collocations (expressões de várias palavras)."
+    cuidados:
+      - "MI favorece colocados raros: use com frequência mínima."
+      - "Falta a conferência de 3 termos contra o AntConc (roteiro em docs/validacao_antconc.md); por isso o status é parcial."
+    referencias: [church1990, dunning1993, evert2005, evert2008, rychly2008]
+    deteccao: {arquivos: ["cache/tokens"]}
+
+  - id: ngramas
+    nome: "N-gramas (clusters, lexical bundles)"
+    familia: "Linguística de corpus"
+    status: implementado
+    eap_id: "5.5"
+    modulo: "app/services/analises/ngramas.py"
+    o_que_mede: "Sequências contíguas de 2 a 6 palavras e quantas vezes (e em quantos documentos) se repetem."
+    metrica: "Contagem exaustiva por forma ou lema; contíguo no mesmo bloco, sem parágrafo entre as palavras; concentração = parcela das ocorrências no documento onde o n-grama é mais frequente."
+    parametros_padrao:
+      - {nome: "Tamanho (n)", valor: "2 a 6 palavras"}
+      - {nome: "Frequência mínima", valor: "3"}
+      - {nome: "Documentos mínimos", valor: "2"}
+      - {nome: "Unidade", valor: "forma"}
+      - {nome: "Palavras vazias", valor: "sem_bordas (descarta n-gramas que começam ou terminam com palavra vazia)"}
+      - {nome: "Pontuação", valor: "quebra a sequência"}
+    equivale_a: "AntConc Clusters/N-Grams e Voyant Phrases."
+    nao_e_igual_a: "Termos compostos (4.3): lista curada com log-likelihood. Também não é textstat_collocations do quanteda."
+    cuidados:
+      - "N-gramas longos refletem resíduos de tabela e repetição; use a coluna de concentração para filtrar."
+      - "Não há teste de associação: frequência alta não significa expressão fixa."
+    referencias: [biber2004, anthony2024]
+    deteccao: {arquivos: ["cache/tokens"]}
+
+  # =====================================================================================================
+  # Estatística textual / lexicometria
+  # =====================================================================================================
+  - id: diversidade_lexical
+    nome: "Diversidade lexical (MATTR)"
+    familia: "Estatística textual / lexicometria"
+    status: implementado
+    eap_id: "5.1"
+    modulo: "app/services/analises/resumo.py"
+    o_que_mede: "A variedade do vocabulário de um documento, sem depender do seu tamanho."
+    metrica: "Média móvel da razão tipo/ocorrência: em cada janela de 500 palavras consecutivas calcula-se tipos/500, e o MATTR é a média de todas as janelas. Documentos com menos de 500 tokens usam a razão simples e ficam fora dos rankings."
+    formula: "MATTR = média sobre as janelas de (tipos distintos na janela / 500)"
+    parametros_padrao:
+      - {nome: "Janela", valor: "500 palavras"}
+      - {nome: "Palavras vazias", valor: "mantidas"}
+    equivale_a: "MATTR do pacote de Covington e McFall (2010)."
+    nao_e_igual_a: "TTR simples do Voyant (depende do tamanho do texto)."
+    cuidados:
+      - "Só compare MATTR de documentos com a mesma janela e o mesmo pré-processamento."
+      - "Textos curtos (menos de 500 tokens) não têm janela completa."
+    referencias: [covington2010, mccarthy2010]
+    deteccao: {snapshots: [resumo]}
+
+  - id: tfidf_termos_distintivos
+    nome: "Termos distintivos por documento (TF-IDF)"
+    familia: "Estatística textual / lexicometria"
+    status: implementado
+    eap_id: "5.1"
+    modulo: "app/services/analises/resumo.py"
+    o_que_mede: "Quais lemas caracterizam um documento frente ao resto do corpus."
+    metrica: "tf = freq / tokens contados do documento; idf = ln(N / df). Termos presentes em todos os documentos têm idf 0 e não aparecem. Apenas lemas sem palavras vazias e com frequência mínima no documento."
+    formula: "tfidf(t, d) = (freq(t, d) / n_d) * ln(N / df(t))"
+    parametros_padrao:
+      - {nome: "Frequência mínima no documento", valor: "3"}
+      - {nome: "Termos por documento", valor: "10"}
+    equivale_a: "Termos distintivos do Voyant."
+    nao_e_igual_a: "Keyness (6.1): TF-IDF não testa diferença estatística entre grupos."
+    cuidados:
+      - "É um indicador descritivo, não um teste: não cite como 'palavras-chave significativas'."
+    referencias: [sparckjones1972, salton1988, manning2008]
+    deteccao: {snapshots: [resumo]}
+
+  - id: especificidades
+    nome: "Especificidades (Lafon)"
+    familia: "Estatística textual / lexicometria"
+    status: parcial
+    eap_id: "6.2"
+    modulo: "app/services/analises/especificidades.py"
+    o_que_mede: "Quais termos estão sobre-representados ou sub-representados em cada parte do corpus (ano, grupo ou documento)."
+    metrica: "Modelo hipergeométrico de Lafon: score = -log10 P(X >= f) quando f é maior ou igual ao esperado F*t/T, e +log10 P(X <= f) quando menor; teto de 50; termos banais quando |score| < limiar."
+    formula: "score(+) = -log10 P(X >= f); score(-) = +log10 P(X <= f); X ~ Hipergeométrica(T, F, t)"
+    parametros_padrao:
+      - {nome: "Limiar de banalidade", valor: "|score| < 2"}
+      - {nome: "Teto do score", valor: "50 (mostra '> 50')"}
+      - {nome: "Frequência mínima", valor: "5"}
+      - {nome: "Partição", valor: "ano (também grupo ou documento)"}
+    equivale_a: "TXM Especificidades, Lexico e IRaMuTeQ especificidades."
+    nao_e_igual_a: "Keyness LL contra o resto (6.1) e keyness contra corpus de referência externo (15.8)."
+    cuidados:
+      - "O lado da cauda é decidido pela média; o TXM decide pela moda, e a diferença só aparece na zona banal."
+      - "Falta a conferência contra o TXM (a validação foi contra o cálculo exato); por isso o status é parcial."
+    referencias: [lafon1980, lafon1984, lebart1998, heiden2010]
+    deteccao: {snapshots: [especificidades]}
+
+  # =====================================================================================================
+  # Comparação entre grupos
+  # =====================================================================================================
+  - id: keyness
+    nome: "Palavras-chave entre grupos (keyness)"
+    familia: "Comparação entre grupos"
+    status: implementado
+    eap_id: "6.1"
+    modulo: "app/services/analises/keyness.py"
+    o_que_mede: "Quais termos são mais (ou menos) frequentes em um grupo de documentos do que em outro, com significância e tamanho de efeito."
+    metrica: "G2 de 2 células com sinal (log-likelihood, Rayson e Garside), Log Ratio de Hardie (0,5 no lugar de zero) e %DIFF, mais frequência por 10 mil, amplitude de documentos e p por qui-quadrado de 1 grau de liberdade (opcionalmente com Bonferroni)."
+    formula: "G2 = 2 * (a ln(a/E1) + b ln(b/E2)); E1 = c(a+b)/(c+d), E2 = d(a+b)/(c+d); Log Ratio = log2((a/c)/(b/d))"
+    parametros_padrao:
+      - {nome: "Frequência mínima", valor: "5"}
+      - {nome: "Documentos mínimos por lado", valor: "2"}
+      - {nome: "Nível de significância (p)", valor: "0,01"}
+      - {nome: "Ordenação", valor: "G2 (ou Log Ratio)"}
+      - {nome: "Lado de referência", valor: "o resto do corpus ou um grupo escolhido"}
+    equivale_a: "AntConc Keywords e quanteda textstat_keyness."
+    nao_e_igual_a: "TF-IDF (termos distintivos do Voyant)."
+    cuidados:
+      - "G2 mede evidência, não tamanho do efeito: leia junto com o Log Ratio."
+      - "Grupos pequenos (por exemplo 7 documentos) tornam o resultado sensível a um documento só; use o filtro de documentos mínimos."
+      - "Palavras-chave dependem do corpus de comparação escolhido."
+    referencias: [scott1997, rayson2000, hardie2014, gabrielatos2012, gabrielatos2018]
+    deteccao: {snapshots: [keyness]}
+
+  - id: keyness_referencia_externa
+    nome: "Keyness contra corpus de referência externo"
+    familia: "Comparação entre grupos"
+    status: implementado
+    eap_id: "15.8"
+    modulo: "app/services/analises/keyness_referencia.py"
+    o_que_mede: "Quais termos do corpus (inteiro, um grupo ou um ano) são incomuns em relação a uma lista de frequências importada (corpus de referência geral)."
+    metrica: "Mesmas medidas da keyness entre grupos: G2 de 2 células com sinal, Log Ratio de Hardie (0,5 no lugar de zero) e %DIFF, com o corpus do projeto no lado A e a referência no lado B. A referência é um CSV/TSV 'termo;frequência' (total opcional) ou uma pasta de .txt contada com o mesmo tokenizador e lematizador; lista de formas é lematizada na importação. Termos fora da referência (OOV) têm b = 0 e vêm marcados."
+    formula: "G2 = 2 * (a ln(a/E1) + b ln(b/E2)); E1 = c(a+b)/(c+d), E2 = d(a+b)/(c+d); c = palavras do corpus, d = palavras da referência"
+    parametros_padrao:
+      - {nome: "Unidade", valor: "lema (ou forma)"}
+      - {nome: "Frequência mínima (a + b)", valor: "5"}
+      - {nome: "Documentos mínimos do corpus", valor: "2"}
+      - {nome: "Nível de significância (p)", valor: "0,01"}
+      - {nome: "Fora da referência (OOV)", valor: "mostrar, marcadas (ou ocultar)"}
+    equivale_a: "Keyword List do AntConc com corpus de referência e KeyWords do WordSmith."
+    nao_e_igual_a: "Especificidades por parte (6.2) e keyness entre grupos do próprio corpus (6.1)."
+    cuidados:
+      - "A referência precisa ser comparável (mesmo idioma e, de preferência, gênero próximo): contra legendas ou notícias quase todo termo técnico vira palavra-chave. O Raio-X não traz corpus de referência (licenças): importe uma lista de um corpus que você pode usar."
+      - "Lista truncada sem o total de palavras distorce as medidas (usa-se a soma da lista); informe o total real. A lematização da lista é feita sem contexto."
+    referencias: [scott1997, rayson2000, hardie2014]
+    deteccao: {arquivos: ["referencias"]}
+
+  - id: dicionario_codebook
+    nome: "Dicionário / codebook (contagem de categorias)"
+    familia: "Comparação entre grupos"
+    status: implementado
+    eap_id: "6.4"
+    modulo: "app/services/analises/dicionario.py"
+    o_que_mede: "Quanto cada categoria do codebook aparece no corpus, por grupo, ano ou documento, e se difere entre grupos."
+    metrica: "Ocorrências de padrões de lema ou forma (com curinga e frases) agrupados por categoria; por 10 mil tokens; documentos com pelo menos uma ocorrência; G2 e Log Ratio tratando a categoria como um termo."
+    parametros_padrao:
+      - {nome: "Unidade", valor: "lema"}
+      - {nome: "Categorias", valor: "definidas no dicionario.yaml do projeto"}
+    equivale_a: "quanteda dictionary (dfm_lookup) e regras de codificação do KH Coder."
+    nao_e_igual_a: "Codificação manual de trechos (ATLAS.ti, NVivo)."
+    cuidados:
+      - "Categorias sem termos ficam fora dos números: o codebook importado não traz palavras-chave."
+      - "Presença de um padrão não equivale ao código aplicado por um humano; valide por amostra."
+    referencias: [grimmer2013, benoit2018, rayson2000, hardie2014]
+    deteccao: {snapshots: [dicionario]}
+
+  # =====================================================================================================
+  # Similaridade e agrupamento
+  # =====================================================================================================
+  - id: similaridade_documentos
+    nome: "Similaridade entre documentos (TF-IDF, cosseno, Ward, MDS)"
+    familia: "Similaridade e agrupamento"
+    status: implementado
+    eap_id: "6.3"
+    modulo: "app/services/analises/similaridade.py"
+    o_que_mede: "Quão parecidos são os vocabulários de dois documentos, e que grupos de documentos temáticos emergem."
+    metrica: "Matriz documento x termo (df entre 2 e 0,9 N), TF-IDF com tf sublinear e idf suavizado, norma L2; cosseno entre documentos; agrupamento hierárquico por Ward (padrão) ou ligação média; k informado ou automático por silhueta (2 a 8); mapa 2D por MDS clássico."
+    formula: "tf = 1 + ln f; idf = ln((1+N)/(1+df)) + 1; cos(d,e) = v(d) . v(e); distância = 1 - cos"
+    parametros_padrao:
+      - {nome: "Unidade", valor: "lema"}
+      - {nome: "Método de agrupamento", valor: "Ward"}
+      - {nome: "k", valor: "automático por silhueta (2 a 8)"}
+      - {nome: "df mínimo / máximo", valor: "2 documentos / 0,9 x N"}
+      - {nome: "tf sublinear", valor: "sim"}
+    equivale_a: "Similaridade e dendrograma do Lexos; mapa de documentos do Orange."
+    nao_e_igual_a: "Termos distintivos do Voyant (TF-IDF sem agrupamento) e tópicos do LDA."
+    cuidados:
+      - "A ligação média pode separar por idioma; o Ward agrupou melhor por tema no corpus MLR."
+      - "Documentos duplicados têm cosseno 1,00 e distorcem os grupos: revise as pendências."
+      - "O número de grupos é uma escolha; a silhueta é só uma sugestão."
+    referencias: [sparckjones1972, salton1988, manning2008, ward1963]
+    deteccao: {snapshots: [similaridade]}
+
+  - id: agrupamento_kmeans_espectral_pca
+    nome: "k-means, agrupamento espectral e PCA dos documentos"
+    familia: "Similaridade e agrupamento"
+    status: implementado
+    eap_id: "15.9"
+    modulo: "app/services/analises/agrupamento.py"
+    o_que_mede: "Agrupa documentos por outros algoritmos e projeta o corpus em poucas dimensões, para comparar com o Ward."
+    metrica: "k-means (Lloyd, inicialização k-means++, 10 reinícios, semente fixa) e agrupamento espectral (Laplaciano normalizado do grafo kNN de cosseno, Ng-Jordan-Weiss) sobre a mesma matriz TF-IDF da similaridade; k pela maior silhueta (1 - cosseno) de 2 a 8; PCA por SVD do TF-IDF centrado; concordância com o corte do Ward no mesmo k pelo índice de Rand ajustado."
+    formula: "||a - b||^2 = 2 (1 - cos) para vetores L2; L = I - D^(-1/2) W D^(-1/2); ARI = (índice - esperado) / (máximo - esperado)"
+    parametros_padrao:
+      - {nome: "Método", valor: "k-means (ou espectral)"}
+      - {nome: "k", valor: "automático por silhueta (2 a 8)"}
+      - {nome: "Reinícios / semente", valor: "10 / 42"}
+      - {nome: "Vizinhos (espectral)", valor: "10"}
+      - {nome: "Matriz", valor: "a da similaridade (lema, df entre 2 e 0,9 x N, tf sublinear)"}
+    equivale_a: "KMeans, SpectralClustering e PCA do scikit-learn; agrupamentos do Orange."
+    nao_e_igual_a: "Ward da similaridade (6.3), AFC (7.3) e tópicos (15.7); o mapa PCA não coincide com o MDS da similaridade."
+    cuidados:
+      - "k-means depende da semente e do k: o resultado é fixado por semente (42) e 10 reinícios."
+      - "A silhueta é só uma sugestão de k; silhuetas abaixo de 0,25 indicam estrutura fraca (a do corpus MLR é ~0,11)."
+      - "O ARI contra o Ward mede concordância entre partições, não qualidade; perto de 0 é acordo ao acaso."
+    referencias: [ward1963, lloyd1982, arthur2007, ng2002, luxburg2007, jolliffe2016, hubert1985]
+    deteccao: {}
+
+  # =====================================================================================================
+  # Temático
+  # =====================================================================================================
+  - id: afc
+    nome: "Análise fatorial de correspondência (AFC)"
+    familia: "Temático"
+    status: implementado
+    eap_id: "7.3"
+    modulo: "app/services/analises/afc.py"
+    o_que_mede: "Como termos e partes do corpus (anos, grupos ou documentos) se associam em poucos eixos."
+    metrica: "AFC simples: SVD dos resíduos padronizados da tabela termo x parte; autovalores e percentual de inércia, coordenadas principais, contribuições (ctr) e cos2; inércia total = qui-quadrado / n."
+    formula: "S = D_r^(-1/2) (P - r c') D_c^(-1/2); SVD de S; inércia = soma dos autovalores = chi2 / n"
+    parametros_padrao:
+      - {nome: "Número de termos", valor: "100 (até 500)"}
+      - {nome: "Seleção dos termos", valor: "frequência (ou especificidade)"}
+      - {nome: "Frequência mínima", valor: "5"}
+      - {nome: "Partição", valor: "ano (também grupo ou documento)"}
+      - {nome: "Eixos calculados", valor: "até 5"}
+    equivale_a: "IRaMuTeQ AFC, TXM AFC, KH Coder Correspondence e Voyant ScatterPlot (modo CA)."
+    nao_e_igual_a: "PCA."
+    cuidados:
+      - "Com 2 partes só há 1 eixo."
+      - "Um documento atípico (ou duplicado) pode puxar um eixo inteiro; confira as contribuições."
+      - "Eixos são resumos estatísticos, não temas: interprete olhando as contribuições dos termos."
+    referencias: [benzecri1973, greenacre2017, lebart1998]
+    deteccao: {snapshots: [afc]}
+
+  - id: chd_reinert
+    nome: "Classificação hierárquica descendente (Reinert)"
+    familia: "Temático"
+    status: implementado
+    eap_id: "7.1"
+    modulo: "app/services/analises/reinert.py"
+    o_que_mede: "Classes de segmentos de texto com vocabulário característico (mundos lexicais)."
+    metrica: "Tabela binária segmento x forma plena; divide-se sempre a maior classe: corte no eixo 1 da AFC da classe que maximiza o qui-quadrado da tabela 2 x formas, seguido de realocação gulosa enquanto o qui-quadrado aumenta. Classes descritas pelo qui-quadrado 2 x 2 (sem correção, com sinal) de formas e variáveis (documento, grupo, ano); segmentos típicos pela soma dos qui-quadrados; AFC classe x forma."
+    formula: "chi2 = n (n S - N_A^2) / (N_A N_B), com S = soma_j a_j^2 / t_j (tabela 2 x formas das presenças)"
+    parametros_padrao:
+      - {nome: "Segmento", valor: "40 palavras (ver segmentação)", parametro: "segmento_palavras"}
+      - {nome: "Classes terminais", valor: "10", parametro: "reinert"}
+      - {nome: "Frequência mínima das formas ativas", valor: "3 (até 3.000 formas mais frequentes)", parametro: "reinert"}
+      - {nome: "Tamanho mínimo de classe", valor: "automático: máx(5; 2,5% dos segmentos classificáveis)", parametro: "reinert"}
+      - {nome: "Classificação", valor: "simples (dupla opcional: UC de 40 e 60 palavras, só classes estáveis)", parametro: "reinert"}
+      - {nome: "Realocação", valor: "até 50 varreduras; o qui-quadrado nunca diminui"}
+    equivale_a: "CHD do IRaMuTeQ e do ALCESTE."
+    nao_e_igual_a: "Agrupamento hierárquico aglomerativo de palavras do KH Coder e tópicos do LDA."
+    cuidados:
+      - "Segmentos atípicos (listas de autores, tabelas, textos repetidos) tendem a formar classes inteiras: o detector de ruído (3.4) os tira por padrão; classes minúsculas restantes são descartadas e não contam como classe."
+      - "Retenção abaixo de 75% pede cautela; a classificação dupla retém menos (só classes estáveis)."
+      - "As classes não coincidem uma a uma com as do IRaMuTeQ (segmentação, lematização e realocação diferentes); compare forma a forma (EAP 12.2, docs/validacao_iramuteq.md)."
+    referencias: [reinert1983, reinert1990, ratinaud2009, camargo2013]
+    deteccao: {snapshots: [reinert]}
+
+  - id: topicos
+    nome: "Tópicos: LSA, NMF e LDA, com coerência"
+    familia: "Temático"
+    status: implementado
+    eap_id: "7.4, 15.7"
+    modulo: "app/services/analises/topicos.py"
+    o_que_mede: "Temas latentes do corpus como distribuições de palavras, e a participação de cada tema por documento, ano ou grupo."
+    metrica: "LSA (SVD truncada), NMF e LDA com semente fixa; coerência C_v, UMass e NPMI; perplexidade; tópicos por ano e grupo (aproximação de STM/DTM)."
+    parametros_padrao:
+      - {nome: "Modelo", valor: "LDA (Gibbs colapsado em blocos; NMF e LSA opcionais)"}
+      - {nome: "K", valor: "8 (varredura 3-12 com coerência e perplexidade)"}
+      - {nome: "Unidade", valor: "documento (ou segmento de ~40 palavras)"}
+      - {nome: "Semente / iterações", valor: "42 / 1000 (aquecimento 500, amostras a cada 10)"}
+      - {nome: "alfa / beta", valor: "50/K (0,1 com segmentos) / 0,01"}
+      - {nome: "Termos", valor: "lemas plenos, df >= 2 e df/N <= 0,9"}
+      - {nome: "Coerência", valor: "top-10; UMass por unidade; NPMI e C_v com janela deslizante de 110"}
+    equivale_a: "Voyant Topics (LDA)."
+    nao_e_igual_a: "CHD de Reinert e agrupamento de documentos."
+    cuidados:
+      - "O número de tópicos é uma escolha do pesquisador; coerência alta não garante interpretabilidade."
+      - "LDA não é determinístico sem semente: registre a semente."
+      - "Tópicos × ano/grupo são médias descritivas das proporções por documento, não STM nem DTM."
+    referencias: [deerwester1990, lee1999, blei2003, roder2015, griffiths2004, mimno2011]
+    deteccao: {}
+
+  # =====================================================================================================
+  # Redes
+  # =====================================================================================================
+  - id: similitude
+    nome: "Análise de similitude (árvore máxima)"
+    familia: "Redes"
+    status: implementado
+    eap_id: "7.2"
+    modulo: "app/services/analises/similitude.py"
+    o_que_mede: "A estrutura de coocorrência entre palavras, mostrada como árvore máxima que preserva as ligações mais fortes."
+    metrica: "Coocorrência das formas plenas mais frequentes nos mesmos segmentos (índice bruto, padrão do IRaMuTeQ; também Jaccard, cosseno e PMI); árvore geradora máxima por Kruskal (empate pela ordem das formas)."
+    parametros_padrao:
+      - {nome: "Segmento", valor: "40 palavras (ver segmentação)", parametro: "segmento_palavras"}
+      - {nome: "Formas", valor: "60 mais frequentes", parametro: "similitude"}
+      - {nome: "Índice", valor: "coocorrência", parametro: "similitude"}
+      - {nome: "Desenho", valor: "árvore máxima", parametro: "similitude"}
+    equivale_a: "Análise de similitude do IRaMuTeQ."
+    nao_e_igual_a: "Links do Voyant (rede em torno de um termo, por janela) e colocados."
+    cuidados:
+      - "A árvore mostra só as ligações da árvore, não toda a coocorrência; com coocorrência bruta, palavras muito frequentes viram centro de estrela."
+    referencias: [flament1981, marchand2012, camargo2013]
+    deteccao: {snapshots: [similitude]}
+
+  - id: rede_coocorrencia
+    nome: "Rede de coocorrência (Jaccard)"
+    familia: "Redes"
+    status: implementado
+    eap_id: "7.2"
+    modulo: "app/services/analises/similitude.py"
+    o_que_mede: "Quais palavras tendem a aparecer juntas nos mesmos segmentos."
+    metrica: "Coeficiente de Jaccard entre as palavras por segmento (interseção sobre união dos conjuntos de segmentos em que cada uma ocorre); cada palavra mantém suas k arestas mais fortes (ou todas acima de um limiar)."
+    formula: "J(a, b) = |S_a interseção S_b| / |S_a união S_b|"
+    parametros_padrao:
+      - {nome: "Segmento", valor: "40 palavras (ver segmentação)", parametro: "segmento_palavras"}
+      - {nome: "Formas", valor: "60 mais frequentes", parametro: "similitude"}
+      - {nome: "Arestas por palavra", valor: "3 (ou limiar de peso)"}
+    equivale_a: "Co-occurrence network do KH Coder."
+    nao_e_igual_a: "Links do Voyant (rede em torno de um termo) e similitude (árvore)."
+    cuidados:
+      - "O número de arestas por palavra (ou o limiar) altera muito o desenho da rede."
+    referencias: [jaccard1912, higuchi2016, brezina2015]
+    deteccao: {snapshots: [similitude]}
+
+  - id: rede_comunidades_centralidade
+    nome: "Rede: comunidades, centralidade e layout"
+    familia: "Redes"
+    status: implementado
+    eap_id: "15.2"
+    modulo: "app/services/analises/similitude.py"
+    o_que_mede: "Grupos de palavras fortemente ligadas (comunidades), palavras centrais na rede e um desenho legível."
+    metrica: "Comunidades por Louvain (networkx, ponderado) com modularidade; grau, grau ponderado, intermediação (Brandes, distância = 1/peso) e PageRank ponderado (0,85); layout Fruchterman-Reingold calculado no servidor; semente fixa (42)."
+    parametros_padrao:
+      - {nome: "Semente", valor: "42 (Louvain e layout)"}
+      - {nome: "Resolução do Louvain", valor: "1"}
+      - {nome: "Iterações do layout", valor: "200"}
+    equivale_a: "Comunidades e centralidades do KH Coder e do Gephi; halos de comunidade da similitude do IRaMuTeQ."
+    nao_e_igual_a: "Classes da CHD (7.1)."
+    cuidados:
+      - "Louvain é sensível à ordem e à semente; a resolução muda o número de comunidades. Leiden não está disponível (exige leidenalg/igraph)."
+      - "Numa árvore, a intermediação concentra-se nos nós internos e é zero nas folhas."
+      - "A posição no layout não tem significado estatístico."
+    referencias: [blondel2008, traag2019, fruchterman1991, freeman1977, page1999]
+    deteccao: {}
+
+  # =====================================================================================================
+  # Estilometria
+  # =====================================================================================================
+  - id: estilometria_delta
+    nome: "Estilometria (Delta de Burrows e variantes)"
+    familia: "Estilometria"
+    status: implementado
+    eap_id: "15.6"
+    modulo: "app/services/analises/estilometria.py"
+    o_que_mede: "Distância de estilo entre documentos (ou amostras de tamanho fixo) a partir das frequências das palavras mais frequentes, sobretudo palavras funcionais."
+    metrica: "Delta clássico (Burrows), Delta quadrático de Argamon, Delta de Eder, Delta simples de Eder, Cosine Delta (Würzburg) e cosseno das frequências, com as definições do stylo 0.7.71; agrupamento hierárquico (ward.D ou ligação média), consenso entre faixas de MFW, PCA (correlação/covariância) com cargas e MDS."
+    formula: "z = (f - média)/dp amostral; Delta clássico = (1/n) soma |z_i(A) - z_i(B)|; Argamon = raiz(soma (z_i(A) - z_i(B))^2)/n; Eder = soma |w_i (z_i(A) - z_i(B))|, w_i = (n - i + 2)/n (código do stylo; a fórmula costuma ser citada com (n - i + 1)/n); Eder simples = soma |raiz f_i(A) - raiz f_i(B)|; Cosine Delta = 1 - cos(z(A), z(B))"
+    parametros_padrao:
+      - {nome: "Palavras mais frequentes (MFW)", valor: "100 formas em minúsculas, com palavras vazias", parametro: "estilometria.mfw"}
+      - {nome: "Culling", valor: "0% (palavra presente em pelo menos c% das unidades)", parametro: "estilometria.culling"}
+      - {nome: "Distância", valor: "Delta clássico", parametro: "estilometria.distancia"}
+      - {nome: "Unidade", valor: "documento (ou amostras de tamanho fixo)", parametro: "estilometria.unidade"}
+      - {nome: "Tamanho da amostra", valor: "2.000 tokens", parametro: "estilometria.tamanho_amostra"}
+      - {nome: "Agrupamento e consenso", valor: "Ward (ward.D, como o stylo), k pela silhueta; consenso entre MFW 100, 200, ..., 500"}
+      - {nome: "Ruído", valor: "só o corpo, sem referências nem segmentos de ruído", parametro: "limpeza.excluir_ruido"}
+    equivale_a: "Pacote stylo (R): dist.delta, dist.argamon, dist.eder, dist.simple, dist.wurzburg, dist.cosine, Cluster Analysis, PCA e árvore de consenso (BCT). Distâncias, alturas do hclust, PCA, MDS e frequências de clados conferidos contra o stylo 0.7.71 até 1e-9."
+    nao_e_igual_a: "Atribuição de autoria (supervisionada ou não): não há autores rotulados neste corpus. A árvore de consenso é uma aproximação (árvores por faixa de MFW, sem reamostragem)."
+    cuidados:
+      - "Neste corpus os documentos têm muitos autores e gêneros (artigo, relatório, capítulo) e mais de um idioma: a distância estilométrica reflete sobretudo gênero/registro, idioma e tradução, não autoria. No corpus MLR o primeiro corte separa os textos em português/espanhol dos em inglês, e o seguinte separa os artigos de benchmark de agentes (computação) dos textos de economia/empreendedorismo e relatórios."
+      - "Textos de extensões muito diferentes: prefira amostras de tamanho fixo; documentos com menos tokens do que uma amostra saem da análise."
+      - "Os agrupamentos mudam com o número de MFW: confira a tabela de consenso e a varredura antes de interpretar um grupo."
+    referencias: [burrows2002, argamon2008, smith2011, evert2017, eder2016, eder2017]
+    deteccao: {snapshots: [estilometria]}
+
+  # =====================================================================================================
+  # Legibilidade
+  # =====================================================================================================
+  - id: legibilidade
+    nome: "Legibilidade (Flesch, Gunning Fog, Coleman-Liau, SMOG)"
+    familia: "Legibilidade"
+    status: implementado
+    eap_id: "15.3"
+    modulo: "app/services/analises/legibilidade.py"
+    o_que_mede: "O quanto um texto é fácil de ler, estimado por tamanho de frases, de palavras e de sílabas."
+    metrica: "Flesch (EN), Flesch adaptado ao português (Martins et al.), Flesch-Kincaid, Gunning Fog, Coleman-Liau e SMOG, calculados por documento sobre o corpo do texto (sem referências nem ruído); a fórmula principal é a do idioma do documento."
+    formula: "Flesch EN = 206,835 - 1,015 ASL - 84,6 ASW; Flesch PT = 248,835 - 1,015 ASL - 84,6 ASW; Kincaid = 0,39 ASL + 11,8 ASW - 15,59; Fog = 0,4 (ASL + 100 complexas/palavras); Coleman-Liau = 0,0588 L - 0,296 S - 15,8; SMOG = 1,043 raiz(polissílabos x 30/frases) + 3,1291"
+    parametros_padrao:
+      - {nome: "Frases", valor: "divisão por regra documentada (abreviações, números, títulos descartados)"}
+      - {nome: "Sílabas EN", valor: "heurística de grupos vocálicos (pyphen opcional)", parametro: "documento_extra.silabas_en"}
+      - {nome: "Sílabas PT/ES", valor: "núcleos vocálicos (ditongos e hiatos por regra)"}
+      - {nome: "Ruído", valor: "segmentos de ruído fora do texto", parametro: "limpeza.excluir_ruido"}
+    equivale_a: "Fórmulas clássicas de legibilidade (textstat, Coh-Metrix básico)."
+    nao_e_igual_a: "Medida de compreensão por leitores reais."
+    cuidados:
+      - "A contagem de sílabas depende do idioma; as fórmulas do inglês não valem para o português (Fog, Kincaid, Coleman-Liau e SMOG só comparam documentos entre si em português)."
+      - "Artigos científicos têm siglas, fórmulas e tabelas que distorcem as médias: confira o número de frases e os avisos de confiabilidade."
+      - "Textos acadêmicos saem como muito difíceis (Flesch EN abaixo de 30) por natureza; compare entre documentos, não com textos gerais."
+    referencias: [flesch1948, martins1996, kincaid1975, gunning1952, coleman1975, mclaughlin1969]
+    deteccao: {snapshots: [documento_extra]}
+
+  # =====================================================================================================
+  # PLN
+  # =====================================================================================================
+  - id: palavras_chave_documento
+    nome: "Palavras-chave por documento (RAKE, YAKE, TextRank)"
+    familia: "PLN"
+    status: implementado
+    eap_id: "15.4"
+    modulo: "app/services/analises/palavras_chave.py"
+    o_que_mede: "Expressões que resumem um documento, extraídas dele mesmo, sem corpus de comparação."
+    metrica: "RAKE (grau e frequência de palavras em candidatos delimitados por palavras vazias), YAKE (caixa, posição, frequência, relação com o contexto e dispersão; implementação própria, menor é melhor) e TextRank (PageRank no grafo de coocorrência de lemas, janela 2 a 10, sem etiquetador), comparados lado a lado com os termos distintivos TF-IDF (5.1)."
+    formula: "RAKE: pontuação(frase) = soma de grau(w)/freq(w); YAKE: S(t) = rel x pos / (caixa + freq/rel + dif/rel), S(kw) = produto de S(t) / (TF(kw) (1 + soma de S(t)))"
+    parametros_padrao:
+      - {nome: "Palavras-chave por método", valor: "10", parametro: "documento_extra.n_palavras_chave"}
+      - {nome: "RAKE: palavras por frase / frequência mínima", valor: "até 4 / 2 (documentos com 1.500+ palavras)", parametro: "documento_extra.rake"}
+      - {nome: "YAKE: n-grama máximo / similaridade de desduplicação", valor: "3 / 0,8", parametro: "documento_extra.yake"}
+      - {nome: "TextRank: janela / palavras por frase", valor: "4 / 4", parametro: "documento_extra.textrank"}
+    equivale_a: "Extração de palavras-chave de documento único (rake-nltk, yake, pytextrank)."
+    nao_e_igual_a: "Keyness (compara grupos) e TF-IDF (compara com o corpus)."
+    cuidados:
+      - "Métodos diferentes dão listas diferentes; compare e escolha por inspeção. No corpus MLR, YAKE e TextRank acompanharam o TF-IDF; o RAKE trouxe frases de método e figura."
+      - "Cabeçalhos repetidos por página (nomes de autores) viram palavras-chave do RAKE em documentos que o detector de ruído não limpou."
+      - "O TextRank não usa etiquetador (só palavras vazias): verbos vizinhos entram nas frases."
+    referencias: [rose2010, campos2020, mihalcea2004]
+    deteccao: {snapshots: [documento_extra]}
+
+  - id: sumarizacao_extrativa
+    nome: "Sumarização extrativa (TextRank, LexRank, MMR)"
+    familia: "PLN"
+    status: implementado
+    eap_id: "15.5"
+    modulo: "app/services/analises/sumarizacao.py"
+    o_que_mede: "As frases mais representativas de cada documento, com a página de onde vêm."
+    metrica: "Pontuação de frases por centralidade em grafo de similaridade (TextRank com a similaridade do artigo; LexRank com cosseno TF-IDF e limiar 0,1) e seleção com diversidade (MMR, lambda 0,7), em ordem original, com página e seção; frases de legenda, sumário, URL e fragmentos ficam de fora."
+    formula: "TextRank: sim = |comuns| / (ln|S1| + ln|S2|); MMR = lambda cos(frase, centroide) - (1 - lambda) max cos(frase, escolhidas)"
+    parametros_padrao:
+      - {nome: "Frases no resumo", valor: "5", parametro: "documento_extra.resumo_frases"}
+      - {nome: "MMR: lambda", valor: "0,7", parametro: "documento_extra.sumarizacao.lambda"}
+      - {nome: "LexRank: limiar do cosseno", valor: "0,1", parametro: "documento_extra.sumarizacao.limiar"}
+      - {nome: "Frases elegíveis", valor: "8 a 70 palavras, pontuação final, sem URL, legenda ou sumário"}
+    equivale_a: "Resumos extrativos clássicos (sumy)."
+    nao_e_igual_a: "Resumo gerado por LLM (abstrativo)."
+    cuidados:
+      - "As frases são do próprio documento e saem com página: conferir o contexto antes de citar."
+      - "TextRank e LexRank não tratam redundância: o resumo executivo repetido no corpo pode entrar duas vezes; o MMR evita."
+      - "Em PDFs, sumários e legendas podem passar pelos filtros; revise o resumo."
+    referencias: [mihalcea2004, erkan2004, carbonell1998]
+    deteccao: {snapshots: [documento_extra]}
+
+  - id: sentimento_lexico
+    nome: "Sentimento por léxico (exploratório)"
+    familia: "PLN"
+    status: implementado
+    eap_id: "15.10"
+    modulo: "app/services/analises/sentimento.py"
+    o_que_mede: "A polaridade (positiva, neutra, negativa) de cada frase do corpo, resumida por documento, grupo e ano, com as frases mais positivas e mais negativas e a página."
+    metrica: "Inglês: VADER (escore compound por frase; pacote vaderSentiment, licença MIT). Português e outros idiomas: léxico importado pelo usuário (OpLexicon, SentiLex-PT ou próprio): soma das polaridades com negação simples (3 palavras) normalizada por soma/raiz(soma^2 + 15); positivo >= 0,05 e negativo <= -0,05."
+    formula: "escore = S / raiz(S^2 + 15), S = soma das polaridades (com inversão após negador nas 3 palavras anteriores)"
+    parametros_padrao:
+      - {nome: "Unidade", valor: "frase do corpo (sem referências nem ruído)"}
+      - {nome: "Limiar de classe", valor: "|escore| >= 0,05"}
+      - {nome: "Léxico PT/ES", valor: "o importado mais recente (guardado na configuração do usuário, fora do projeto)"}
+    equivale_a: "Análise de sentimento baseada em léxico (VADER, SentiLex-PT, OpLexicon)."
+    nao_e_igual_a: "Classificação supervisionada ou por LLM."
+    cuidados:
+      - "Uso exploratório: prosa acadêmica é quase toda neutra e os léxicos foram feitos para redes sociais e resenhas; termos técnicos ('risco', 'limitação') contam como negativos sem opinião, e linhas de tabela podem receber escores extremos."
+      - "OpLexicon e SentiLex-PT não acompanham o Raio-X: a licença de redistribuição do OpLexicon não está clara e a do SentiLex-PT 02 (CC BY segundo o catálogo B2FIND) não foi confirmada na fonte primária. Baixe o arquivo e importe-o (conferir a licença antes de usar)."
+    referencias: [hutto2014, souza2011, silva2012]
+    deteccao: {}
+
+  - id: embeddings_ollama
+    nome: "Embeddings opcionais (Ollama)"
+    familia: "PLN"
+    status: planejado
+    eap_id: "15.12"
+    modulo: null
+    o_que_mede: "Similaridade semântica de documentos ou trechos, por vetores gerados por um modelo local."
+    metrica: "Cosseno entre embeddings gerados por um modelo servido pelo Ollama."
+    parametros_padrao:
+      - {nome: "Modelo", valor: "ver parâmetros do projeto (ainda não implementado)"}
+    equivale_a: "Busca por similaridade semântica."
+    nao_e_igual_a: "Similaridade lexical por TF-IDF (6.3)."
+    cuidados:
+      - "Só funciona com Ollama configurado; nada sai da máquina."
+      - "Sem referência bibliográfica no catálogo ainda: acrescente a do modelo escolhido."
+    referencias: []
+    deteccao: {}
+
+  # =====================================================================================================
+  # LLM
+  # =====================================================================================================
+  - id: redacao_paragrafos_llm
+    nome: "Redação de parágrafos com LLM e verificação"
+    familia: "LLM"
+    status: implementado
+    eap_id: "14.1, 14.2, 14.3"
+    modulo: app/services/llm/gerador.py
+    o_que_mede: "Não mede: gera um parágrafo a partir dos números do projeto e de um modelo de parágrafo, e verifica o texto contra as métricas."
+    metrica: "Um LLM (Ollama, Anthropic ou compatível OpenAI) reescreve o modelo com os dados calculados; os números do texto são conferidos contra as métricas e os trechos citados contra o corpus. A saída entra como sugerida, com origem LLM, e depende de revisão humana."
+    parametros_padrao:
+      - {nome: "Provedor e modelo", valor: "ver parâmetros do projeto (configuração da Frente 14)"}
+    equivale_a: "Redação assistida com verificação (grounding) dos números."
+    nao_e_igual_a: "Texto livre do LLM sem conferência."
+    cuidados:
+      - "O LLM é opcional; o sistema funciona e gera comentários por regras sem ele."
+      - "Nenhum parágrafo sugerido entra no laudo sem aceite do revisor."
+    referencias: []
+    deteccao: {}
+
+  - id: codificacao_llm_concordancia
+    nome: "Codificação por LLM e concordância (kappa, alfa)"
+    familia: "LLM"
+    status: implementado
+    eap_id: "15.1"
+    modulo: "app/services/concordancia/estatisticas.py"
+    o_que_mede: "O quanto a codificação feita pelo LLM concorda com a codificação humana, por código e no geral."
+    metrica: "Kappa de Cohen (dois codificadores, escala nominal) e alfa de Krippendorff, calculados sobre os trechos da planilha de coleta como referência."
+    formula: "kappa = (po - pe) / (1 - pe)"
+    parametros_padrao:
+      - {nome: "Unidades", valor: "trechos com código humano importados da planilha (.xlsx)"}
+      - {nome: "LLM", valor: "segundo codificador às cegas (codebook + trecho), um código ou nenhum"}
+      - {nome: "IC 95%", valor: "kappa: EP assintótico (Fleiss, Cohen & Everitt 1969) e bootstrap; alfa: bootstrap por unidades (1000 réplicas, semente 42)"}
+      - {nome: "Alfa", valor: "nominal (ordinal, intervalar e razão disponíveis), com faltantes"}
+    equivale_a: "Confiabilidade entre codificadores na análise de conteúdo."
+    nao_e_igual_a: "Percentual simples de concordância, que não corrige o acaso."
+    cuidados:
+      - "Kappa depende da prevalência dos códigos: leia junto com a tabela de confusão."
+      - "Concordância alta com o humano não prova validade do código; o LLM é segundo codificador, não substitui o humano."
+      - "Leitura: Landis & Koch (1977) para kappa; alfa >= 0,800 confiável, >= 0,667 provisório."
+    referencias: [cohen1960, fleiss1969, landis1977, krippendorff2011, krippendorff2018, hayes2007]
+    deteccao: {}
+
+  - id: classificacao_zero_few_shot
+    nome: "Classificação zero-shot e few-shot por LLM"
+    familia: "LLM"
+    status: implementado
+    eap_id: "15.11"
+    modulo: "app/services/concordancia/classificador.py"
+    o_que_mede: "Atribui categorias do dicionário (codebook) ou de uma lista própria a trechos, segmentos ou documentos, pedindo ao LLM que classifique, com justificativa e confiança."
+    metrica: "Prompt com as definições dos rótulos (zero-shot) ou com até k exemplos por rótulo tirados da codificação humana (few-shot, escolhidos de forma determinística por hash e deixados fora da avaliação); saída em JSON, revisável item a item (aceitar/rejeitar) e comparável com os rótulos humanos (percentual, kappa de Cohen, alfa de Krippendorff)."
+    parametros_padrao:
+      - {nome: "Unidade", valor: "trechos codificados (padrão), segmentos do corpus ou documentos (início do texto limpo, 3000 caracteres)"}
+      - {nome: "Modo", valor: "zero-shot (padrão) ou few-shot com k = 3 exemplos por rótulo"}
+      - {nome: "Multirrótulo", valor: "desligado (um rótulo ou nenhum); ligado aceita vários"}
+      - {nome: "Cache de prompt", valor: "instruções, rótulos e exemplos no prefixo do system (ponto de cache no último bloco); só a unidade varia"}
+    equivale_a: "Classificação de texto com modelos de linguagem (zero-shot / few-shot prompting)."
+    nao_e_igual_a: "Contagem de padrões do dicionário (6.4), que é determinística, e codificação humana."
+    cuidados:
+      - "Resultados variam entre execuções e modelos: o modelo e o hash do prompt ficam no log; meça a concordância com o humano (15.1)."
+      - "A classificação é uma sugestão para triagem: revise item a item; no few-shot, os exemplos saem da avaliação para não haver vazamento."
+      - "Modelos remotos recebem as unidades e cobram por token: veja a estimativa de custo (com e sem cache) antes de rodar."
+    referencias: [cohen1960, krippendorff2018]
+    deteccao: {}
+
+  - id: busca_semantica_rag
+    nome: "Perguntar ao corpus: busca BM25, híbrida (RRF) e RAG com citação de página"
+    familia: "LLM"
+    status: implementado
+    eap_id: "15.13"
+    modulo: "app/services/busca/rag.py"
+    o_que_mede: "Recupera os trechos do corpus mais relevantes para uma pergunta, com documento e página; opcionalmente, o LLM redige uma resposta que só pode citar esses trechos."
+    metrica: "BM25 (Okapi, k1 = 1,5, b = 0,75, idf não negativo) sobre os segmentos; com embeddings (15.12), fusão do ranking BM25 com o do cosseno por reciprocal rank fusion (k = 60). A resposta do LLM é conferida (números, citações (rótulo, p. N) e trechos entre aspas) contra os trechos recuperados e mostrada com avisos se falhar."
+    formula: "score(d) = soma idf(t) f (k1 + 1) / (f + k1 (1 - b + b |d| / avgdl))"
+    parametros_padrao:
+      - {nome: "Trechos recuperados (k)", valor: "8"}
+      - {nome: "Modo", valor: "automático: híbrido se houver embeddings, senão só BM25"}
+      - {nome: "Resposta do LLM", valor: "desligada por padrão; nunca há resposta sem trechos recuperados"}
+    equivale_a: "RAG (retrieval-augmented generation) sobre corpus próprio."
+    nao_e_igual_a: "Concordância por palavra (KWIC), que mostra todas as ocorrências de um termo, e busca vetorial pura."
+    cuidados:
+      - "A busca lexical não lematiza: usa só radical mínimo (plural em s) e não acha sinônimos; a híbrida ajuda quando há embeddings."
+      - "A resposta só vale com os trechos citados: confira cada página no documento; a conferência automática não detecta interpretação indevida."
+      - "Textos idênticos em documentos diferentes aparecem uma vez, com a indicação de onde mais ocorrem."
+    referencias: [robertson2009, cormack2009, lewis2020]
+    deteccao: {}
+
+  - id: similaridade_semantica_embeddings
+    nome: "Similaridade semântica por embeddings (Ollama)"
+    familia: "LLM"
+    status: implementado
+    eap_id: "15.12"
+    modulo: "app/services/busca/embeddings.py"
+    o_que_mede: "O quanto dois documentos (ou um segmento e uma pergunta) se parecem em sentido, e não só em vocabulário."
+    metrica: "Embeddings dos segmentos calculados por um modelo do Ollama local (ex.: nomic-embed-text), normalizados em L2 e guardados em cache (.npy); o vetor do documento é a média renormalizada dos seus segmentos; similaridade = cosseno."
+    formula: "cos(u, v) = u . v / (|u| |v|)"
+    parametros_padrao:
+      - {nome: "Provedor", valor: "somente Ollama (local); nada sai da máquina"}
+      - {nome: "Modelo", valor: "um modelo de embeddings instalado (a tela lista os disponíveis)"}
+    equivale_a: "Similaridade de documentos por embeddings de sentenças."
+    nao_e_igual_a: "Similaridade por TF-IDF (6.3), que compara vocabulário."
+    cuidados:
+      - "Depende do modelo de embeddings: registre o modelo (fica no meta.json do cache) e não misture modelos."
+      - "Opcional: sem Ollama e sem modelo de embeddings, a tela explica como habilitar e o resto do sistema segue igual."
+    referencias: []
+    deteccao: {}
+
+  # =====================================================================================================
+  # Comentários e revisão
+  # =====================================================================================================
+  - id: comentarios_regras
+    nome: "Comentários por regras e revisão humana"
+    familia: "Comentários e revisão"
+    status: implementado
+    eap_id: "8.1, 8.2"
+    modulo: "app/services/regras/motor.py"
+    o_que_mede: "Não mede: transforma resultados das análises em frases-modelo com números e evidências, que o revisor aceita, edita ou rejeita."
+    metrica: "Catálogo de regras (condição sobre métricas, modelo de frase em português, evidências) avaliado sem LLM; cada comentário tem pelo menos uma evidência (trecho com página); reconciliação com a revisão humana por chave."
+    parametros_padrao:
+      - {nome: "Regras", valor: "10 regras (R01 a R10), limiares editáveis em app/services/regras/catalogo.yaml"}
+    equivale_a: "Redação automatizada baseada em regras (templates)."
+    nao_e_igual_a: "Texto gerado por LLM (Frente 14)."
+    cuidados:
+      - "Só comentários aceitos ou editados entram no laudo."
+      - "Se o corpus muda, comentários aceitos cujo número ou evidência mudou voltam para 'revisar'."
+    referencias: []
+    deteccao: {tabelas: [comentario]}
+
+  # =====================================================================================================
+  # Frente 16: corpus e metadados
+  # =====================================================================================================
+  - id: planilha_corpus
+    nome: "Planilha do corpus (extração por seções e padrões)"
+    familia: "Corpus e metadados"
+    status: implementado
+    eap_id: "16.1, 16.2, 16.4"
+    modulo: "app/services/corpus/partes.py"
+    o_que_mede: "Não mede: organiza, por documento, trechos literais de cada parte do artigo (resumo, introdução, objetivo, perguntas, referencial, método, dados, resultados, discussão, conclusão, limitações, trabalhos futuros, contribuições) com página e origem."
+    metrica: "Partes de seção: frases da seção detectada (3.1) até um limite de caracteres, cortando no fim da frase. Partes por padrão: frases pontuadas por expressões de cue em inglês, português e espanhol (força do padrão, seção preferida, posição); as melhores entram, citadas literalmente. Sem trecho: 'não encontrado'. Opcional (LLM desligado por padrão): frases literais sugeridas e conferidas contra o texto, aceitas uma a uma."
+    parametros_padrao:
+      - {nome: "Limite de caracteres por seção", valor: "1500", parametro: "planilha_corpus.max_caracteres"}
+      - {nome: "Frases por célula de padrão", valor: "3", parametro: "planilha_corpus.max_frases"}
+      - {nome: "Nota mínima do padrão", valor: "2,0", parametro: "planilha_corpus.nota_minima"}
+    equivale_a: "Matriz de extração de dados de uma revisão da literatura (planilha de coleta), preenchida por regras."
+    nao_e_igual_a: "Resumo automático nem codificação temática: os trechos são citações, não interpretações."
+    cuidados:
+      - "A detecção de seções e frases é heurística; confira o trecho no documento antes de citar."
+      - "Um padrão pode achar frase que não é o objetivo ou a limitação do estudo; 'não encontrado' não prova que a parte não existe. Limitações exigem cue + semântica de limitação (refinado em 12/10/2026) e ignoram itens de checklist de conferência."
+    referencias: []
+    deteccao: {}
+
+  - id: exportacao_bibliometrix
+    nome: "Exportação bibliométrica (bibliometrix)"
+    familia: "Corpus e metadados"
+    status: implementado
+    eap_id: "16.3, 16.4"
+    modulo: "app/services/corpus/bibtex.py"
+    o_que_mede: "Não mede: exporta os metadados e as referências citadas dos documentos em BibTeX no padrão do Scopus, para análises bibliométricas no pacote bibliometrix (R)."
+    metrica: "Uma entrada por documento (@ARTICLE, @CONFERENCE, @BOOK, @INCOLLECTION ou @MISC) com author, title, journal, year, doi, affiliations, abstract, author_keywords e references; as referências vêm da seção de Referências, separadas e interpretadas por regras (autores, ano, título, fonte), com o texto bruto quando não há interpretação. Lido com convert2df(dbsource = 'scopus', format = 'bibtex')."
+    parametros_padrao:
+      - {nome: "Escape BibTeX", valor: "completo"}
+      - {nome: "Confiança mínima do metadado", valor: "0,35"}
+    equivale_a: "Export BibTeX do Scopus."
+    nao_e_igual_a: "Dados da base Scopus: não há contagem de citações recebidas, palavras-chave indexadas nem afiliações normalizadas."
+    cuidados:
+      - "As referências são interpretadas por regras e parte delas fica só como texto bruto: a rede de cocitação é aproximada."
+      - "Metadados vindos só do texto têm confiança menor: confira ou importe o índice da revisão."
+    referencias: [aria2017]
+    deteccao: {}
+
+  - id: exportacao_coleta_mlr
+    nome: "Exportação para a planilha de coleta da MLR"
+    familia: "Corpus e metadados"
+    status: implementado
+    eap_id: "9.5"
+    modulo: "app/services/concordancia/exportacao_coleta.py"
+    o_que_mede: "Não mede: gera um .xlsx novo com os trechos escolhidos no Raio-X (evidências de comentários aceitos, ocorrências do KWIC, células da planilha do corpus e trechos codificados pelo LLM) nas mesmas colunas da aba de trechos da planilha de coleta do usuário."
+    metrica: "Uma linha por trecho literal, com documento, página, seção, código e tema quando conhecidos, 'Motivo da coleta' = 'Raio-X: <análise>' e tradução vazia. Duplicatas contra a planilha do usuário (somente leitura) são achadas por texto normalizado (igual ou mesmo início de 60 caracteres) e marcadas, ou omitidas."
+    parametros_padrao:
+      - {nome: "Planilha de referência", valor: "caminho informado na tela (opcional; copia o cabeçalho e checa duplicatas)"}
+      - {nome: "Duplicados", valor: "marcados (ou omitidos)"}
+    equivale_a: "Preenchimento manual da aba de trechos temáticos da planilha de coleta."
+    nao_e_igual_a: "Codificação temática: código e tema só vão preenchidos quando já existem (codificação LLM); tradução, trilha, QP e decisão do revisor ficam em branco."
+    cuidados:
+      - "O arquivo gerado é novo: a planilha do usuário nunca é alterada. Os IDs de registro 'RX-...' são provisórios e devem ser renumerados ao colar na coleta."
+      - "A coluna 'Sentença verificada (auto)' só diz se o trecho foi achado no texto do documento; a conferência continua sendo do revisor."
+    referencias: []
+    deteccao: {}
+
+  # =====================================================================================================
+  # Referências gerais
+  # =====================================================================================================
+  - id: referencias_gerais
+    nome: "Referências gerais (ferramentas equivalentes)"
+    familia: "Referências gerais"
+    status: implementado
+    eap_id: "6"
+    modulo: null
+    o_que_mede: "Não mede: reúne as ferramentas de referência com as quais as análises do Raio-X são comparadas (mapa de equivalência da seção 6 do EAP)."
+    metrica: "Voyant Tools, AntConc, IRaMuTeQ, TXM, KH Coder e quanteda."
+    parametros_padrao:
+      - {nome: "Parâmetros", valor: "não se aplica"}
+    equivale_a: "Voyant Tools, AntConc, IRaMuTeQ, TXM, KH Coder, quanteda."
+    nao_e_igual_a: "Os números só coincidem com os dessas ferramentas quando os parâmetros (lematização, palavras vazias, janelas) coincidem."
+    cuidados:
+      - "Ao citar equivalência, informe a ferramenta, a versão e os parâmetros usados na comparação."
+    referencias: [sinclair2016voyant, anthony2024, camargo2013, heiden2010, higuchi2016, benoit2018]
+    deteccao: {}

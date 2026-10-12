@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+sqlalchemy>=2.0
+pydantic>=2.7
+pytest
+httpx
+regex
+simplemma
+PyYAML
+openpyxl
+numpy
+scipy
+networkx>=3.2
+anthropic>=1.13
+keyring
+python-docx
+vaderSentiment

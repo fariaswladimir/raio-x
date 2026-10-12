@@ -1,0 +1,28 @@
+/* 15.7 Tópicos (painel na sub-aba Temático) e 15.1 Codificação (aba do projeto). Usa as variáveis de styles.css. */
+.tp-cartoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin: 8px 0 12px; }
+.tp-cartao { border: 1px solid var(--borda); border-top: 4px solid; border-radius: 6px; padding: 8px 10px; background: var(--painel); min-width: 0; }
+.tp-cab { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; margin-bottom: 4px; }
+.tp-palavras { line-height: 1.5; overflow-wrap: anywhere; }
+.tp-pal { font-weight: 600; margin-right: 4px; }
+.tp-neg { margin-top: 4px; opacity: .85; }
+.tp-coer, .tp-docs { margin-top: 4px; font-size: 12px; }
+.tp-tab { border-collapse: collapse; font-size: 12.5px; }
+.tp-tab th, .tp-tab td { border: 1px solid var(--borda); padding: 3px 6px; text-align: right; }
+.tp-tab th:first-child, .tp-tab td:first-child { text-align: left; }
+.tp-cel { min-width: 42px; font-variant-numeric: tabular-nums; }
+.tp-minis { display: flex; flex-wrap: wrap; gap: 10px; }
+.tp-mini { border: 1px solid var(--borda); border-radius: 5px; background: var(--painel); }
+.cd-papel { border-left: 4px solid var(--destaque); padding: 8px 12px; background: var(--fundo); border-radius: 4px; margin: 0 0 12px; }
+.cd-mapa { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 8px 0; }
+.cd-mapa select { max-width: 100%; }
+.cd-prog { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; max-width: 520px; margin: 6px 0; }
+#cd-tab { font-size: 12.5px; }
+#cd-tab td { vertical-align: top; }
+#cd-tab .cd-texto { min-width: 260px; max-width: 520px; }
+#cd-tab .cd-just { min-width: 180px; max-width: 360px; color: var(--suave); }
+#cd-tab tr.cd-dif td:nth-child(5) { color: var(--erro); }
+#cd-tab tr.cd-ok td:nth-child(5) { color: var(--ok); }
+.cd-estat { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 8px 0; }
+.cd-num { display: grid; gap: 2px; border: 1px solid var(--borda); border-radius: 6px; padding: 8px 10px; }
+.cd-num b { font-size: 22px; }
+.cd-conf td, .cd-conf th { text-align: center; }

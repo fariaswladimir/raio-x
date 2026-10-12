@@ -1,0 +1,157 @@
+# Catálogo de regras do Raio-X (entregável 8.1).
+#
+# Cada regra transforma um resultado das análises num comentário em linguagem natural, SEM LLM (decisão D1):
+# o texto é o `modelo` preenchido com números calculados. Você pode editar limiares (`condicao`), textos
+# (`modelo`), o número de comentários (`max_comentarios`), o de trechos de evidência (`evidencias`) e ligar ou
+# desligar regras (`ativa`) sem programar; ao salvar, a próxima execução do pipeline regenera os comentários
+# (os já revisados são reconciliados, não perdidos).
+#
+# Campos de cada regra
+#   id              identificador (R01...). Define a identidade dos comentários, não mude depois de revisar.
+#   avaliador       (opcional) qual lógica usar; padrão = id. Permite duplicar uma regra com outros limiares
+#                   (ex.: id R07b, avaliador R07).
+#   analise         resumo | frequencias | tendencias | keyness | colocacoes (de onde vêm os números)
+#   descricao       explicação para quem lê o catálogo
+#   condicao        limiares da regra (os nomes e os valores padrão estão ao lado de cada regra)
+#   modelo          frase com {campos}; números saem no formato pt-BR. Formatação opcional: {g2:.1f}, {n:,d}.
+#                   Os campos válidos de cada regra estão listados em "campos".
+#   max_comentarios máximo de comentários da regra (R07 e R08: por grupo), pelos mais fortes primeiro
+#   evidencias      quantos trechos (com página) acompanham cada comentário (0 = nenhum)
+#   ativa           true/false
+#
+# Observação: R07 e R08 filtram o instantâneo da etapa `comparativo` (que já aplica p < 0,01, frequência
+# mínima 5 e ao menos 2 documentos de cada lado); aqui só dá para ser mais rigoroso, não menos.
+
+versao: 1
+
+regras:
+  - id: R01
+    analise: resumo
+    descricao: Visão geral do corpus (documentos, palavras, período e grupos).
+    condicao:
+      min_documentos: 1
+    modelo: "O corpus tem {n_docs} documentos ({tokens} palavras no corpo do texto, sem referências), {periodo}; grupos: {grupos}."
+    max_comentarios: 1
+    evidencias: 3          # os documentos mais longos
+    ativa: true
+    # campos: n_docs, tokens, tokens_total, periodo, grupos
+
+  - id: R02
+    analise: resumo
+    descricao: Documentos com pendências de qualidade (fora das análises ou com avisos).
+    condicao:
+      min_documentos: 1    # nº mínimo de documentos com pendência para comentar
+    modelo: "{n_pend} de {n_total} documentos têm pendências de qualidade: {n_excl} fora das análises ({excluidos}) e {n_av} só com avisos."
+    max_comentarios: 1
+    evidencias: 5
+    ativa: true
+    # campos: n_pend, n_total, n_excl, n_av, excluidos
+
+  - id: R03
+    analise: resumo
+    descricao: Documentos com diversidade lexical (MATTR) muito acima ou abaixo da média do corpus.
+    condicao:
+      z_min: 2.0           # |z| mínimo
+      min_documentos: 8    # nº mínimo de documentos comparáveis (com MATTR) para o z ter sentido
+    modelo: "{rotulo} tem MATTR de {mattr:.3f}, {direcao} da média do corpus ({media:.3f}; z = {z:.1f}), o que sugere vocabulário {leitura}."
+    max_comentarios: 5
+    evidencias: 1
+    ativa: true
+    # campos: rotulo, mattr, media, desvio, z, direcao, leitura, n_comparaveis
+
+  - id: R04
+    analise: frequencias
+    descricao: Termos mais frequentes do corpus (lemas, sem palavras vazias).
+    condicao:
+      top_n: 5
+    modelo: "‘{termo}’ é o {posicao}º termo mais frequente do corpus: {freq} ocorrências ({por_10k} por 10 mil palavras), presente em {docs} de {n_docs} documentos."
+    max_comentarios: 5
+    evidencias: 3
+    ativa: true
+    # campos: termo, posicao, freq, por_10k, docs, n_docs
+
+  - id: R05
+    analise: frequencias
+    descricao: Termos frequentes, mas concentrados em poucos documentos.
+    condicao:
+      min_freq: 30
+      max_docs: 3
+      min_documentos_corpus: 8
+    modelo: "‘{termo}’ aparece {freq} vezes ({por_10k} por 10 mil palavras), mas só em {docs} de {n_docs} documentos: concentrado em {onde}."
+    max_comentarios: 5
+    evidencias: 3
+    ativa: true
+    # campos: termo, freq, por_10k, docs, n_docs, onde
+
+  - id: R06
+    analise: tendencias
+    descricao: Termo cuja frequência relativa no ano mais recente é pelo menos o dobro da média dos anos anteriores.
+    condicao:
+      razao_min: 2.0
+      min_freq: 20             # frequência total mínima do termo no corpus
+      min_freq_ultimo: 5       # ocorrências mínimas no ano mais recente
+      min_anos: 2
+      min_docs_ultimo_ano: 2
+      min_tokens_ultimo_ano: 2000
+      top_termos: 50           # só os N termos mais frequentes são testados
+    modelo: "‘{termo}’ cresce com o tempo: {rel_ultimo} por 10 mil palavras em {ano_ultimo}, {razao:.1f}× a média dos anos anteriores ({rel_media}; {anos_anteriores})."
+    max_comentarios: 5
+    evidencias: 3
+    ativa: true
+    # campos: termo, ano_ultimo, rel_ultimo, razao, rel_media, anos_anteriores, freq_ultimo, docs_ultimo
+
+  - id: R07
+    analise: keyness
+    descricao: Palavras-chave de cada grupo contra os demais (sobre-representadas).
+    condicao:
+      p_max: 0.01
+      log_ratio_min: 1.0
+      docs_a_min: 2
+      min_freq_a: 5
+    modelo: "‘{termo}’ é {razao:.1f}× mais frequente em {grupo_a} que {contra} (G² = {g2:.1f}; {p_txt}; presente em {docs_a} de {n_a} documentos)."
+    max_comentarios: 5       # por grupo
+    evidencias: 3
+    ativa: true
+    # campos: termo, razao, grupo_a, contra, g2, p_txt, docs_a, n_a, freq_a, por_10k_a, por_10k_b, log_ratio
+
+  - id: R08
+    analise: keyness
+    descricao: Palavras sub-representadas em um grupo (contrapartida de R07); só quando há 3 ou mais grupos (com 2, é a R07 do outro grupo).
+    condicao:
+      p_max: 0.01
+      log_ratio_min: 1.0
+      docs_b_min: 2
+      min_grupos: 3
+    modelo: "‘{termo}’ é {razao:.1f}× menos frequente em {grupo_a} que {contra} (G² = {g2:.1f}; {p_txt}; presente em {docs_b} de {n_b} documentos de comparação)."
+    max_comentarios: 3       # por grupo
+    evidencias: 3
+    ativa: true
+    # campos: termo, razao, grupo_a, contra, g2, p_txt, docs_b, n_b, freq_b, por_10k_a, por_10k_b, log_ratio
+
+  - id: R09
+    analise: colocacoes
+    descricao: Colocados mais fortes (log-likelihood e MI) dos termos mais frequentes.
+    condicao:
+      n_termos: 3              # quantos dos termos mais frequentes são analisados
+      por_termo: 2             # colocados por termo
+      ll_min: 10.83            # log-likelihood mínimo (p < 0,001)
+      mi_min: 3.0
+      o11_min: 5               # coocorrências mínimas
+    modelo: "‘{colocado}’ é colocado forte de ‘{termo}’: coocorrem {o11} vezes numa janela de {janela} palavras (LL = {ll:.1f}; MI = {mi:.2f}; {p_txt})."
+    max_comentarios: 6
+    evidencias: 3
+    ativa: true
+    # campos: termo, colocado, o11, janela, ll, mi, p_txt
+
+  - id: R10
+    analise: resumo
+    descricao: Grupo pequeno em relação ao corpus (cautela nas comparações com ele).
+    condicao:
+      docs_max: 10
+      pct_tokens_max: 25.0
+      min_grupos: 2
+    modelo: "O grupo ‘{grupo}’ tem {n_docs} documentos ({tokens} palavras, {pct} % do corpus): comparações com ele dependem de poucos documentos e pedem cautela."
+    max_comentarios: 3
+    evidencias: 3
+    ativa: true
+    # campos: grupo, n_docs, tokens, pct, n_total

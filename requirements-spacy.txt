@@ -1,0 +1,3 @@
+# Opcional (4.5): classes gramaticais (POS), entidades nomeadas (NER) e lematização "spacy".
+# Os modelos pequenos (en_core_web_sm, pt_core_news_sm; ~15 MB cada) são baixados por instalar_spacy.bat.
+spacy>=3.8,<4

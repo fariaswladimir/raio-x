@@ -1,0 +1,25 @@
+{
+  "descricao": "Valores esperados do corpus de referência (calcular_esperado.py, sem o app).",
+  "regex": "[^\\W\\d_]+(?:['’-][^\\W\\d_]+)*",
+  "documentos": {
+    "001_2024_Silva_Titulo.md": {
+      "tokens": 329
+    },
+    "002_2025_Souza_Titulo.md": {
+      "tokens": 317
+    },
+    "003_2025_Lima_Titulo.md": {
+      "tokens": 318
+    },
+    "004_2026_Costa_Titulo.md": {
+      "tokens": 330
+    }
+  },
+  "total_tokens": 1294,
+  "termos": {
+    "agent": 4,
+    "agents": 15,
+    "tasks": 25
+  },
+  "agent_mais_agents": 19
+}

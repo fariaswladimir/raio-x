@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Raio-X de Textos</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="topicos-codificacao.css">
+  <link rel="stylesheet" href="busca-classificacao.css">
+  <link rel="stylesheet" href="documento_extra.css">
+  <link rel="stylesheet" href="estilometria.css">
+</head>
+<body>
+  <header>
+    <div class="topo">
+      <h1>Raio-X de Textos</h1>
+      <span id="versao" class="discreto"></span>
+      <nav id="nav-principal" aria-label="Navegação principal">
+        <button type="button" class="nav-item on" data-vista="projetos">Projetos</button>
+        <button type="button" class="nav-item" data-vista="config">Configurações</button>
+        <button type="button" class="nav-item" onclick="location.href='metodologia.html'">Metodologia</button>
+        <span id="nav-projeto" hidden class="discreto">Projeto: <b id="det-nome"></b></span>
+      </nav>
+    </div>
+    <nav id="nav-abas" class="abas" aria-label="Seções do projeto" hidden>
+      <button type="button" data-aba="geral">Visão geral</button>
+      <button type="button" data-aba="executar">Executar <span id="aba-run" class="selo" hidden>em andamento</span></button>
+      <button type="button" data-aba="analises">Análises</button>
+      <button type="button" data-aba="comentarios">Comentários</button>
+      <button type="button" data-aba="codificacao">Codificação</button>
+      <button type="button" data-aba="perguntar">Perguntar ao corpus</button>
+      <button type="button" data-aba="corpus">Corpus</button>
+      <button type="button" data-aba="paragrafos">Exemplos de parágrafos</button>
+      <button type="button" data-aba="laudo">Laudo e exportação</button>
+    </nav>
+  </header>
+  <main>
+    <!-- ===== Vista: Projetos ===== -->
+    <div id="vista-projetos" class="vista-pag">
+      <section>
+        <h2>Novo projeto</h2>
+        <form id="form-projeto" novalidate>
+          <label>Nome do projeto <input id="nome" placeholder="Ex.: MLR agentes de IA">
+            <span class="campo-erro" id="erro-nome" role="alert"></span></label>
+          <label>Caminho da pasta de artigos <input id="pasta" placeholder="C:\Users\...\Corpus">
+            <span class="campo-erro" id="erro-pasta" role="alert"></span></label>
+          <button type="submit">Criar projeto</button>
+        </form>
+        <p class="discreto">A pasta com os arquivos .md/.txt (ou PDFs) só é lida; nada é gravado nela.</p>
+        <p id="msg" role="status"></p>
+      </section>
+      <section>
+        <h2>Projetos</h2>
+        <div class="rolagem"><table id="tab-projetos">
+          <thead><tr><th>Nome</th><th>Pasta de origem</th><th>Parâmetros</th><th>Documentos</th><th>Pendências</th><th>Execução</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </section>
+    </div>
+
+    <!-- ===== Vista: Configurações (Frente 14.1) ===== -->
+    <div id="vista-config" class="vista-pag" hidden>
+      <section>
+        <h2>Configurações: LLM opcional</h2>
+        <p class="discreto">O Raio-X funciona sem LLM: os comentários vêm de regras. Se você quiser, um LLM pode redigir versões adaptadas de parágrafos a partir dos
+          números do projeto. O texto gerado é só uma sugestão: passa por uma conferência automática de números, citações e trechos, e só vai ao laudo se você aceitar.
+          Esta configuração vale para todos os projetos.</p>
+        <label class="check cf-chave-geral"><input type="checkbox" id="cf-hab"> <b>Permitir geração de parágrafos com LLM</b> <span class="discreto">(desligado por padrão)</span></label>
+        <h3>Provedor</h3>
+        <div id="cf-cartoes" class="cf-cartoes" role="radiogroup" aria-label="Provedor de LLM">
+          <label class="cf-card"><input type="radio" name="cf-prov" value="nenhum"><b>Nenhum</b><span>Sem LLM. Só regras (padrão). Nada é enviado a lugar nenhum.</span></label>
+          <label class="cf-card"><input type="radio" name="cf-prov" value="ollama"><b>Ollama (local, grátis)</b><span><em>Nenhum dado sai do seu computador.</em> Usa um modelo instalado na sua máquina.</span></label>
+          <label class="cf-card"><input type="radio" name="cf-prov" value="anthropic"><b>Anthropic (Claude)</b><span>Exige chave de API (pago). <em>Os trechos e as métricas do pedido são enviados à Anthropic.</em></span></label>
+          <label class="cf-card"><input type="radio" name="cf-prov" value="openai_compativel"><b>Compatível com OpenAI</b><span>OpenRouter, Groq e similares (alguns têm modelos gratuitos). <em>Os trechos e as métricas do pedido são enviados ao provedor.</em></span></label>
+        </div>
+        <div id="cf-p-ollama" class="cf-painel" hidden>
+          <label>URL do Ollama <input id="cf-ol-url" autocomplete="off" placeholder="http://127.0.0.1:11434"></label>
+          <label>Modelo instalado <input id="cf-ol-modelo" list="cf-ol-lista" autocomplete="off" placeholder="ex.: llama3.1:8b"><datalist id="cf-ol-lista"></datalist></label>
+          <p class="discreto">Use "Testar conexão" para listar os modelos instalados (<code>ollama list</code>). Os dados do pedido não saem da máquina.</p>
+        </div>
+        <div id="cf-p-anthropic" class="cf-painel" hidden>
+          <label>Modelo <select id="cf-an-modelo"></select></label>
+          <label>Esforço de raciocínio <select id="cf-an-esforco"><option value="low">baixo</option><option value="medium">médio (padrão)</option><option value="high">alto</option></select></label>
+          <div class="cf-chave"><label>Chave de API <input id="cf-an-chave" type="password" autocomplete="off" spellcheck="false" placeholder="cole a chave para guardar"></label>
+            <button type="button" class="sec" data-mostrar="cf-an-chave">mostrar</button><button type="button" class="sec" data-remover="anthropic">Remover chave</button></div>
+          <p class="discreto" id="cf-an-guardada"></p>
+          <p class="discreto">Nos modelos Opus e Sonnet, o fallback de recusa no servidor fica ligado por padrão: se o modelo recusar um pedido, a própria API tenta de novo com outro modelo. O Haiku não tem esse recurso.</p>
+        </div>
+        <div id="cf-p-openai_compativel" class="cf-painel" hidden>
+          <label>URL base <input id="cf-oa-url" autocomplete="off" placeholder="https://openrouter.ai/api/v1"></label>
+          <label>Nome do modelo <input id="cf-oa-modelo" autocomplete="off" placeholder="ex.: meta-llama/llama-3.3-70b-instruct:free"></label>
+          <div class="cf-chave"><label>Chave de API <input id="cf-oa-chave" type="password" autocomplete="off" spellcheck="false" placeholder="cole a chave para guardar"></label>
+            <button type="button" class="sec" data-mostrar="cf-oa-chave">mostrar</button><button type="button" class="sec" data-remover="openai_compativel">Remover chave</button></div>
+          <p class="discreto" id="cf-oa-guardada"></p>
+        </div>
+        <p class="barra">
+          <button type="button" id="cf-salvar">Salvar</button>
+          <button type="button" class="sec" id="cf-testar">Testar conexão</button>
+          <span id="cf-msg" class="discreto" role="status"></span>
+        </p>
+        <p id="cf-cofre" class="cm-aviso" hidden></p>
+        <p class="discreto">A chave fica no cofre de credenciais do Windows e nunca aparece aqui (só os 4 últimos caracteres), nos logs, nos projetos, nas exportações nem no pacote zip.
+          O pedido enviado ao LLM e a resposta (com a conferência) ficam em <code>projetos/&lt;projeto&gt;/saidas/llm_log.jsonl</code>: contêm só os dados do seu projeto.</p>
+      </section>
+    </div>
+
+    <!-- ===== Vista: projeto aberto ===== -->
+    <div id="vista-projeto" class="vista-pag" hidden>
+      <section id="aba-geral" class="aba" hidden>
+        <h3>Documentos <span id="det-resumo" class="discreto"></span></h3>
+              <p class="barra">
+                <label class="inline">documentos.csv (arquivo;grupo;id_estudo;qp)
+                  <input type="file" id="arq-csv" accept=".csv,text/csv"></label>
+                <button class="sec" id="btn-csv" type="button">Enviar CSV</button>
+                <span id="det-grupos" class="discreto"></span>
+              </p>
+              <p class="discreto">Grupo, id, ano e autor são editáveis: altere o campo e saia dele para salvar.
+                Edições manuais sobrevivem a novas varreduras (o documentos.csv, porém, volta a sobrescrever o que preencher).</p>
+              <div class="rolagem">
+                <table id="tab-docs">
+                  <thead><tr><th>Arquivo</th><th>Grupo</th><th>Id</th><th>Ano</th><th>Autor</th><th>Status</th><th>Págs.</th><th>Idioma</th><th title="Referências detectadas: ✓ por título, ~ por heurística, ✗ não detectadas">Ref.</th><th title="Palavras do corpo (sem referências/apêndice) sobre o total">% corpo</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <datalist id="lista-grupos"></datalist>
+              <div id="painel-secoes" hidden>
+                <h3>Seções: <span id="sec-doc"></span> <button class="sec" id="sec-fechar" type="button">Fechar</button></h3>
+                <p id="sec-resumo" class="discreto"></p>
+                <div class="rolagem">
+                  <table id="tab-secoes">
+                    <thead><tr><th>Tipo</th><th>Título</th><th>Páginas</th><th>Palavras</th><th>Incluída?</th></tr></thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+                <p class="barra">
+                  <select id="sec-modo" aria-label="Quais seções mostrar">
+                    <option value="corpo">Só o corpo (sem referências/apêndice)</option>
+                    <option value="tudo">Tudo</option>
+                  </select>
+                  <button class="sec" id="sec-ver-texto" type="button">Ver texto limpo</button>
+                </p>
+                <pre id="sec-texto" hidden></pre>
+              </div>
+      
+        <h3>Vocabulário <span id="voc-resumo" class="discreto"></span></h3>
+              <p class="barra">
+                <label class="inline">Contar por
+                  <select id="voc-por"><option value="lema">lema (agent = agents)</option><option value="forma">forma (como no texto)</option><option value="termo">termo (inclui compostos)</option></select></label>
+                <label class="inline">Palavras vazias
+                  <select id="voc-vazias"><option value="filtrar">filtrar</option><option value="manter">manter</option></select></label>
+                <label class="inline">Documento
+                  <select id="voc-doc"><option value="">corpus inteiro</option></select></label>
+                <label class="inline">Termos
+                  <select id="voc-limite"><option>50</option><option selected>100</option><option>200</option><option>500</option></select></label>
+              </p>
+              <div class="rolagem">
+                <table id="tab-voc">
+                  <thead><tr><th>#</th><th>Termo</th><th>Freq.</th><th>Por 10 mil</th><th>Docs</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+      
+        <h3>Pendências <span id="det-pend" class="discreto"></span></h3>
+              <div class="rolagem">
+                <table id="tab-pend">
+                  <thead><tr><th>Arquivo</th><th>Status</th><th>Problemas</th><th>Avisos</th><th>Ações</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+      
+      </section>
+
+      <section id="aba-executar" class="aba" hidden>
+        <h2>Executar o pipeline</h2>
+        <p class="discreto">Roda as etapas em ordem (varredura, conversão, qualidade, limpeza, linguística, vocabulário, descritivo, comentários).
+          O que não mudou é pulado pelo cache. Uma execução por vez em cada projeto.</p>
+        <p class="barra">
+          <button id="ex-btn" type="button">Executar</button>
+          <span id="ex-status" role="status" class="discreto"></span>
+        </p>
+        <div id="ex-etapas" class="etapas"></div>
+        <div id="ex-erros-bloco" hidden>
+          <h3>Erros <span id="ex-erros-n" class="discreto"></span></h3>
+          <ul id="ex-erros" class="lista-erros"></ul>
+        </div>
+        <h3>Execuções recentes</h3>
+              <div class="rolagem">
+                <table id="tab-exec">
+                  <thead><tr><th>#</th><th>Etapa</th><th>Início</th><th>Status</th><th>Mensagem</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+      </section>
+
+      <section id="aba-analises" class="aba analises" hidden>
+        <div id="raiox">
+          <div class="barra topo-an">
+            <label class="inline">Contar e buscar por
+              <select id="rx-por"><option value="lema">lema (agent = agents)</option><option value="forma">forma (como no texto)</option><option value="termo">termo (inclui compostos)</option></select></label>
+            <label class="inline">Palavras vazias
+              <select id="rx-vazias"><option value="filtrar">filtrar</option><option value="manter">manter</option></select></label>
+            <label class="inline">Escopo
+              <select id="rx-escopo"><option value="corpus">corpus inteiro</option><option value="documento">documento</option>
+                <option value="grupo">grupo</option><option value="ano">ano</option></select></label>
+            <label class="inline" id="rx-valor-rotulo" hidden>Qual
+              <select id="rx-valor"></select></label>
+            <label class="inline">Termos selecionados
+              <input id="rx-termos" placeholder="ex.: agent, startup*, founder" size="30"></label>
+            <button id="rx-usar" type="button">Usar termos</button>
+            <span id="rx-status" class="discreto"></span>
+          </div>
+          <div id="rx-chips" class="chips"></div>
+          <p class="discreto">Clique num termo em qualquer painel para selecioná-lo em todos; Ctrl/Shift + clique soma (até 6, para comparar nas tendências).
+            Lema/forma vale para todos os painéis e as palavras vazias para Cirrus, Termos, Colocações e Keyness; o escopo vale para Cirrus, Termos,
+            Links, Colocações e Contextos (Tendências compara documentos, anos ou grupos; Keyness compara dois lados).</p>
+
+          <div class="abas-sub" id="rx-subabas" role="tablist" aria-label="Painéis temáticos">
+            <button type="button" role="tab" data-sub="descritivo">Descritivo</button>
+            <button type="button" role="tab" data-sub="comparativo">Comparativo</button>
+            <button type="button" role="tab" data-sub="tematico">Temático</button>
+            <button type="button" role="tab" data-sub="associacoes">Associações</button>
+          </div>
+          <p class="discreto" id="rx-sub-desc"></p>
+          <div class="grade-an" data-sub="descritivo">
+            <div class="painel" id="p-termos" data-sub="descritivo">
+              <div class="p-cab">
+                <div class="abas-p"><button type="button" class="on" data-vista="v-cirrus">Cirrus</button><button type="button" data-vista="v-termos">Termos</button></div>
+                <span class="p-ctl" data-para="v-cirrus">palavras <input type="range" id="cirrus-n" min="30" max="200" value="90" aria-label="Quantidade de palavras no Cirrus"></span>
+                <span class="p-ctl" data-para="v-termos" hidden>
+                  <input id="rx-freq-filtro" placeholder="filtrar: trecho ou agent*" size="16" aria-label="Filtrar termo">
+                  <select id="rx-freq-limite" aria-label="Quantidade de termos"><option>50</option><option selected>100</option><option>200</option><option>500</option></select>
+                  <a class="botao sec peq" id="rx-freq-csv" download="frequencias.csv" href="#">CSV</a></span>
+                <span class="discreto p-info" id="rx-freq-info"></span>
+              </div>
+              <div class="p-corpo">
+                <div class="vista on" id="v-cirrus"><div id="cirrus-wrap"><canvas id="cirrus" aria-label="Nuvem de palavras (Cirrus)"></canvas><div class="dica" id="cirrus-dica" hidden></div></div></div>
+                <div class="vista" id="v-termos"><table id="tab-freq">
+                  <thead><tr><th>#</th><th>Termo</th><th>Freq.</th><th>Por 10 mil</th><th>Docs</th></tr></thead><tbody></tbody></table></div>
+              </div>
+            </div>
+
+            <div class="painel" id="p-tend" data-sub="descritivo">
+              <div class="p-cab"><b>Tendências</b>
+                <span class="p-ctl">
+                  <select id="rx-agrupar" aria-label="Distribuição por"><option value="documento">por documento</option><option value="ano">por ano</option><option value="grupo">por grupo</option></select>
+                  <select id="rx-metrica" aria-label="Métrica"><option value="rel">por 10 mil palavras</option><option value="bruta">contagem bruta</option></select></span>
+                <span class="discreto p-info" id="rx-tend-info"></span></div>
+              <div class="p-corpo flex">
+                <div id="rx-grafico" class="grafico"></div>
+                <div id="rx-legenda" class="chips"></div>
+                <div id="rx-dica" class="dica" hidden></div>
+              </div>
+            </div>
+
+            <div class="painel" id="p-links" data-sub="associacoes">
+              <div class="p-cab">
+                <div class="abas-p"><button type="button" class="on" data-vista="v-links">Links</button><button type="button" data-vista="v-colocacoes">Colocações</button></div>
+                <span class="p-ctl"><input id="rx-col-q" placeholder="nó: agent ou agent*" size="14" aria-label="Nó das colocações">
+                  <button id="rx-col-buscar" type="button" class="peq">Calcular</button>
+                  <a class="botao sec peq" id="rx-col-csv" download="colocacoes.csv" href="#">CSV</a></span>
+                <span class="discreto p-info" id="rx-col-info"></span>
+              </div>
+              <details class="parm"><summary>Parâmetros das colocações</summary>
+                <p class="barra">
+                  <label class="inline">Esquerda <input type="number" id="rx-col-esq" min="0" max="20" value="5" class="curto"></label>
+                  <label class="inline">Direita <input type="number" id="rx-col-dir" min="0" max="20" value="5" class="curto"></label>
+                  <label class="inline">Ordenar por
+                    <select id="rx-col-ordem"><option value="ll">log-likelihood (LL)</option><option value="mi">MI</option>
+                      <option value="logdice">logDice</option><option value="freq">frequência</option></select></label>
+                  <label class="inline" title="Mínimo de coocorrências (O11)">Freq. mín. <input type="number" id="rx-col-min" min="1" max="1000" value="3" class="curto"></label>
+                  <label class="inline" title="Mínimo de ocorrências do colocado no escopo (C1)">Freq. mín. colocado <input type="number" id="rx-col-minc" min="1" max="100000" value="5" class="curto"></label>
+                </p></details>
+              <div class="p-corpo">
+                <div class="vista on" id="v-links"><div id="rx-col-rede" class="grafico rede" aria-label="Rede do nó com os 12 colocados mais fortes"></div></div>
+                <div class="vista" id="v-colocacoes">
+                  <table id="tab-col">
+                    <thead><tr><th>#</th><th>Colocado</th><th title="O11: coocorrências (cada token conta uma vez)">Freq.</th>
+                      <th title="Log-likelihood (G², Dunning 1993); p pelo qui-quadrado com 1 g.l.">LL</th>
+                      <th title="log2(O11/E11) (Church &amp; Hanks 1990)">MI</th><th title="Rychlý (2008)">logDice</th>
+                      <th title="C1: frequência do colocado no escopo">C1</th>
+                      <th title="Coocorrências por posição relativa (esquerda | direita do nó)">Posições</th></tr></thead>
+                    <tbody></tbody>
+                  </table>
+                  <p class="discreto">Palavras vazias ocupam posição na janela, mas não são candidatas; a janela não atravessa página/seção.
+                    Equivale ao Collocates do AntConc/LancsBox (LL, MI).</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="painel" id="p-resumo" data-sub="descritivo">
+              <div class="p-cab">
+                <div class="abas-p"><button type="button" class="on" data-vista="v-resumo">Resumo</button><button type="button" data-vista="v-docs">Documentos</button></div>
+                <span class="discreto p-info" id="rx-resumo-info"></span></div>
+              <div class="p-corpo">
+                <div class="vista on" id="v-resumo"><div id="rx-resumo" class="cartao"></div></div>
+                <div class="vista" id="v-docs"><table id="tab-resumo-docs">
+                  <thead><tr><th>Documento</th><th>Págs.</th><th>Tokens</th><th>Tipos (lema)</th><th>MATTR</th><th>% corpo</th>
+                    <th title="TF-IDF por lema, sem palavras vazias: equivale aos termos distintivos do Voyant (não é keyness)">Termos distintivos (TF-IDF)</th></tr></thead>
+                  <tbody></tbody></table></div>
+              </div>
+            </div>
+
+            <div class="painel" id="p-kwic" data-sub="descritivo">
+              <div class="p-cab"><b>Contextos (KWIC)</b>
+                <span class="p-ctl">
+                  <input id="rx-q" placeholder="agent  ou  agent*, startup" size="20" aria-label="Consulta">
+                  <button id="rx-kwic-buscar" type="button" class="peq">Buscar</button>
+                  <a class="botao sec peq" id="rx-kwic-csv" download="kwic.csv" href="#">CSV</a></span>
+                <span class="discreto p-info" id="rx-kwic-info"></span></div>
+              <details class="parm"><summary>Parâmetros da concordância</summary>
+                <p class="barra">
+                  <label class="inline">Palavras de cada lado: <b id="rx-janela-valor">10</b>
+                    <input type="range" id="rx-janela" min="2" max="40" value="10"></label>
+                  <label class="inline">Ordenar por
+                    <select id="rx-ordem"><option value="corpus">ordem do corpus</option><option value="esquerda">palavra à esquerda</option>
+                      <option value="direita">palavra à direita</option></select></label>
+                  <label class="inline check"><input type="checkbox" id="rx-excluidas"> incluir seções excluídas</label>
+                </p></details>
+              <div class="p-corpo">
+                <table id="tab-kwic">
+                  <thead><tr><th class="c-doc">Documento</th><th class="c-pag">Pág.</th><th class="c-esq">Esquerda</th><th class="c-termo">Termo</th><th class="c-dir">Direita</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+                <p class="barra"><button class="sec" id="rx-kwic-mais" type="button" hidden>Carregar mais</button>
+                  <span class="discreto">Clique numa linha para ampliar o contexto (±60 palavras) e copiar o trecho com a citação (documento, página).</span></p>
+              </div>
+            </div>
+
+            <div class="painel larga" id="p-key" data-sub="comparativo">
+              <div class="p-cab"><b>Keyness (comparação entre grupos)</b> <span class="discreto p-info" id="rx-key-info"></span></div>
+              <div class="p-corpo livre">
+                <p id="rx-key-vazio" class="vazio" hidden>Defina grupos na tabela de documentos ou envie documentos.csv para comparar grupos (a partição por ano continua disponível).</p>
+                        <p class="barra">
+                          <label class="inline">Partição
+                            <select id="rx-key-part"><option value="grupo">grupo</option><option value="ano">ano</option></select></label>
+                          <label class="inline">A <select id="rx-key-a"></select></label>
+                          <label class="inline">B <select id="rx-key-b"></select></label>
+                          <label class="inline">Ordenar por
+                            <select id="rx-key-ordem"><option value="ll">log-likelihood (G²)</option><option value="logratio">Log Ratio</option></select></label>
+                          <label class="inline" title="Frequência total mínima (A + B)">Freq. mín.
+                            <input type="number" id="rx-key-min" min="1" max="100000" value="5" class="curto"></label>
+                          <label class="inline" title="Dispersão: documentos do lado em que a palavra-chave ocorre">Docs mín.
+                            <input type="number" id="rx-key-docs" min="1" max="1000" value="2" class="curto"></label>
+                          <label class="inline check" title="Limiar de significância p / nº de termos testados"><input type="checkbox" id="rx-key-bonf"> Bonferroni</label>
+                          <button id="rx-key-buscar" type="button">Comparar</button>
+                          <a class="botao sec" id="rx-key-csv" download="keyness.csv" href="#">CSV</a>
+                        </p>
+                        <div class="key-grade">
+                          <div>
+                            <h5 class="key-tit a" id="rx-key-tit-a">A sobre-representado</h5>
+                            <div class="rolagem alta"><table class="tab-key" id="tab-key-a"></table></div>
+                          </div>
+                          <div>
+                            <h5 class="key-tit b" id="rx-key-tit-b">B sobre-representado</h5>
+                            <div class="rolagem alta"><table class="tab-key" id="tab-key-b"></table></div>
+                          </div>
+                        </div>
+                        <p class="discreto">Clique numa palavra-chave para selecioná-la (KWIC, tendências, colocações). Lema ou forma e palavras
+                          vazias seguem os seletores acima. G² de 2 células (Rayson &amp; Garside 2000), com p pelo qui-quadrado (1 g.l.);
+                          Log Ratio (Hardie 2014; 0,5 no lugar de zero); barra: Log Ratio, B à esquerda e A à direita.
+                          Equivale à Keyword List do AntConc, ao Wmatrix e ao textstat_keyness (G²); não é o "termos distintivos" (TF-IDF) do Voyant.</p>
+              </div>
+            </div>
+
+            <div class="painel larga" id="p-ngramas" data-sub="descritivo">
+              <div class="p-cab"><b>N-gramas</b> <span class="discreto p-info" id="rx-ng-info"></span>
+                <span class="p-ctl"><a class="botao sec peq" id="rx-ng-csv" download="ngramas.csv" href="#">CSV</a></span></div>
+              <div class="p-corpo livre">
+                <p class="barra">
+                  <label class="inline">Tamanho mín.
+                    <select id="rx-ng-nmin"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+                  <label class="inline">Tamanho máx.
+                    <select id="rx-ng-nmax"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></label>
+                  <label class="inline">Contar por
+                    <select id="rx-ng-por"><option value="forma">forma (como no texto)</option><option value="lema">lema</option></select></label>
+                  <label class="inline">Palavras vazias
+                    <select id="rx-ng-stop"><option value="sem_bordas">fora das bordas</option><option value="sem_vazias">em nenhuma posição</option><option value="todas">manter todas</option></select></label>
+                  <label class="inline check"><input type="checkbox" id="rx-ng-quebrar" checked> pontuação quebra</label>
+                </p>
+                <p class="barra">
+                  <label class="inline">Freq. mín. <input type="number" id="rx-ng-minf" value="3" min="1" style="width:4.5em"></label>
+                  <label class="inline">Docs mín. <input type="number" id="rx-ng-mind" value="2" min="1" style="width:4.5em"></label>
+                  <label class="inline">Contém <input id="rx-ng-contem" placeholder="ex.: agent*" size="14" aria-label="Termo contido"></label>
+                  <label class="inline">em
+                    <select id="rx-ng-pos"><option value="qualquer">qualquer posição</option><option value="inicio">início</option><option value="fim">fim</option></select></label>
+                  <label class="inline">Ordenar por
+                    <select id="rx-ng-ordem"><option value="freq">frequência</option><option value="docs">documentos</option><option value="n">tamanho</option></select></label>
+                  <button id="rx-ng-buscar" type="button">Listar</button>
+                </p>
+                <div class="rolagem alta"><table id="tab-ng">
+                  <thead><tr><th>#</th><th>N-grama</th><th>N</th><th>Freq.</th><th>Por 10 mil</th><th title="Documentos em que aparece (faixa)">Docs</th>
+                    <th title="Parcela das ocorrências que está no documento onde o n-grama é mais frequente (100% = todas num só documento)">Concentração</th></tr></thead>
+                  <tbody></tbody></table></div>
+                <p class="barra"><button class="sec" id="rx-ng-mais" type="button" hidden>Carregar mais</button></p>
+                <p class="discreto">Lista exaustiva de sequências contíguas de palavras (equivale ao Clusters/N-Grams do AntConc e ao Phrases do Voyant), sem teste de associação;
+                  não é a lista de <b>termos compostos</b> (curada, pontuada por log-likelihood e usada como unidade de contagem). Não atravessa página, seção nem parágrafo;
+                  com "pontuação quebra", vírgula, ponto e parênteses também cortam. "Contém" funciona como o modo Clusters (curinga *, vírgula = alternativas).
+                  O escopo é o escolhido acima. <b>Clique numa linha</b> para ver o n-grama nos contextos (KWIC).</p>
+              </div>
+            </div>
+
+            <div class="painel larga" id="p-termos-compostos" data-sub="associacoes">
+              <div class="p-cab"><b>Termos compostos</b> <span class="discreto p-info" id="rx-tc-info"></span></div>
+              <div class="p-corpo livre">
+                <p class="barra">
+                  <label class="inline">Mostrar
+                    <select id="rx-tc-origem"><option value="todos">todos</option><option value="automatico">automáticos</option><option value="lista">da lista</option></select></label>
+                  <label class="inline">Novo termo <input id="rx-tc-novo" placeholder="ex.: agentic ai (lemas separados por espaço)" size="34"></label>
+                  <button id="rx-tc-add" type="button">Adicionar à lista</button>
+                  <span id="rx-tc-aviso" class="discreto"></span>
+                </p>
+                <div class="rolagem alta"><table id="tab-tc"></table></div>
+                <p class="discreto">Aceitar move um termo automático para a lista (ele sobrevive a mudanças de limiar); Bloquear o tira das análises.
+                  As mudanças ficam em parâmetros (termos_compostos) e valem depois de executar o pipeline (só a etapa de termos é refeita).
+                  Selecione "termo" em "Contar e buscar por" para usar os compostos nos painéis.</p>
+              </div>
+            </div>
+
+            <div class="painel larga" id="p-simil" data-sub="comparativo">
+              <div class="p-cab"><b>Similaridade entre documentos</b> <span class="discreto p-info" id="sm-info"></span>
+                <span class="p-ctl"><a class="botao sec peq" id="sm-csv" download="similaridade.csv" href="#">Matriz CSV</a>
+                  <a class="botao sec peq" id="sm-csv2" download="agrupamentos.csv" href="#">Grupos CSV</a></span></div>
+              <div class="p-corpo livre">
+                <p class="barra">
+                  <label class="inline">Unidade
+                    <select id="sm-por"><option value="lema">lema</option><option value="forma">forma</option><option value="termo">termo (inclui compostos)</option></select></label>
+                  <label class="inline">Agrupamento
+                    <select id="sm-metodo"><option value="ward" selected>Ward (vetores L2)</option><option value="average">ligação média (1 − cosseno)</option></select></label>
+                  <label class="inline">Grupos (k)
+                    <select id="sm-k"><option value="">automático (silhueta)</option><option>2</option><option>3</option><option>4</option><option>5</option>
+                      <option>6</option><option>7</option><option>8</option></select></label>
+                  <label class="inline" title="Termo em no máximo esta fração dos documentos">df máx.
+                    <input type="number" id="sm-maxdf" min="0.1" max="1" step="0.05" value="0.9" class="curto"></label>
+                  <button id="sm-calcular" type="button">Calcular</button>
+                </p>
+                <p id="sm-aviso" class="vazio" hidden></p>
+                <div class="sm-grade">
+                  <div>
+                    <h5 class="sm-tit">Dendrograma <span class="discreto" id="sm-dend-info"></span></h5>
+                    <div class="sm-rolagem" id="sm-dend" role="img" aria-label="Dendrograma de documentos"></div>
+                  </div>
+                  <div>
+                    <h5 class="sm-tit">Mapa dos documentos <span class="discreto" id="sm-mapa-info"></span></h5>
+                    <div id="sm-mapa" class="sm-mapa" role="img" aria-label="Mapa 2D dos documentos"></div>
+                    <div id="sm-legenda" class="chips"></div>
+                  </div>
+                </div>
+                <div class="sm-grade">
+                  <div>
+                    <h5 class="sm-tit">Documentos mais parecidos com
+                      <select id="sm-doc" aria-label="Documento de referência"></select></h5>
+                    <div class="rolagem"><table id="tab-sm-viz"></table></div>
+                  </div>
+                  <div>
+                    <h5 class="sm-tit">Termos característicos de cada grupo</h5>
+                    <div id="sm-termos" class="sm-termos"></div>
+                  </div>
+                </div>
+                <div id="sm-dica" class="dica" hidden></div>
+                <div class="sm-sem" id="sm-sem">
+                  <h5 class="sm-tit">Similaridade semântica <span class="selo">requer Ollama</span></h5>
+                  <p class="discreto">Alternativa ao TF-IDF: compara o <i>sentido</i> dos textos por embeddings (cosseno). Só funciona com o Ollama rodando na sua máquina, com um modelo de embeddings
+                    instalado (ex.: nomic-embed-text); nenhum texto sai do computador. É opcional e não altera os painéis acima.</p>
+                  <p class="barra"><button id="se-verificar" type="button" class="sec">Verificar Ollama</button>
+                    <label class="inline">Modelo de embeddings <select id="se-modelo"></select></label>
+                    <button id="se-calcular" type="button" disabled>Calcular embeddings</button>
+                    <button id="se-cancelar" type="button" class="sec" hidden>Cancelar</button>
+                    <span id="se-msg" class="discreto" role="status"></span></p>
+                  <div id="se-como" class="vazio" hidden></div>
+                  <div id="se-prog" class="cd-prog" hidden><div class="barra-prog" role="progressbar" aria-label="Progresso dos embeddings"><i id="se-prog-barra" style="width:0%"></i></div><span id="se-prog-txt" class="discreto"></span></div>
+                  <div class="sm-grade">
+                    <div>
+                      <h5 class="sm-tit">Documentos mais parecidos (semântica) com
+                        <select id="se-doc" aria-label="Documento de referência"></select></h5>
+                      <div class="rolagem"><table id="tab-se-viz"></table></div>
+                    </div>
+                    <div>
+                      <h5 class="sm-tit">Pares mais parecidos do corpus</h5>
+                      <div class="rolagem"><table id="tab-se-pares"></table></div>
+                    </div>
+                  </div>
+                </div>
+                <p class="discreto">TF-IDF por documento (tf = 1 + ln f; idf = ln((1 + N)/(1 + df)) + 1; norma L2) sobre a unidade escolhida, sem palavras vazias, com df ≥ 2
+                  e ≤ df máx. × N; cosseno entre documentos; dendrograma por ligação média sobre 1 − cosseno (ou Ward); mapa 2D por escalonamento
+                  multidimensional clássico; k automático = maior silhueta de 2 a 8. Cor = grupo de similaridade (cluster); forma do marcador = grupo do documento (metadado).
+                  O escopo é o escolhido no alto (corpus, grupo ou ano; "documento" vale como corpus). Clique num rótulo, ponto ou termo para selecioná-lo.
+                  Equivale à similaridade/dendrograma do Lexos e ao mapa de documentos do Orange; não é o "termos distintivos" do Voyant.</p>
+              </div>
+            </div>
+
+            <div class="painel larga" id="p-dic" data-sub="comparativo">
+              <div class="p-cab"><b>Dicionário (codebook)</b> <span class="discreto p-info" id="dc-info"></span>
+                <span class="p-ctl"><a class="botao sec peq" id="dc-csv" download="dicionario.csv" href="#">CSV</a></span></div>
+              <div class="p-corpo livre">
+                <p class="barra">
+                  <label class="inline">Importar codebook (.xlsx)
+                    <input type="file" id="dc-arq" accept=".xlsx"></label>
+                  <button id="dc-importar" type="button" class="sec">Importar</button>
+                  <button id="dc-nova" type="button" class="sec">Nova categoria</button>
+                  <button id="dc-salvar" type="button">Salvar dicionário</button>
+                  <span id="dc-msg" class="discreto" role="status"></span>
+                </p>
+                <div id="dc-relatorio" class="vazio" hidden></div>
+                <details id="dc-editor" open>
+                  <summary>Categorias e termos <span class="discreto" id="dc-resumo-ed"></span></summary>
+                  <div class="rolagem alta"><table id="tab-dc-ed"></table></div>
+                  <p class="discreto">Termos separados por vírgula, em minúsculas: <code>agent*</code> (curinga), <code>human oversight</code> (frase de palavras contíguas).
+                    Casam o lema (ou a forma, conforme "Contar por"). Nenhum termo é inventado: categorias importadas sem palavras-chave ficam
+                    "sem termos — preencha" e fora das contagens.</p>
+                </details>
+                <p class="barra">
+                  <label class="inline">Agrupar por
+                    <select id="dc-agrupar"><option value="grupo">grupo</option><option value="ano">ano</option><option value="documento">documento</option></select></label>
+                  <label class="inline">Contar por
+                    <select id="dc-por"><option value="lema">lema</option><option value="forma">forma</option></select></label>
+                  <button id="dc-atualizar" type="button" class="sec">Atualizar resultados</button>
+                </p>
+                <p id="dc-vazio" class="vazio" hidden></p>
+                <h5 class="sm-tit">Resultados por categoria</h5>
+                <div class="rolagem alta"><table id="tab-dc-res"></table></div>
+                <h5 class="sm-tit">Mapa de calor: categoria × <span id="dc-unid-nome">grupo</span> (por 10 mil palavras)</h5>
+                <div class="rolagem alta"><table id="tab-dc-heat" class="heat"></table></div>
+                <p class="discreto">Ocorrências de padrões do dicionário (uma por posição inicial; a frase prevalece sobre a palavra que começa no mesmo token).
+                  G² de 2 células e Log Ratio comparam cada grupo (ou ano) contra os demais, tratando a categoria como um termo (mesmas fórmulas da keyness).
+                  <b>Clique numa categoria</b> para ver os padrões nos contextos (KWIC). Equivale aos dicionários do quanteda e às regras de codificação
+                  do KH Coder; não é a codificação manual do ATLAS.ti/NVivo.</p>
+              </div>
+            </div>
+
+            <div class="painel larga" id="p-esp" data-sub="comparativo">
+              <div class="p-cab"><b>Especificidades por parte</b> <span class="discreto p-info" id="es-info"></span>
+                <span class="p-ctl"><a class="botao sec peq" id="es-csv" download="especificidades.csv" href="#">CSV</a></span></div>
+              <div class="p-corpo livre">
+                <p class="barra">
+                  <label class="inline">Partição
+                    <select id="es-part"><option value="ano">ano</option><option value="grupo">grupo</option><option value="documento">documento</option><option value="classe">classe (Reinert)</option></select></label>
+                  <label class="inline" title="Frequência mínima do termo no corpus (F)">Freq. mín.
+                    <input type="number" id="es-min" min="1" max="100000" value="5" class="curto"></label>
+                  <label class="inline" title="|score| abaixo disto = banal (2 = P &gt; 0,01)">Limiar
+                    <input type="number" id="es-limiar" min="0.5" max="50" step="0.5" value="2" class="curto"></label>
+                  <label class="inline">Termos por parte
+                    <input type="number" id="es-limite" min="1" max="100" value="10" class="curto"></label>
+                  <button id="es-calcular" type="button">Calcular</button>
+                </p>
+                <p id="es-aviso" class="vazio" hidden></p>
+                <div class="es-colunas" id="es-colunas"></div>
+                <h5 class="sm-tit">Especificidade de <span id="es-termo-nome" class="discreto">(clique num termo)</span> em cada parte</h5>
+                <div id="es-barras" class="es-barras" role="img" aria-label="Score de especificidade do termo por parte"></div>
+                <p class="discreto">Modelo hipergeométrico de Lafon (1980): score = −log10 P(X ≥ f) quando a frequência f na parte é maior ou igual à
+                  esperada (F·t/T; termo sobre-representado, positivo) e +log10 P(X ≤ f) quando é menor (sub-representado, negativo).
+                  |score| &lt; limiar (2 = P &gt; 0,01) é banal (linhas tracejadas em ±limiar); scores acima de 50 aparecem como "&gt; 50".
+                  t e T contam todas as palavras do corpo; palavras vazias e lema/forma/termo seguem os seletores do alto. Clique num termo para selecioná-lo.
+                  Equivale às Especificidades do TXM, do Lexico e do IRaMuTeQ; não é a keyness (G² contra o resto) da Comparação entre grupos.</p>
+              </div>
+            </div>
+
+            <div class="painel larga" id="p-afc" data-sub="tematico">
+              <div class="p-cab"><b>AFC (análise fatorial de correspondência)</b> <span class="discreto p-info" id="af-info"></span>
+                <span class="p-ctl"><a class="botao sec peq" id="af-csv" download="afc.csv" href="#">CSV</a></span></div>
+              <div class="p-corpo livre">
+                <p class="barra">
+                  <label class="inline">Partição
+                    <select id="af-part"><option value="ano">ano</option><option value="grupo">grupo</option><option value="documento">documento</option><option value="classe">classe (Reinert)</option></select></label>
+                  <label class="inline">Termos
+                    <input type="number" id="af-n" min="2" max="500" value="100" class="curto"></label>
+                  <label class="inline">Escolher termos por
+                    <select id="af-selecao"><option value="freq">frequência</option><option value="especificidade">especificidade</option></select></label>
+                  <label class="inline">Eixos
+                    <select id="af-eixos"><option value="1,2">1 × 2</option><option value="1,3">1 × 3</option><option value="2,3">2 × 3</option><option value="3,4">3 × 4</option></select></label>
+                  <label class="inline check" title="Mostra só os termos com contribuição acima da média (100/nº de termos) em algum dos dois eixos"><input type="checkbox" id="af-ctr" checked> só ctr acima da média</label>
+                  <button id="af-calcular" type="button">Calcular</button>
+                </p>
+                <p id="af-aviso" class="vazio" hidden></p>
+                <div class="sm-grade af-grade">
+                  <div><div id="af-mapa" class="sm-mapa" role="img" aria-label="Plano fatorial da AFC"></div></div>
+                  <div>
+                    <h5 class="sm-tit">Autovalores (inércia)</h5>
+                    <div class="rolagem"><table id="tab-af-eixos"></table></div>
+                    <h5 class="sm-tit">Maiores contribuições <span class="discreto" id="af-ctr-tit"></span></h5>
+                    <div class="rolagem"><table id="tab-af-ctr"></table></div>
+                  </div>
+                </div>
+                <div id="af-dica" class="dica" hidden></div>
+                <p class="discreto">Análise de correspondência da tabela termo × parte (Benzécri 1973; Greenacre 2017): coordenadas principais de termos (texto,
+                  tamanho pela contribuição) e partes (marcadores em negrito), autovalores e % da inércia (χ²/n). ctr = contribuição ao eixo (%; média = 100/nº de termos);
+                  cos² = qualidade da representação no eixo. Sinal de cada eixo: a parte de maior |coordenada| fica do lado positivo (outros programas podem mostrar o mapa espelhado).
+                  Com 2 partes há um só eixo. Passe o mouse para ver ctr e cos²; clique num termo para selecioná-lo.
+                  Equivale à AFC do IRaMuTeQ e do TXM e ao Correspondence Analysis do KH Coder; não é uma PCA.</p>
+              </div>
+            </div>
+
+            <div class="painel larga" id="p-reinert" data-sub="tematico">
+              <div class="p-cab"><b>Classes (Reinert)</b> <span class="discreto p-info" id="rn-info"></span>
+                <span class="p-ctl"><a class="botao sec peq" id="rn-csv" download="reinert_classes.csv" href="#">CSV classes</a>
+                  <a class="botao sec peq" id="rn-csv-seg" download="reinert_segmentos.csv" href="#">CSV segmentos</a></span></div>
+              <div class="p-corpo livre">
+                <p class="barra">
+                  <label class="inline" title="Classes terminais da fase 1 (como no IRaMuTeQ)">Classes
+                    <input type="number" id="rn-classes" min="2" max="30" value="10" class="curto"></label>
+                  <label class="inline" title="Frequência mínima das formas ativas (ocorrências no corpus)">Freq. mín.
+                    <input type="number" id="rn-min" min="1" max="1000" value="3" class="curto"></label>
+                  <label class="inline" title="Tamanho mínimo de classe em segmentos (0 = automático: máx(5; 2,5% dos segmentos))">Classe mín.
+                    <input type="number" id="rn-minc" min="0" max="100000" value="0" class="curto"></label>
+                  <label class="inline check" title="Classificação dupla: CHD em unidades de contexto de dois tamanhos e só as classes estáveis do cruzamento"><input type="checkbox" id="rn-dupla"> dupla (UC de 40 e 60 palavras)</label>
+                  <button id="rn-calcular" type="button">Calcular</button>
+                </p>
+                <p id="rn-aviso" class="vazio" hidden></p>
+                <div class="rn-dendro" id="rn-dendro" role="img" aria-label="Dendrograma da classificação hierárquica descendente"></div>
+                <div class="rn-colunas" id="rn-colunas"></div>
+                <div class="sm-grade af-grade">
+                  <div><h5 class="sm-tit">AFC das classes (formas características × classes) <span class="discreto" id="rn-afc-info"></span></h5>
+                    <div id="rn-afc" class="sm-mapa" role="img" aria-label="Plano fatorial das classes"></div></div>
+                  <div><h5 class="sm-tit">Segmentos típicos</h5>
+                    <div id="rn-segmentos" class="rn-segmentos"></div></div>
+                </div>
+                <p class="discreto">Classificação hierárquica descendente de Reinert (1983, 1990) sobre os segmentos de texto (~40 palavras) × formas plenas
+                  (lemas fora das palavras vazias, frequência ≥ mínima): divide-se sempre a maior classe pelo corte no eixo 1 da AFC que maximiza o χ²,
+                  seguido de realocação dos segmentos enquanto o χ² aumenta; classes menores que o mínimo são descartadas (segmentos não classificados).
+                  <b>Retenção</b> = % dos segmentos classificados (o IRaMuTeQ recomenda ≥ 75%). As palavras de cada classe aparecem por χ² de associação (tamanho da fonte),
+                  com as variáveis (documento, grupo, ano) mais associadas. Clique numa palavra para selecioná-la em todos os painéis.
+                  Equivale à CHD do IRaMuTeQ e do ALCESTE; não é o agrupamento hierárquico de palavras do KH Coder nem tópicos (LDA).</p>
+              </div>
+            </div>
+
+            <div class="painel larga" id="p-similitude" data-sub="tematico">
+              <div class="p-cab"><b>Similitude / Rede</b> <span class="discreto p-info" id="sl-info"></span>
+                <span class="p-ctl"><a class="botao sec peq" id="sl-csv-nos" download="similitude_nos.csv" href="#">CSV nós</a>
+                  <a class="botao sec peq" id="sl-csv-arestas" download="similitude_arestas.csv" href="#">CSV arestas</a></span></div>
+              <div class="p-corpo livre">
+                <p class="barra">
+                  <label class="inline">Desenho
+                    <select id="sl-arvore"><option value="true">árvore máxima (IRaMuTeQ)</option><option value="false">rede top-3 por palavra (KH Coder)</option></select></label>
+                  <label class="inline">Índice
+                    <select id="sl-indice"><option value="coocorrencia">coocorrência</option><option value="jaccard">Jaccard</option><option value="cosseno">cosseno</option><option value="pmi">PMI</option></select></label>
+                  <label class="inline">Formas
+                    <input type="number" id="sl-n" min="3" max="300" value="60" class="curto"></label>
+                  <label class="inline check"><input type="checkbox" id="sl-com" checked> comunidades (Louvain)</label>
+                  <button id="sl-calcular" type="button">Calcular</button>
+                </p>
+                <p id="sl-aviso" class="vazio" hidden></p>
+                <div class="sm-grade af-grade">
+                  <div><div id="sl-grafo" class="sl-grafo" role="img" aria-label="Grafo de similitude"></div></div>
+                  <div>
+                    <h5 class="sm-tit">Comunidades <span class="discreto" id="sl-mod"></span></h5>
+                    <div id="sl-comms" class="sm-termos"></div>
+                    <h5 class="sm-tit">Centralidade (ordenada por PageRank)</h5>
+                    <div class="rolagem"><table id="tab-sl-nos"></table></div>
+                  </div>
+                </div>
+                <div id="sl-dica" class="dica" hidden></div>
+                <p class="discreto">Coocorrência das formas plenas mais frequentes nos mesmos segmentos de texto. <b>Árvore máxima</b> (padrão do IRaMuTeQ, índice de coocorrência):
+                  mantém só as ligações mais fortes que conectam todas as palavras, sem ciclos. <b>Rede</b> (KH Coder, use Jaccard): cada palavra mantém suas 3 ligações mais fortes.
+                  Espessura da aresta = índice; tamanho da palavra = frequência; cores e halos = comunidades (Louvain, semente fixa, com modularidade Q).
+                  Intermediação (distância = 1/peso) e PageRank indicam as palavras que articulam a rede. Layout Fruchterman-Reingold calculado no servidor (semente fixa):
+                  a posição não tem significado estatístico. Equivale à análise de similitude do IRaMuTeQ e à co-occurrence network do KH Coder; não é o Links do Voyant.</p>
+              </div>
+            </div>
+
+            <div class="painel larga" id="p-topicos" data-sub="tematico">
+              <div class="p-cab"><b>Tópicos (LDA / NMF / LSA)</b> <span class="discreto p-info" id="tp-info"></span>
+                <span class="p-ctl"><a class="botao sec peq" id="tp-csv-pal" download="topicos_palavras.csv" href="#">CSV palavras</a>
+                  <a class="botao sec peq" id="tp-csv-doc" download="topicos_documentos.csv" href="#">CSV documentos</a></span></div>
+              <div class="p-corpo livre">
+                <p class="barra">
+                  <label class="inline">Modelo
+                    <select id="tp-modelo"><option value="lda">LDA (Gibbs, semente fixa)</option><option value="nmf">NMF (TF-IDF)</option><option value="lsa">LSA (SVD da TF-IDF)</option></select></label>
+                  <label class="inline">Tópicos (K) <input type="number" id="tp-k" min="2" max="40" value="8" class="curto"></label>
+                  <label class="inline">Unidade
+                    <select id="tp-unidade"><option value="documento">documento</option><option value="segmento">segmento (~40 palavras)</option></select></label>
+                  <label class="inline">Iterações <input type="number" id="tp-it" min="10" max="20000" value="1000" class="curto"></label>
+                  <label class="inline check"><input type="checkbox" id="tp-perp"> perplexidade (só LDA; ajusta outro modelo)</label>
+                  <button id="tp-calcular" type="button">Calcular</button>
+                </p>
+                <p id="tp-aviso" class="vazio" hidden></p>
+                <div id="tp-coer" class="chips"></div>
+                <div id="tp-cartoes" class="tp-cartoes"></div>
+                <h5 class="sm-tit">Tópicos × <select id="tp-part" aria-label="Partição"><option value="por_ano">ano</option><option value="por_grupo">grupo</option></select></h5>
+                <div id="tp-mapa" class="rolagem"></div>
+                <h5 class="sm-tit">Trechos representativos (com página)</h5>
+                <div id="tp-trechos" class="rn-segmentos"></div>
+                <h5 class="sm-tit">Varredura de K</h5>
+                <p class="barra">
+                  <label class="inline">Modelo <select id="tp-v-modelo"><option value="nmf">NMF (rápido)</option><option value="lda">LDA (+ perplexidade, lento)</option><option value="lsa">LSA</option></select></label>
+                  <label class="inline">K de <input type="number" id="tp-v-min" min="2" max="40" value="3" class="curto"></label>
+                  <label class="inline">até <input type="number" id="tp-v-max" min="2" max="40" value="12" class="curto"></label>
+                  <label class="inline">Iterações <input type="number" id="tp-v-it" min="10" max="5000" value="200" class="curto"></label>
+                  <button id="tp-varrer" type="button" class="sec">Varrer K</button>
+                  <a class="botao sec peq" id="tp-csv-var" download="topicos_varredura.csv" href="#">CSV</a>
+                </p>
+                <div id="tp-varredura"></div>
+                <p class="discreto">Temas latentes como listas de palavras (lemas plenos, sem palavras vazias nem segmentos de ruído; termos em ao menos 2 unidades e em no máximo 90% delas).
+                  <b>LDA</b>: amostragem de Gibbs colapsada (Griffiths &amp; Steyvers 2004), alfa = 50/K, beta = 0,01, semente fixa: o mesmo resultado a cada execução.
+                  <b>NMF</b> e <b>LSA</b> trabalham sobre a TF-IDF; a LSA dá eixos bipolares (coordenadas, não proporções).
+                  Coerência das 10 palavras de cada tópico: <b>C_v</b> e <b>NPMI</b> por janela deslizante de 110 palavras no próprio corpus (Röder et al. 2015) e <b>UMass</b> por coocorrência nas unidades (Mimno et al. 2011).
+                  Perplexidade: documentos retidos (20%). Tópicos × ano/grupo são médias descritivas das proporções por documento, não STM/DTM.
+                  Clique numa palavra para selecioná-la em todos os painéis. Equivale ao Voyant Topics (LDA); não é a CHD de Reinert.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="aba-comentarios" class="aba" hidden>
+        <h3>Comentários para revisão <span id="cm-info" class="discreto"></span></h3>
+              <p class="discreto">Gerados por regras (catálogo editável em <code>app/services/regras/catalogo.yaml</code>) ou, se você ligou o LLM em Configurações, redigidos por um LLM (selo "LLM"): são só sugestões.
+                Cada um traz os trechos que o sustentam; só os aceitos ou editados irão para o laudo. Se a evidência de um comentário aceito mudar
+                (corpus ou grupos alterados), ele volta para <b>revisar</b>.</p>
+              <div id="cm-contagem" class="chips"></div>
+              <p class="barra">
+                <label class="inline">Status
+                  <select id="cm-status"><option value="">todos</option><option>sugerido</option><option>revisar</option><option>aceito</option>
+                    <option>editado</option><option>rejeitado</option><option>obsoleto</option></select></label>
+                <label class="inline">Análise
+                  <select id="cm-analise"><option value="">todas</option><option>resumo</option><option>frequencias</option><option>tendencias</option>
+                    <option>keyness</option><option>colocacoes</option><option>kwic</option><option>ngramas</option>
+                    <option>especificidades</option><option>afc</option><option>similaridade</option><option>dicionario</option></select></label>
+                <label class="inline">Origem
+                  <select id="cm-origem"><option value="">todas</option><option value="regra">regra</option><option value="llm">LLM</option></select></label>
+                <label class="inline">Revisor (fica gravado em cada ação)
+                  <input id="cm-revisor" placeholder="seu nome" size="18" maxlength="200"></label>
+                <label class="inline check"><input type="checkbox" id="cm-todos"> selecionar todos</label>
+                <button class="sec" id="cm-lote-aceitar" type="button">Aceitar selecionados</button>
+                <button class="sec" id="cm-lote-rejeitar" type="button">Rejeitar selecionados</button>
+                <button class="sec" id="cm-checar" type="button" title="Confere se cada trecho existe no texto atual (na página citada) e se os números batem com as métricas atuais">Checar evidências</button>
+                <span id="cm-msg" class="discreto" role="status"></span>
+              </p>
+              <div id="cm-lista" class="cm-lista"></div>
+      
+      </section>
+
+      <section id="aba-corpus" class="aba" hidden>
+        <h3>Corpus: metadados e planilha do corpus <span class="discreto">(Frente 16)</span></h3>
+        <p class="barra">
+          <a class="botao" id="cp-xlsx" download="planilha-corpus.xlsx" href="#">Planilha do corpus (.xlsx)</a>
+          <a class="botao sec" id="cp-bib" download="bibliometrix.bib" href="#">.bib para o bibliometrix</a>
+          <span id="cp-msg" class="discreto" role="status"></span>
+        </p>
+        <h4>1. Metadados dos documentos</h4>
+        <p class="barra">
+          <button id="cp-extrair" type="button">Extrair do texto</button>
+          <label class="inline"><input type="checkbox" id="cp-online"> consulta online por DOI (Crossref/OpenAlex)</label>
+          <select id="cp-fonte"><option value="crossref">Crossref</option><option value="openalex">OpenAlex</option><option value="ambos">ambos</option></select>
+          <label class="inline">e-mail de contato <input id="cp-email" size="22" placeholder="obrigatório para o online"></label>
+          <button id="cp-salvar-email" type="button" class="sec peq">salvar e-mail</button>
+        </p>
+        <p class="discreto" id="cp-privacidade"></p>
+        <p class="barra">
+          <label class="inline">Índice de downloads (.csv, só leitura) <input type="file" id="cp-indice" accept=".csv"></label>
+          <button id="cp-aplicar-grupos" type="button" class="sec peq">aplicar todas as sugestões de grupo</button>
+          <span id="cp-msg-meta" class="discreto" role="status"></span>
+        </p>
+        <div id="cp-cob-meta" class="chips"></div>
+        <div class="rolagem alta"><table id="cp-tab-meta"><thead><tr><th>Documento</th><th>Título</th><th>Autores</th><th>Ano</th><th>DOI</th><th>Fonte</th><th>Tipo</th><th>Grupo</th><th>Sugestão (trilha)</th><th></th></tr></thead><tbody></tbody></table></div>
+        <h4>2. Planilha do corpus</h4>
+        <p class="discreto">Clique numa célula para ver os trechos, a página, a regra e o contexto. Sem LLM: seção detectada ou padrões de linguagem; "não encontrado" nunca é preenchido por invenção.</p>
+        <p class="barra"><button id="cp-llm" type="button" class="sec">Extração assistida por LLM (partes vazias/fracas)</button>
+          <span class="discreto">desligada por padrão: exige "Permitir geração com LLM" em Configurações; só entram frases que existem no documento.</span>
+          <span id="cp-msg-plan" class="discreto" role="status"></span></p>
+        <div class="rolagem"><table><thead><tr><th>Parte</th><th>Por seção</th><th>Por padrão</th><th>Por LLM</th><th>Não encontrado</th></tr></thead><tbody id="cp-cob-plan"></tbody></table></div>
+        <div class="rolagem alta"><table id="cp-tab-plan"><thead></thead><tbody></tbody></table></div>
+        <div id="cp-detalhe"></div>
+      </section>
+
+      <section id="aba-codificacao" class="aba" hidden>
+        <h3>Codificação: LLM como segundo codificador e concordância <span id="cd-info" class="discreto"></span></h3>
+        <div class="cd-subabas" id="cl-subabas" role="tablist" aria-label="Seções da codificação">
+          <button type="button" class="on" data-cl-aba="codificacao" role="tab">Codificação e concordância</button>
+          <button type="button" data-cl-aba="classificacao" role="tab">Classificação</button>
+        </div>
+        <p class="cd-papel"><b>O LLM atua como segundo codificador para checar a confiabilidade, não como substituto do pesquisador.</b>
+          Ele codifica cada trecho às cegas (recebe só o codebook e o trecho; nunca o seu código), e o Raio-X mede a concordância entre as duas codificações.
+          Divergências apontam trechos e códigos para rever (regra de aplicação ambígua, código sobreposto), não "erros" do pesquisador.</p>
+        <h4>1. Importar a codificação humana (.xlsx)</h4>
+        <p class="discreto">A planilha só é lida. Detecta a aba de trechos (trecho original, código, tema, fonte, página) e, se houver, a aba <i>Codebook</i>, que vira o dicionário do projeto.</p>
+        <p class="barra">
+          <label class="inline">Planilha <input type="file" id="cd-arquivo" accept=".xlsx"></label>
+          <span id="cd-msg-imp" class="discreto" role="status"></span>
+        </p>
+        <div id="cd-imp-opcoes" hidden>
+          <p class="barra">
+            <label class="inline">Aba <select id="cd-aba"></select></label>
+            <label class="inline">Modo <select id="cd-modo"><option value="substituir">substituir os trechos</option><option value="acrescentar">acrescentar</option></select></label>
+            <label class="inline check"><input type="checkbox" id="cd-codebook"> mesclar a aba Codebook no dicionário mesmo se ele já tiver categorias</label>
+          </p>
+          <div id="cd-mapa" class="cd-mapa"></div>
+          <p class="barra"><button id="cd-importar" type="button">Importar</button></p>
+        </div>
+        <p id="cd-relatorio" class="cartao" hidden></p>
+        <h4>2. Codificar com o LLM</h4>
+        <p class="discreto" id="cd-estimativa"></p>
+        <p class="vazio" id="cd-aviso-remoto" hidden>Provedor remoto: os trechos e o codebook serão enviados ao provedor configurado em Configurações, que pode cobrar por token.
+          Para que nada saia da máquina, use o Ollama local.</p>
+        <p class="barra">
+          <label class="inline">Limite de trechos (vazio = todos os pendentes) <input type="number" id="cd-limite" min="1" class="curto"></label>
+          <button id="cd-rodar" type="button">Codificar com LLM</button>
+          <button id="cd-cancelar" type="button" class="sec" hidden>Cancelar</button>
+          <button id="cd-limpar" type="button" class="sec">Limpar codificação do LLM</button>
+          <span id="cd-msg-llm" class="discreto" role="status"></span>
+        </p>
+        <div id="cd-prog" class="cd-prog" hidden>
+          <div class="barra-prog" role="progressbar" aria-label="Progresso da codificação"><i id="cd-prog-barra" style="width:0%"></i></div>
+          <span id="cd-prog-txt" class="discreto"></span>
+        </div>
+        <h4>3. Trechos</h4>
+        <div id="cd-contagem" class="chips"></div>
+        <p class="barra">
+          <label class="inline">Mostrar <select id="cd-filtro"><option value="todos">todos</option><option value="concordam">concordam</option><option value="discordam">discordam</option>
+            <option value="pendente">pendentes</option><option value="erro">com erro</option><option value="codificado">codificados</option></select></label>
+          <label class="inline">Código (humano ou LLM) <input id="cd-codigo" size="8" placeholder="C1.1"></label>
+          <label class="inline">Buscar no trecho <input id="cd-busca" size="18"></label>
+          <a class="botao sec peq" id="cd-csv" download="codificacao_trechos.csv" href="#">CSV</a>
+          <button id="cd-ant" type="button" class="sec peq">‹</button><span id="cd-pag" class="discreto"></span><button id="cd-prox" type="button" class="sec peq">›</button>
+        </p>
+        <div class="rolagem alta"><table id="cd-tab"><thead><tr><th>Registro</th><th>Fonte</th><th>Trecho</th><th>Humano</th><th>LLM</th><th>Conf.</th><th>Justificativa do LLM</th></tr></thead><tbody></tbody></table></div>
+        <h4>4. Concordância</h4>
+        <p class="barra">
+          <label class="inline">Nível <select id="cd-nivel"><option value="codigo">código</option><option value="tema">tema</option></select></label>
+          <label class="inline">Réplicas bootstrap <input type="number" id="cd-boot" min="0" max="10000" value="1000" class="curto"></label>
+          <button id="cd-calc" type="button">Calcular concordância</button>
+          <a class="botao sec peq" id="cd-conc-csv" download="concordancia.csv" href="#">CSV por código</a>
+          <span id="cd-msg-conc" class="discreto" role="status"></span>
+        </p>
+        <div id="cd-conc"></div>
+        <p class="discreto"><b>Kappa de Cohen</b> corrige a concordância pelo acaso (IC 95% pelo erro-padrão de Fleiss, Cohen &amp; Everitt 1969 e por bootstrap); leitura de Landis &amp; Koch (1977):
+          &lt; 0 pobre, até 0,20 leve, até 0,40 razoável, até 0,60 moderada, até 0,80 substancial, acima quase perfeita (faixas convencionais).
+          <b>Alfa de Krippendorff</b> (nominal; aceita faltantes): ≥ 0,800 confiável; 0,667 a 0,800 só conclusões provisórias; abaixo, descartar.
+          Por código: kappa um-contra-o-resto e precisão/revocação/F1 do LLM tomando o humano como referência. O kappa depende da prevalência: leia junto com a matriz de confusão.</p>
+              <div id="cl-painel" hidden>
+          <h4>Classificação por LLM: zero-shot e few-shot</h4>
+          <p class="cd-papel"><b>Sugestão para triagem, revisável item a item.</b> O LLM classifica trechos, segmentos ou documentos nos rótulos do dicionário do projeto
+            (ou numa lista sua), com justificativa e confiança. <i>Zero-shot</i> usa só as definições; <i>few-shot</i> acrescenta até k exemplos por rótulo tirados da codificação
+            humana, escolhidos de forma determinística e deixados de fora da avaliação. Aceite ou rejeite cada resultado; havendo rótulo humano, a concordância usa as mesmas
+            estatísticas da codificação (kappa, alfa).</p>
+          <div class="barra">
+            <label class="inline">Unidade <select id="cl-origem"><option value="trechos">trechos codificados (importados)</option><option value="segmentos">segmentos do corpus</option><option value="documentos">documentos (início do texto)</option></select></label>
+            <label class="inline">Modo <select id="cl-modo"><option value="zero_shot">zero-shot (só definições)</option><option value="few_shot">few-shot (com exemplos humanos)</option></select></label>
+            <label class="inline" id="cl-k-rot">Exemplos por rótulo (k) <input type="number" id="cl-k" min="1" max="10" value="3" class="curto"></label>
+            <label class="inline check"><input type="checkbox" id="cl-multi"> multirrótulo</label>
+            <label class="inline">Limite <input type="number" id="cl-limite" min="1" class="curto" placeholder="todos"></label>
+          </div>
+          <div class="barra">
+            <label class="inline">Rótulos <select id="cl-fonte"><option value="dicionario">dicionário do projeto</option><option value="lista">lista própria</option></select></label>
+            <span id="cl-info-rot" class="discreto"></span>
+          </div>
+          <textarea id="cl-lista" rows="4" hidden placeholder="Um rótulo por linha, no formato  rótulo: definição  (a definição é opcional)" style="width:100%;max-width:640px"></textarea>
+          <p class="discreto" id="cl-estimativa"></p>
+          <p class="discreto" id="cl-custo"></p>
+          <p class="vazio" id="cl-aviso-remoto" hidden>Provedor remoto: as unidades e os rótulos serão enviados ao provedor configurado em Configurações, que pode cobrar por token.</p>
+          <p class="barra">
+            <button id="cl-estimar" type="button" class="sec">Estimar</button>
+            <button id="cl-rodar" type="button">Classificar com LLM</button>
+            <button id="cl-cancelar" type="button" class="sec" hidden>Cancelar</button>
+            <button id="cl-limpar" type="button" class="sec">Limpar resultados</button>
+            <span id="cl-msg" class="discreto" role="status"></span>
+          </p>
+          <div id="cl-prog" class="cd-prog" hidden>
+            <div class="barra-prog" role="progressbar" aria-label="Progresso da classificação"><i id="cl-prog-barra" style="width:0%"></i></div>
+            <span id="cl-prog-txt" class="discreto"></span>
+          </div>
+          <div id="cl-contagem" class="chips"></div>
+          <p class="barra">
+            <label class="inline">Mostrar <select id="cl-filtro"><option value="todos">todos</option><option value="pendente_revisao">a revisar</option><option value="aceito">aceitos</option>
+              <option value="rejeitado">rejeitados</option><option value="concordam">concordam com o humano</option><option value="discordam">discordam do humano</option>
+              <option value="erro">com erro</option><option value="exemplo">exemplos (fora da avaliação)</option></select></label>
+            <label class="inline">Rótulo <input id="cl-rotulo" size="8"></label>
+            <label class="inline">Buscar <input id="cl-busca" size="16"></label>
+            <label class="inline">Aceitar todos com confiança ≥ <input type="number" id="cl-confmin" min="0" max="1" step="0.05" value="0.8" class="curto"></label>
+            <button id="cl-aceitar-lote" type="button" class="sec peq">Aceitar</button>
+            <a class="botao sec peq" id="cl-csv" download="classificacao_itens.csv" href="#">CSV</a>
+            <button id="cl-ant" type="button" class="sec peq">‹</button><span id="cl-pag" class="discreto"></span><button id="cl-prox" type="button" class="sec peq">›</button>
+          </p>
+          <div class="rolagem alta"><table id="cl-tab"><thead><tr><th>Unidade</th><th>Texto</th><th>Rótulo(s) do LLM</th><th>Humano</th><th>Conf.</th><th>Justificativa</th><th>Revisão</th></tr></thead><tbody></tbody></table></div>
+          <h4>Concordância com os rótulos humanos</h4>
+          <p class="barra">
+            <label class="inline">Itens <select id="cl-somente"><option value="todos">todos</option><option value="nao_rejeitados">sem os rejeitados</option><option value="aceitos">só os aceitos</option></select></label>
+            <label class="inline">Réplicas bootstrap <input type="number" id="cl-boot" min="0" max="10000" value="1000" class="curto"></label>
+            <button id="cl-calc" type="button">Calcular concordância</button>
+            <span id="cl-msg-conc" class="discreto" role="status"></span>
+          </p>
+          <div id="cl-conc"></div>
+        </div>
+      </section>
+
+      <section id="aba-perguntar" class="aba" hidden>
+        <h3>Perguntar ao corpus <span id="pq-info" class="discreto"></span></h3>
+        <p class="cd-papel"><b>Recuperação com citação de página.</b> A busca usa BM25 (e, se você calculou embeddings com o Ollama, BM25 + cosseno por fusão de rankings RRF)
+          e mostra os trechos com documento e página. Opcionalmente, o LLM (se estiver ligado em Configurações) redige uma resposta que só pode citar esses trechos como
+          (rótulo, p. N); a resposta é conferida automaticamente e aparece com avisos se falhar. Sem trechos, não há resposta.</p>
+        <p class="barra">
+          <input id="pq-pergunta" size="64" placeholder="ex.: limitations of autonomous agents in small firms" aria-label="Pergunta">
+          <button id="pq-buscar" type="button">Buscar</button>
+        </p>
+        <p class="barra">
+          <label class="inline">Trechos (k) <input type="number" id="pq-k" min="1" max="30" value="8" class="curto"></label>
+          <label class="inline">Busca <select id="pq-modo"><option value="auto">automática (híbrida se houver embeddings)</option><option value="bm25">só BM25</option><option value="hibrido">híbrida (BM25 + semântica)</option></select></label>
+          <label class="inline check"><input type="checkbox" id="pq-resp"> gerar resposta com o LLM</label>
+          <span id="pq-msg" class="discreto" role="status"></span>
+        </p>
+        <div id="pq-resposta"></div>
+        <div id="pq-itens"></div>
+        <h4>Consultas recentes</h4>
+        <div id="pq-log" class="discreto"></div>
+      </section>
+
+      <section id="aba-paragrafos" class="aba" hidden>
+        <h3>Exemplos de parágrafos <span id="pg-info" class="discreto"></span></h3>
+        <p class="discreto">Modelos de parágrafo por tipo de análise, em português acadêmico. Os <code>{campos}</code> são números que o Raio-X já calcula. "Pré-visualizar" preenche o modelo
+          com os dados do projeto, <b>sem LLM</b> e sem rede. Seus ajustes ficam só neste projeto; os modelos padrão nunca são alterados.</p>
+        <p class="barra">
+          <label class="inline">Análise <select id="pg-filtro"><option value="">todas</option></select></label>
+          <span id="pg-msg" class="discreto" role="status"></span>
+        </p>
+        <div id="pg-lista" class="pg-lista"></div>
+      </section>
+
+      <section id="aba-laudo" class="aba" hidden>
+        <h3>Laudo e exportação <span id="ld-info" class="discreto"></span></h3>
+              <div id="laudo">
+                <p class="discreto">O laudo leva só os comentários <b>aceitos</b> ou <b>editados</b>, com métricas, evidências e parâmetros, em um único
+                  arquivo HTML que abre offline. Gerado sem IA.</p>
+                <p id="ld-contagem" class="chips"></p>
+                <p class="barra">
+                  <button id="ld-gerar" type="button">Gerar laudo</button>
+                  <a class="botao sec" id="ld-abrir" href="#" target="_blank" rel="noopener" hidden>Abrir laudo</a>
+                  <a class="botao sec" id="ld-docx" href="#" download="laudo.docx" hidden>Baixar laudo .docx</a>
+                  <button class="sec" id="ld-pacote" type="button">Baixar pacote (.zip)</button>
+                  <span id="ld-msg" class="discreto" role="status"></span>
+                </p>
+                <p class="barra" id="ld-csvs"></p>
+                <p class="discreto">CSV: UTF-8 com BOM, separador <code>;</code>, decimais com ponto. O pacote reúne o laudo (.html e .docx), todos os CSV e o parametros.json.</p>
+                <h4>Texto de Métodos para o artigo</h4>
+                <p class="discreto">Parágrafos prontos (sem IA) com o que foi feito neste projeto: corpus, pré-processamento, análises com parâmetros, citações e referências do catálogo.</p>
+                <p class="barra">
+                  <label class="inline">Idioma <select id="mt-idioma"><option value="pt">Português</option><option value="en">English</option></select></label>
+                  <label class="inline">Referências <select id="mt-estilo"><option value="abnt">ABNT</option><option value="apa">APA</option></select></label>
+                  <button id="mt-gerar" type="button">Gerar texto de Métodos</button>
+                  <button class="sec" id="mt-copiar" type="button" hidden>Copiar</button>
+                  <a class="botao sec" id="mt-md" href="#" hidden>.md</a>
+                  <a class="botao sec" id="mt-docx" href="#" hidden>.docx</a>
+                  <span id="mt-msg" class="discreto" role="status"></span>
+                </p>
+                <textarea id="mt-texto" rows="14" readonly hidden style="width:100%" aria-label="Texto de Métodos"></textarea>
+              </div>
+      
+      </section>
+    </div>
+  </main>
+  <script src="app.js"></script>
+  <script src="raiox.js"></script>
+  <script src="analises.js"></script>
+  <script src="similaridade.js"></script>
+  <script src="documento_extra.js"></script>
+  <script src="estilometria.js"></script>
+  <script src="keyness_referencia.js"></script>
+  <script src="sentimento.js"></script>
+  <script src="classes_gramaticais.js"></script>
+  <script src="dicionario.js"></script>
+  <script src="textometria.js"></script>
+  <script src="tematico.js"></script>
+  <script src="comentarios.js"></script>
+  <script src="laudo.js"></script>
+  <script src="config-llm.js"></script>
+  <script src="paragrafos.js"></script>
+  <script src="topicos.js"></script>
+  <script src="codificacao.js"></script>
+  <script src="classificacao.js"></script>
+  <script src="busca.js"></script>
+  <script src="corpus.js"></script>
+  <script src="coleta_mlr.js"></script>
+  <script src="navegacao.js"></script>
+</body>
+</html>

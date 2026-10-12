@@ -1,0 +1,33 @@
+/* Raio-x do documento (15.3-15.5) e painel de agrupamento (15.9). Usa as variáveis de cor de styles.css (claro/escuro). */
+#painel-rxdoc { border: 1px solid var(--borda); border-radius: 8px; background: var(--painel); padding: 4px 14px 12px; margin: 12px 0; min-width: 0; }
+.rd-tit { margin: 16px 0 6px; font-size: 15px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.rd-tit .p-ctl { margin-left: auto; display: inline-flex; gap: 8px; align-items: center; }
+.rd-principal { margin: 4px 0 8px; }
+.rd-cartao { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; border: 1px solid var(--borda); border-radius: 8px; padding: 8px 14px; background: var(--fundo); }
+.rd-num { font-size: 34px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: var(--destaque); }
+.rd-faixa { color: var(--suave); font-size: 13px; }
+.rd-escala { display: block; position: relative; width: 160px; max-width: 100%; height: 8px; border-radius: 4px; margin-top: 4px; opacity: .9; }
+.rd-escala i { position: absolute; top: -3px; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: var(--texto); border: 1px solid var(--painel); }
+#tab-rd-leg td:nth-child(2), #tab-rd-leg th:nth-child(2), #tab-ag-sil td:nth-child(n+2), #tab-ag-sil th:nth-child(n+2) { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.rd-sel td { background: color-mix(in srgb, var(--destaque) 10%, var(--painel)); font-weight: 600; }
+.rd-lista { margin: 4px 0 0 18px; padding: 0; }
+.rd-colunas { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.rd-col { border: 1px solid var(--borda); border-radius: 6px; padding: 6px 10px; min-width: 0; background: var(--fundo); }
+.rd-col h5 { margin: 0 0 4px; font-size: 13px; }
+.rd-col ol { margin: 0; padding-left: 22px; font-size: 12.5px; }
+.rd-col li { margin: 0 0 3px; overflow-wrap: anywhere; }
+.termo-chave { font-weight: 600; }
+.rd-resumo { margin: 4px 0; padding-left: 22px; display: grid; gap: 8px; }
+.rd-resumo li { overflow-wrap: anywhere; line-height: 1.45; font-size: 13.5px; }
+.rd-barra { display: inline-block; width: 90px; max-width: 100%; height: 10px; background: var(--fundo); border: 1px solid var(--borda); border-radius: 5px; vertical-align: middle; overflow: hidden; }
+.rd-barra i { display: block; height: 100%; background: var(--c1); }
+.rd-link { font-size: 12px; white-space: nowrap; }
+.ag-pt { cursor: default; }
+@media (max-width: 600px) {
+  #painel-rxdoc { padding: 2px 10px 10px; }
+  .rd-colunas { grid-template-columns: minmax(0, 1fr); }
+  .rd-tit .p-ctl { margin-left: 0; }
+  .rd-num { font-size: 28px; }
+}
+#painel-rxdoc h3 { overflow-wrap: anywhere; }
+#rd-nome { overflow-wrap: anywhere; word-break: break-all; }

@@ -1,0 +1,259 @@
+# Modelos de parágrafo (Frente 14.2). Este arquivo é o PADRÃO e nunca é editado pelo sistema em execução.
+# Cada projeto pode ter projetos/<slug>/modelos_paragrafo.yaml: um modelo com o mesmo id substitui o padrão,
+# e os demais são modelos novos. Os {campos} são as métricas que o Raio-X já calcula para cada análise
+# (a lista de campos de cada análise aparece na tela "Exemplos de parágrafos"). Números saem em pt-BR (1.234,5).
+# "notas" diz o que o parágrafo NÃO pode afirmar; vai junto ao pedido enviado ao LLM, quando ele é usado.
+modelos:
+  # ---------- resumo do corpus ----------
+  - id: resumo-descritivo
+    analise: resumo
+    titulo: Descrição do corpus
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      O corpus analisado reúne {n_documentos} documentos, que somam {tokens} palavras do corpo do texto (sem referências)
+      e {tipos_lema} lemas distintos. O comprimento médio é de {media_tokens:.0f} palavras por documento (mediana de {mediana_tokens}).
+    notas: Descreve o tamanho do corpus; não avalia a qualidade nem a representatividade das fontes.
+  - id: resumo-diversidade
+    analise: resumo
+    titulo: Diversidade lexical (MATTR)
+    estilo: interpretativo cauteloso
+    idioma: pt
+    texto_modelo: >-
+      A diversidade lexical, medida pelo MATTR com janela de {mattr_janela} palavras, tem média de {mattr_media:.3f}
+      (mediana de {mattr_mediana:.3f}) em {mattr_documentos_comparaveis} documentos comparáveis. Esse índice descreve a variedade
+      do vocabulário, e valores mais altos indicam menos repetição de palavras, sem que isso implique, por si só, melhor ou pior qualidade textual.
+    notas: MATTR compara a variedade de vocabulário e não mede qualidade, profundidade nem rigor. Só vale entre textos do mesmo idioma e tamanho comparável.
+  - id: resumo-artigo
+    analise: resumo
+    titulo: Corpus (para seção de método)
+    estilo: resultado para artigo
+    idioma: pt
+    texto_modelo: >-
+      O corpus final compreendeu {n_documentos} documentos ({tokens} palavras após a remoção das seções de referências),
+      processados com lematização e lista de palavras vazias; o vocabulário resultante contou {tipos_lema} lemas.
+    notas: Não afirmar critérios de seleção dos documentos; isso pertence ao protocolo da revisão.
+
+  # ---------- frequências ----------
+  - id: frequencias-descritivo
+    analise: frequencias
+    titulo: Termos mais frequentes
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      Entre os {tipos} lemas do corpus, os mais frequentes foram {termos_top}. O termo "{termo_1}" ocorreu {freq_1} vezes
+      ({por_10k_1} por 10 mil palavras) em {docs_1} documentos, seguido de "{termo_2}" ({freq_2} ocorrências em {docs_2} documentos)
+      e "{termo_3}" ({freq_3} ocorrências em {docs_3} documentos).
+    notas: Frequência não é importância nem tendência; não interpretar a ordem como relevância temática.
+  - id: frequencias-cauteloso
+    analise: frequencias
+    titulo: Termos frequentes e dispersão
+    estilo: interpretativo cauteloso
+    idioma: pt
+    texto_modelo: >-
+      O vocabulário do corpus concentra-se em torno de "{termo_1}", "{termo_2}" e "{termo_3}", com {freq_1}, {freq_2} e {freq_3}
+      ocorrências, respectivamente. A presença em {docs_1}, {docs_2} e {docs_3} dos {n_documentos} documentos sugere o quanto cada termo
+      está disseminado no corpus, e não apenas concentrado em poucos textos.
+    notas: Dispersão (nº de documentos) não prova que o conceito seja tratado da mesma forma em todos os documentos.
+
+  # ---------- tendências ----------
+  - id: tendencias-descritivo
+    analise: tendencias
+    titulo: Evolução de um termo por ano
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      A frequência relativa de "{termo}" passou de {rel_inicial} por 10 mil palavras em {ano_inicial}
+      ({bruto_inicial} ocorrências) para {rel_final} por 10 mil palavras em {ano_final} ({bruto_final} ocorrências),
+      considerando {n_anos} anos com documentos no corpus.
+    notas: Os anos têm números de documentos diferentes; não afirmar crescimento causal nem tendência sem ressalvar o tamanho de cada ano.
+  - id: tendencias-cauteloso
+    analise: tendencias
+    titulo: Tendência com ressalva
+    estilo: interpretativo cauteloso
+    idioma: pt
+    texto_modelo: >-
+      Observa-se que "{termo}" varia de {rel_inicial} por 10 mil palavras ({ano_inicial}) para {rel_final} ({ano_final}),
+      uma razão de {razao}. Como cada ano reúne poucos documentos, esse movimento descreve o corpus coletado e não deve ser lido
+      como tendência da literatura em geral.
+    notas: Não generalizar para a literatura; a amostra do corpus não é aleatória.
+
+  # ---------- concordância (KWIC) ----------
+  - id: kwic-descritivo
+    analise: kwic
+    titulo: Uso de um termo no corpus
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      O termo "{termo}" ocorre {total} vezes em {documentos_com_ocorrencias} dos {n_documentos} documentos.
+      As concordâncias (janela de {janela} palavras de cada lado) mostram os contextos de uso, citados com documento e página.
+    notas: Citar trechos só como (rótulo, p. N), exatamente como fornecidos; não parafrasear como se fosse citação.
+  - id: kwic-artigo
+    analise: kwic
+    titulo: Evidência textual para um termo
+    estilo: resultado para artigo
+    idioma: pt
+    texto_modelo: >-
+      Identificaram-se {total} ocorrências de "{termo}", distribuídas em {documentos_com_ocorrencias} documentos; os trechos a seguir
+      ilustram os usos mais representativos, com indicação de fonte e página.
+    notas: Os trechos ilustram usos; não afirmar que representam todos os usos nem a posição dos autores.
+
+  # ---------- colocações ----------
+  - id: colocacoes-descritivo
+    analise: colocacoes
+    titulo: Palavras que acompanham um termo
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      Em uma janela de {janela} palavras de cada lado, "{termo}" ({ocorrencias_no} ocorrências em {documentos_com_no} documentos)
+      coocorre de forma marcante com {colocados_top}. Os três primeiros colocados, por log-likelihood, são "{colocado_1}"
+      (LL = {ll_1:.1f}, {o11_1} coocorrências), "{colocado_2}" (LL = {ll_2:.1f}) e "{colocado_3}" (LL = {ll_3:.1f}).
+    notas: Coocorrência não implica relação semântica nem causal; LL mede força de associação, não importância.
+  - id: colocacoes-cauteloso
+    analise: colocacoes
+    titulo: Colocações com ressalva
+    estilo: interpretativo cauteloso
+    idioma: pt
+    texto_modelo: >-
+      As colocações de "{termo}" sugerem associação frequente com "{colocado_1}" e "{colocado_2}"
+      (informação mútua de {mi_1} e {mi_2}). Tratando-se de coocorrência de superfície, convém conferir nas concordâncias
+      se a vizinhança reflete um mesmo sentido do termo.
+    notas: Não afirmar sentido, causalidade nem relação conceitual a partir da coocorrência.
+
+  # ---------- n-gramas ----------
+  - id: ngramas-descritivo
+    analise: ngramas
+    titulo: Expressões recorrentes
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      Foram encontrados {n_total} n-gramas de {n_min} a {n_max} palavras com frequência mínima de {min_freq}. As expressões mais frequentes
+      foram "{ngrama_1}" ({freq_1} ocorrências em {docs_1} documentos), "{ngrama_2}" ({freq_2} em {docs_2}) e "{ngrama_3}" ({freq_3} em {docs_3}).
+    notas: N-gramas são sequências recorrentes de palavras, não termos técnicos validados; não equivalem aos termos compostos.
+  - id: ngramas-artigo
+    analise: ngramas
+    titulo: Pacotes lexicais (resultado)
+    estilo: resultado para artigo
+    idioma: pt
+    texto_modelo: >-
+      A análise de pacotes lexicais ({n_min} a {n_max} palavras, ao menos {min_freq} ocorrências) em {n_documentos} documentos
+      destacou "{ngrama_1}", "{ngrama_2}" e "{ngrama_3}", com {freq_1}, {freq_2} e {freq_3} ocorrências.
+    notas: Não interpretar a frequência da expressão como importância conceitual.
+
+  # ---------- keyness ----------
+  - id: keyness-descritivo
+    analise: keyness
+    titulo: Palavras-chave de um grupo
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      Comparando {lado_a} ({docs_a} documentos, {tokens_a} palavras) com o {lado_b} ({docs_b} documentos, {tokens_b} palavras), {total_positivas}
+      palavras foram sobrerrepresentadas em {lado_a}. As de maior G² foram "{pos_termo_1}" ({pos_a_1} contra {pos_b_1} ocorrências; G² = {pos_g2_1:.1f};
+      Log Ratio = {pos_log_ratio_1}; {pos_p_texto_1}) e "{pos_termo_2}" ({pos_a_2} contra {pos_b_2}; G² = {pos_g2_2:.1f}; {pos_p_texto_2}).
+    notas: Keyness mostra sobrerrepresentação estatística, não causalidade, importância nem intenção dos autores. Não explicar o motivo da diferença.
+  - id: keyness-cauteloso
+    analise: keyness
+    titulo: Sobre e sub-representação
+    estilo: interpretativo cauteloso
+    idioma: pt
+    texto_modelo: >-
+      Em {lado_a}, "{pos_termo_1}" aparece com {pos_por_10k_a_1} ocorrências por 10 mil palavras, contra {pos_por_10k_b_1} no {lado_b}
+      (Log Ratio = {pos_log_ratio_1}). No sentido oposto, "{neg_termo_1}" é subrepresentado em {lado_a} ({neg_por_10k_a_1} contra {neg_por_10k_b_1}
+      por 10 mil palavras). São diferenças de frequência entre conjuntos de documentos de tamanhos distintos, que pedem leitura qualitativa antes de qualquer interpretação.
+    notas: Sobrerrepresentação não é causa; não atribuir a diferença a uma característica do grupo sem leitura dos documentos.
+  - id: keyness-artigo
+    analise: keyness
+    titulo: Resultado de keyness
+    estilo: resultado para artigo
+    idioma: pt
+    texto_modelo: >-
+      O teste de log-likelihood (G²) identificou {total_positivas} palavras-chave positivas e {total_negativas} negativas para {lado_a}
+      em relação ao {lado_b}. As mais fortes foram "{pos_termo_1}" (G² = {pos_g2_1:.1f}; {pos_p_texto_1}) e "{pos_termo_2}" (G² = {pos_g2_2:.1f}; {pos_p_texto_2}).
+    notas: Não afirmar causalidade; informar que o teste compara frequências e não significados.
+
+  # ---------- especificidades ----------
+  - id: especificidades-descritivo
+    analise: especificidades
+    titulo: Termos específicos de uma parte
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      Na parte "{parte}" ({parte_documentos} documentos, {parte_tokens} palavras), os termos mais específicos pelo modelo hipergeométrico foram
+      "{pos_termo_1}" (frequência {pos_f_1} de {pos_F_1} no corpus; score = {pos_score_1:.1f}), "{pos_termo_2}" (score = {pos_score_2:.1f}) e
+      "{pos_termo_3}" (score = {pos_score_3:.1f}). Valores de |score| abaixo de {limiar} são considerados banais.
+    notas: Scores têm um teto no sistema (50); especificidade é relativa às demais partes do corpus e não prova nada sobre causa.
+  - id: especificidades-cauteloso
+    analise: especificidades
+    titulo: Específicos e evitados
+    estilo: interpretativo cauteloso
+    idioma: pt
+    texto_modelo: >-
+      Em "{parte}", destacam-se por especificidade "{pos_termo_1}" e "{pos_termo_2}" (scores de {pos_score_1:.1f} e {pos_score_2:.1f}), enquanto
+      "{neg_termo_1}" (score = {neg_score_1:.1f}) é evitado em relação ao restante do corpus ({n_partes} partes por {particao}).
+      Trata-se de contraste interno ao corpus, e não de propriedade geral do tema.
+    notas: Não generalizar para fora do corpus; o contraste depende de como as partes foram definidas.
+
+  # ---------- AFC ----------
+  - id: afc-descritivo
+    analise: afc
+    titulo: Eixos da análise fatorial
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      A análise fatorial de correspondências da tabela de {n_linhas} termos por {n_colunas} partes ({particao}) extraiu {n_eixos} eixos;
+      o primeiro explica {pct_1:.1f}% da inércia (autovalor = {autovalor_1:.4f}) e os dois primeiros juntos, {pct_acumulado_2:.1f}%.
+      No primeiro eixo, o lado positivo é caracterizado por {eixo1_positivo} e o negativo por {eixo1_negativo}.
+    notas: Eixos são dimensões estatísticas; nomeá-los como "tema" ou "construto" é interpretação do autor e deve ser marcada como tal.
+  - id: afc-cauteloso
+    analise: afc
+    titulo: AFC com ressalva
+    estilo: interpretativo cauteloso
+    idioma: pt
+    texto_modelo: >-
+      O plano formado pelos dois primeiros eixos retém {pct_acumulado_2:.1f}% da inércia total ({inercia_total:.4f}). O eixo 1 ({pct_1:.1f}%) opõe
+      {eixo1_positivo} a {eixo1_negativo}; o eixo 2 ({pct_2:.1f}%) opõe {eixo2_positivo} a {eixo2_negativo}. Essa leitura é exploratória
+      e depende da seleção de termos e da definição das partes.
+    notas: Não dar nomes conceituais aos eixos como se fossem resultado; a AFC é exploratória.
+
+  # ---------- similaridade ----------
+  - id: similaridade-descritivo
+    analise: similaridade
+    titulo: Agrupamento de documentos
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      A similaridade entre {n_documentos} documentos (cosseno sobre TF-IDF de {n_termos} termos; agrupamento por {metodo}) resultou em {k}
+      grupos ({modo_k}; silhueta média de {silhueta:.3f}). O maior grupo reúne {grupo_docs_1} documentos, caracterizados por {grupo_termos_1};
+      o segundo, {grupo_docs_2} documentos ({grupo_termos_2}).
+    notas: Agrupamentos refletem vocabulário compartilhado, não necessariamente tema, método ou posição teórica; a silhueta baixa indica grupos pouco nítidos.
+  - id: similaridade-cauteloso
+    analise: similaridade
+    titulo: Agrupamento com ressalva
+    estilo: interpretativo cauteloso
+    idioma: pt
+    texto_modelo: >-
+      O agrupamento hierárquico ({metodo}) separou os documentos em {k} grupos ({modo_k}), com silhueta de {silhueta:.3f}. O grupo 1 ({grupo_docs_1}
+      documentos) se distingue por {grupo_termos_1}. Como a similaridade lexical é sensível ao idioma e ao tamanho dos textos, os grupos
+      devem ser conferidos pela leitura dos documentos.
+    notas: Não afirmar que os grupos correspondem a categorias teóricas; conferir idioma e tamanho dos documentos.
+
+  # ---------- dicionário ----------
+  - id: dicionario-descritivo
+    analise: dicionario
+    titulo: Categorias do codebook
+    estilo: descritivo
+    idioma: pt
+    texto_modelo: >-
+      Das {n_categorias} categorias do dicionário, "{cat_nome_1}" foi a mais frequente ({cat_total_1} ocorrências; {cat_por_10k_1} por 10 mil palavras;
+      {cat_docs_1} documentos), seguida de "{cat_nome_2}" ({cat_total_2} ocorrências) e "{cat_nome_3}" ({cat_total_3}). Os termos mais
+      frequentes em "{cat_nome_1}" foram {cat_termos_1}.
+    notas: Contagem de termos do dicionário não equivale a codificação qualitativa do trecho; um termo pode aparecer fora do sentido da categoria.
+  - id: dicionario-artigo
+    analise: dicionario
+    titulo: Codificação por dicionário (resultado)
+    estilo: resultado para artigo
+    idioma: pt
+    texto_modelo: >-
+      A codificação automática por dicionário, aplicada a {n_documentos} documentos ({tokens} palavras), registrou {cat_total_1} ocorrências
+      de "{cat_nome_1}" ({cat_por_10k_1} por 10 mil palavras), {cat_total_2} de "{cat_nome_2}" e {cat_total_3} de "{cat_nome_3}".
+    notas: A contagem é lexical; não afirmar que o documento "trata" da categoria sem leitura.

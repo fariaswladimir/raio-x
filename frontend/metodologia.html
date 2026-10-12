@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metodologia · Raio-X de Textos</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="metodologia.css">
+</head>
+<body>
+  <header>
+    <div class="topo">
+      <h1>Raio-X de Textos</h1>
+      <nav id="nav-principal" aria-label="Navegação principal">
+        <button type="button" class="nav-item" onclick="location.href='index.html'">Projetos</button>
+        <button type="button" class="nav-item on" aria-current="page">Metodologia</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="met-main">
+    <section class="met-intro">
+      <h2>Metodologia e referências por análise</h2>
+      <p class="discreto">Para cada análise: o que mede, a métrica, os parâmetros padrão, o que é equivalente (e o que não é) em outras ferramentas, cuidados de interpretação e as referências bibliográficas. A fonte única é <code>app/services/metodologia/catalogo.yaml</code>.</p>
+
+      <div class="barra met-barra" role="search">
+        <label class="inline met-busca">Buscar (nome, termo, autor)
+          <input id="busca" type="search" placeholder="ex.: keyness, Dunning, kappa" autocomplete="off">
+        </label>
+        <label class="inline">Status
+          <select id="filtro-status">
+            <option value="">todos</option>
+            <option value="implementado">implementado</option>
+            <option value="parcial">parcial</option>
+            <option value="planejado">planejado</option>
+          </select>
+        </label>
+        <label class="inline">Projeto (opcional)
+          <select id="projeto"><option value="">nenhum</option></select>
+        </label>
+        <label class="inline met-so-usadas" id="rotulo-so-usadas" hidden>
+          <span>Mostrar</span>
+          <span class="met-check"><input type="checkbox" id="so-usadas"> só as usadas no projeto</span>
+        </label>
+      </div>
+
+      <div class="barra met-barra">
+        <div class="inline">
+          <span class="rotulo-fmt" id="rotulo-formato">Formato das referências</span>
+          <div class="abas-p" role="group" aria-labelledby="rotulo-formato" id="formatos">
+            <button type="button" data-formato="abnt" class="on" aria-pressed="true">ABNT</button>
+            <button type="button" data-formato="apa" aria-pressed="false">APA</button>
+            <button type="button" data-formato="bibtex" aria-pressed="false">BibTeX</button>
+          </div>
+        </div>
+        <a class="botao sec" id="baixar-bib" href="/api/metodologia/referencias.bib" download>Baixar todas (.bib)</a>
+        <a class="botao sec" id="baixar-txt" href="/api/metodologia/referencias.txt?formato=abnt" download>Baixar todas (.txt, ABNT)</a>
+        <button type="button" class="sec" id="imprimir">Imprimir</button>
+        <span id="contagem" class="discreto" aria-live="polite"></span>
+      </div>
+      <p id="msg" role="status"></p>
+      <p class="discreto">Convenções de cálculo de todas as análises: <a href="/api/metodologia/nota" target="_blank" rel="noopener">nota metodológica</a> (Markdown; também em docs/nota_metodologica.md).</p>
+    </section>
+
+    <div class="met-grade">
+      <details id="indice-det" class="met-indice-det" open>
+        <summary>Índice por família</summary>
+        <nav id="indice" aria-label="Índice das análises"></nav>
+      </details>
+      <div id="cartoes" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <script src="metodologia.js"></script>
+</body>
+</html>

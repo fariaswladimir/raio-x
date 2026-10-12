@@ -1,0 +1,75 @@
+/* Tela de metodologia: usa os tokens de styles.css (--fundo, --texto, --suave, --borda, --painel, --destaque, --ok, --aviso, --erro). */
+.met-main { max-width: 1400px; }
+.met-intro p { margin: 0 0 10px; }
+.met-barra { align-items: end; }
+.met-busca input { min-width: 260px; }
+.rotulo-fmt { display: block; font-size: 13px; color: var(--suave); margin-bottom: 4px; }
+.met-check { display: inline-flex; gap: 6px; align-items: center; color: var(--texto); padding: 6px 0; }
+.met-check input { width: auto; }
+a.botao { display: inline-block; padding: 7px 14px; border: 1px solid var(--destaque); border-radius: 5px; color: var(--destaque); text-decoration: none; font: inherit; }
+a.botao:hover { background: var(--destaque); color: #fff; }
+code { font: 12.5px ui-monospace, Consolas, monospace; background: var(--fundo); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+
+.met-grade { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 18px; align-items: start; }
+.met-indice-det { position: sticky; top: 8px; max-height: calc(100vh - 16px); overflow: auto; background: var(--painel); border: 1px solid var(--borda); border-radius: 8px; padding: 10px 12px; }
+.met-indice-det summary { cursor: pointer; font-weight: 600; }
+#indice h3 { margin: 12px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--suave); }
+#indice a { display: flex; flex-wrap: wrap; gap: 2px 6px; align-items: baseline; padding: 4px 6px; border-radius: 5px; color: var(--texto); text-decoration: none; font-size: 13px; }
+#indice a:hover, #indice a.atual { background: var(--fundo); }
+#indice a .nome { flex: 1 1 140px; min-width: 0; overflow-wrap: anywhere; }
+#indice a.usada .nome::after { content: " ●"; color: var(--destaque); font-size: 10px; }
+
+.chip { display: inline-block; padding: 0 7px; border-radius: 9px; font-size: 11px; font-weight: 600; border: 1px solid currentColor; white-space: nowrap; }
+.chip.implementado { color: var(--ok); }
+.chip.parcial { color: var(--aviso); }
+.chip.planejado { color: var(--suave); }
+.chip.eap { color: var(--suave); font-weight: 400; }
+.chip.usada { color: var(--destaque); }
+
+.met-cartao { margin: 0 0 16px; scroll-margin-top: 10px; }
+.met-cartao.usada { border-left: 4px solid var(--destaque); }
+.met-cartao header { border: 0; background: transparent; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; margin-bottom: 8px; }
+.met-cartao h2 { margin: 0; font-size: 17px; flex: 1 1 260px; overflow-wrap: anywhere; }
+.met-cartao dl { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 6px 14px; margin: 0; }
+.met-cartao dt { color: var(--suave); font-size: 13px; }
+.met-cartao dd { margin: 0; overflow-wrap: anywhere; }
+.met-cartao ul { margin: 0; padding-left: 18px; }
+.met-formula { display: block; margin-top: 4px; white-space: pre-wrap; }
+.met-param td:first-child { width: 38%; color: var(--suave); }
+.met-param .proj { color: var(--destaque); }
+.met-param .dif { color: var(--aviso); font-weight: 600; }
+.met-refs { margin-top: 14px; border-top: 1px solid var(--borda); padding-top: 10px; }
+.met-refs h3 { margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+.met-refs ol { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 8px; }
+.met-ref { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: start; padding: 6px 8px; border: 1px solid var(--borda); border-radius: 6px; }
+.met-ref .txt { overflow-wrap: anywhere; min-width: 0; }
+.met-ref pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12.5px/1.45 ui-monospace, Consolas, monospace; }
+.met-ref .nota { display: inline-block; margin-left: 6px; color: var(--aviso); font-weight: 600; font-size: 12px; }
+.met-ref .nota-livre { display: block; color: var(--suave); font-size: 12.5px; }
+.met-ref button, .met-refs button { padding: 3px 10px; font-size: 12.5px; }
+.met-vazio { color: var(--suave); }
+.met-nenhum { padding: 24px; text-align: center; color: var(--suave); }
+
+@media (max-width: 900px) {
+  .met-grade { grid-template-columns: minmax(0, 1fr); }
+  .met-indice-det { position: static; max-height: 50vh; }
+}
+@media (max-width: 560px) {
+  .met-cartao dl { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .met-cartao dd { margin-bottom: 8px; }
+  .met-busca input { min-width: 0; width: 100%; }
+  .met-busca { flex: 1 1 100%; }
+  .met-ref { grid-template-columns: minmax(0, 1fr); }
+  .topo, .met-main { padding-left: 16px; padding-right: 16px; }
+}
+
+@media print {
+  body { background: #fff; color: #000; font-size: 11pt; }
+  header, .met-intro .barra, .met-indice-det, .met-ref button, .met-refs button { display: none !important; }
+  .met-main { padding: 0; max-width: none; }
+  .met-grade { display: block; }
+  .met-intro { border: 0; padding: 0 0 8px; }
+  .met-cartao { break-inside: avoid-page; border: 1px solid #999; page-break-inside: avoid; }
+  .met-ref { border: 0; padding: 2px 0; display: block; }
+  a { color: #000; text-decoration: none; }
+}

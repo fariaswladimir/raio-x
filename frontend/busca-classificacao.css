@@ -1,0 +1,24 @@
+/* 15.11 Classificação, 15.12 Similaridade semântica e 15.13 Perguntar ao corpus. Usa as variáveis de styles.css. */
+.cd-subabas { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 12px; border-bottom: 1px solid var(--borda); }
+.cd-subabas button { background: transparent; color: var(--suave); border: 0; border-bottom: 3px solid transparent; border-radius: 0; padding: 6px 12px; }
+.cd-subabas button.on { color: var(--texto); border-bottom-color: var(--destaque); font-weight: 600; }
+#aba-codificacao.cl-ativo > :not(h3):not(#cl-subabas):not(#cl-painel) { display: none !important; }
+#cl-tab { font-size: 12.5px; }
+#cl-tab td { vertical-align: top; }
+#cl-tab td.cl-texto { min-width: 260px; max-width: 460px; }
+#cl-tab tr.cl-rejeitado td { opacity: .55; }
+#cl-tab tr.cl-aceito td:first-child { box-shadow: inset 3px 0 0 var(--ok); }
+.cl-rot { display: inline-block; border: 1px solid var(--borda); border-radius: 10px; padding: 0 7px; margin: 1px 2px 1px 0; font-weight: 600; white-space: nowrap; }
+.cl-rev button { padding: 1px 8px; margin-right: 3px; }
+.cl-rev button.on-ok { background: var(--ok); color: #fff; }
+.cl-rev button.on-no { background: var(--erro); color: #fff; }
+.sm-sem { border-top: 1px solid var(--borda); margin-top: 14px; padding-top: 8px; }
+.pq-trecho { border: 1px solid var(--borda); border-left: 4px solid var(--destaque); border-radius: 6px; padding: 8px 12px; margin: 8px 0; background: var(--painel); }
+.pq-cab { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; margin-bottom: 4px; font-size: 12.5px; }
+.pq-cab b { font-size: 13px; }
+.pq-texto { overflow-wrap: anywhere; line-height: 1.5; }
+.pq-texto mark { background: color-mix(in srgb, var(--aviso) 35%, transparent); color: inherit; padding: 0 1px; }
+.pq-resposta { border: 1px solid var(--borda); border-radius: 6px; padding: 10px 12px; margin: 8px 0; background: var(--painel); }
+.pq-resposta.com-aviso { border-color: var(--aviso); }
+.pq-aviso { color: var(--aviso); font-size: 13px; margin: 4px 0; }
+@media (max-width: 720px) { #pq-pergunta { width: 100%; } }
