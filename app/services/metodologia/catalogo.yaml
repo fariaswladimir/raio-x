@@ -49,7 +49,7 @@ referencias:
   # ---------- EAP 11.7 ----------
   lafon1980: {autores: ["Lafon, P."], ano: 1980, titulo: "Sur la variabilité de la fréquence des formes dans un corpus", tipo: artigo, veiculo: "Mots", detalhes: {numero: "1", paginas: "127-165"}}
   heiden2010: {autores: ["Heiden, S.", "Magué, J.-P.", "Pincemin, B."], ano: 2010, titulo: "TXM : une plateforme logicielle open-source pour la textométrie", tipo: congresso, veiculo: "Actes des JADT 2010"}
-  lafon1984: {autores: ["Lafon, P."], ano: 1984, titulo: "Dépouillements et statistiques en lexicométrie", tipo: livro, detalhes: {local: "Genève/Paris", editora: "Slatkine-Champion"}, nota: "Modelo hipergeométrico e uso do score log10; o pacote R textometry do TXM decide o lado pela moda, a 6.2 pela média: só difere na zona banal."}
+  lafon1984: {autores: ["Lafon, P."], ano: 1984, titulo: "Dépouillements et statistiques en lexicométrie", tipo: livro, detalhes: {local: "Genève/Paris", editora: "Slatkine-Champion"}, nota: "Modelo hipergeométrico e uso do score log10; o pacote R textometry 0.1.7 (CRAN) decide o lado pela média, como a 6.2 (conferido na 12.2); uma decisão pela moda só mudaria a zona banal."}
   # ---------- EAP 11.8 ----------
   sparckjones1972: {autores: ["Spärck Jones, K."], ano: 1972, titulo: "A statistical interpretation of term specificity and its application in retrieval", tipo: artigo, veiculo: "Journal of Documentation", detalhes: {volume: "28", numero: "1", paginas: "11-21"}}
   salton1988: {autores: ["Salton, G.", "Buckley, C."], ano: 1988, titulo: "Term-weighting approaches in automatic text retrieval", tipo: artigo, veiculo: "Information Processing & Management", detalhes: {volume: "24", numero: "5", paginas: "513-523"}}
@@ -78,6 +78,10 @@ referencias:
   # ---------- EAP 11.15 ----------
   grimmer2013: {autores: ["Grimmer, J.", "Stewart, B. M."], ano: 2013, titulo: "Text as data: the promise and pitfalls of automatic content analysis methods for political texts", tipo: artigo, veiculo: "Political Analysis", detalhes: {volume: "21", numero: "3", paginas: "267-297"}}
   benoit2018: {autores: ["Benoit, K."], et_al: true, ano: 2018, titulo: "quanteda: an R package for the quantitative analysis of textual data", tipo: artigo, veiculo: "Journal of Open Source Software", detalhes: {volume: "3", numero: "30", paginas: "774"}}
+  # ---------- EAP 12.2: validação cruzada em R (docs/validacao_cruzada.md); dados do citation() do R ----------
+  barnier2026rainette: {autores: ["Barnier, J."], ano: 2026, titulo: "rainette: The Reinert Method for Textual Data Clustering", tipo: software, veiculo: "R package version 0.3.3 (CRAN)", doi_ou_url: "10.32614/CRAN.package.rainette", nota: "conferir antes de citar"}
+  le2008: {autores: ["Lê, S.", "Josse, J.", "Husson, F."], ano: 2008, titulo: "FactoMineR: an R package for multivariate analysis", tipo: artigo, veiculo: "Journal of Statistical Software", detalhes: {volume: "25", numero: "1", paginas: "1-18"}, doi_ou_url: "10.18637/jss.v025.i01", nota: "conferir antes de citar"}
+  csardi2006: {autores: ["Csardi, G.", "Nepusz, T."], ano: 2006, titulo: "The igraph software package for complex network research", tipo: artigo, veiculo: "InterJournal, Complex Systems", detalhes: {paginas: "1695"}, nota: "conferir antes de citar"}
 
   # ---------- Frente 15 (compiladas de memória: conferir antes de citar) ----------
   burrows2002: {autores: ["Burrows, J."], ano: 2002, titulo: "'Delta': a measure of stylistic difference and a guide to likely authorship", tipo: artigo, veiculo: "Literary and Linguistic Computing", detalhes: {volume: "17", numero: "3", paginas: "267-287"}, nota: "conferir antes de citar"}
@@ -1097,5 +1101,6 @@ analises:
     nao_e_igual_a: "Os números só coincidem com os dessas ferramentas quando os parâmetros (lematização, palavras vazias, janelas) coincidem."
     cuidados:
       - "Ao citar equivalência, informe a ferramenta, a versão e os parâmetros usados na comparação."
-    referencias: [sinclair2016voyant, anthony2024, camargo2013, heiden2010, higuchi2016, benoit2018]
+      - "Validação cruzada (EAP 12.2) feita em R com rainette, quanteda.textstats, textometry, FactoMineR/ca e igraph, nas mesmas unidades do Raio-X (docs/validacao_cruzada.md)."
+    referencias: [sinclair2016voyant, anthony2024, camargo2013, heiden2010, higuchi2016, benoit2018, barnier2026rainette, le2008, csardi2006]
     deteccao: {}

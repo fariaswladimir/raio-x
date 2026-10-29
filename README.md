@@ -54,7 +54,7 @@ flowchart TB
     subgraph UI["Interface no navegador · localhost:8800"]
         direction LR
         U1[Projetos] --- U2[Visão geral] --- U3[Executar] --- U4["Análises (4 sub-abas)"] --- U5[Comentários]
-        U6[Laudo e exportação] --- U7[Corpus] --- U8[Codificação] --- U9[Perguntar ao corpus] --- U10[Metodologia] --- U11[Configurações]
+        U6[Laudo e exportação] --- U7[Corpus] --- U8[Codificação] --- U9[Perguntar ao corpus] --- U12[Coleta] --- U10[Metodologia] --- U11[Configurações]
     end
     API["API FastAPI (JSON) · execução em segundo plano"]
     subgraph SRV["Serviços (Python)"]
@@ -156,13 +156,13 @@ O laudo declara quando um texto foi redigido com LLM.
 
 ## Andamento (EAP)
 
-Situação em 12/10/2026: **68 de 71 entregáveis concluídos** · 748 testes. Os 3 restantes são conferências externas que dependem do usuário.
+Situação em 14/10/2026: **72 de 74 entregáveis concluídos** · 816 testes. Os 2 restantes (5.4 e 6.2) são conferências no AntConc e no TXM que dependem do usuário; ambas já foram conferidas em R na validação cruzada (12.2).
 
 > 🖥️ **Versão interativa**, com filtros por versão e situação: abra [docs/eap.html](docs/eap.html) no navegador. Para o que cada entregável faz, veja o [dicionário da EAP](docs/dicionario_eap.md).
 
 ```mermaid
 flowchart LR
-    RX(("Raio-X<br/>68/71"))
+    RX(("Raio-X<br/>71/74"))
     RX --> F1["1 Fundação<br/>4/4"]:::ok
     RX --> F2["2 Varredura e conversão<br/>6/6"]:::ok
     RX --> F3["3 Limpeza e estrutura<br/>4/4"]:::ok
@@ -174,11 +174,12 @@ flowchart LR
     RX --> F9["9 Laudo e exportação<br/>5/5"]:::ok
     RX --> F10["10 Interface<br/>3/3"]:::ok
     RX --> F11["11 Empacotamento<br/>2/2"]:::ok
-    RX --> F12["12 Validação<br/>2/3 · falta cruzada"]:::parcial
+    RX --> F12["12 Validação<br/>3/3"]:::ok
     RX --> F13["13 Documentação<br/>3/3"]:::ok
     RX --> F14["14 LLM opcional<br/>3/3"]:::ok
     RX --> F15["15 Análises adicionais<br/>13/13"]:::ok
     RX --> F16["16 Planilha do corpus e .bib<br/>4/4"]:::ok
+    RX --> F17["17 Coleta por protocolo<br/>3/3"]:::ok
     classDef ok fill:#e1f5ee,stroke:#0f6e56,color:#085041
     classDef parcial fill:#faeeda,stroke:#854f0b,color:#633806
 ```
@@ -189,6 +190,7 @@ flowchart LR
 | v0.2 | 22 / 24 | `█████████░` 92% |
 | v0.3 | 19 / 19 | `██████████` 100% |
 | v1.0 | 1 / 1 | `██████████` 100% |
+| v0.4 | 3 / 3 | `██████████` 100% |
 
 | Frente | Entregáveis | Situação |
 |---|---|---|
@@ -203,11 +205,12 @@ flowchart LR
 | 9 Laudo e exportação | 9.1–9.5 | ✅ 5/5 |
 | 10 Interface | 10.1–10.3 | ✅ 3/3 |
 | 11 Empacotamento | 11.1–11.2 | ✅ 2/2 (falta testar em outra máquina) |
-| 12 Validação | 12.1–12.3 | ⬜ 2/3 — 12.2 validação cruzada IRaMuTeQ/AntConc |
+| 12 Validação | 12.1–12.3 | ✅ 3/3 |
 | 13 Documentação | 13.1–13.3 | ✅ 3/3 |
 | 14 LLM opcional | 14.1–14.3 | ✅ 3/3 |
 | 15 Análises adicionais | 15.1–15.13 | ✅ 13/13 |
 | 16 Planilha do corpus e .bib | 16.1–16.4 | ✅ 4/4 |
+| 17 Coleta guiada por protocolo | 17.1–17.3 | ✅ 3/3 |
 
 ## Documentação
 
@@ -219,6 +222,7 @@ flowchart LR
 | [docs/nota_metodologica.md](docs/nota_metodologica.md) | Convenções estatísticas e referências |
 | [docs/validacao_antconc.md](docs/validacao_antconc.md) | Como conferir colocações e keyness no AntConc |
 | [docs/validacao_iramuteq.md](docs/validacao_iramuteq.md) | Como comparar Reinert e similitude com o IRaMuTeQ |
+| [docs/validacao_cruzada.md](docs/validacao_cruzada.md) | Validação cruzada em R no corpus MLR (rainette, quanteda, textometry, FactoMineR, igraph): resultados e divergências explicadas |
 | [docs/dicionario_eap.md](docs/dicionario_eap.md) | Dicionário da EAP: o que cada entregável faz, como funciona e onde está, com glossário e índice "Quero... use" |
 | [EAP.md](EAP.md) | Plano, decisões, entregáveis, riscos e histórico |
 | [docs/eap.html](docs/eap.html) | EAP interativa (abre no navegador, sem internet) |
@@ -230,8 +234,9 @@ flowchart LR
 | AFC | Exemplo de Greenacre (autovalores 0,07476 / 0,01002 / 0,00041) |
 | Alfa de Krippendorff | Exemplo publicado (α nominal = 0,743) |
 | Estilometria | Pacote `stylo` do R (até 1e-9) |
-| Colocações, keyness e especificidades | Implementações independentes e scipy; **falta** conferir no AntConc e no TXM |
-| Reinert | Tópicos plantados e bipartição ótima por força bruta; **falta** comparar com o IRaMuTeQ |
+| Colocações, keyness e especificidades | Implementações independentes, scipy e, no corpus MLR, R: quanteda.textstats, textometry e reimplementação dos colocados (até o arredondamento); AntConc e TXM opcionais |
+| Reinert | Tópicos plantados, bipartição ótima por força bruta e rainette no corpus MLR (8/10 classes pareadas com a mesma regra de folhas pequenas); IRaMuTeQ opcional |
+| AFC e similitude | FactoMineR/ca e igraph no corpus MLR (até o arredondamento; mesma árvore) |
 | Coerência de tópicos | UMass idêntica ao gensim |
 | `.bib` | Lido pelo bibliometrix 5.5 no R 4.6 |
 

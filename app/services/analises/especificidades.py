@@ -25,8 +25,10 @@ observada na parte e ``esperada`` = F·t/T (média de X):
 - se f >= esperada: P = P(X >= f) (cauda superior)  ->  ``score`` = −log10 P  (>= 0, termo sobre-representado);
 - se f <  esperada: P = P(X <= f) (cauda inferior)  ->  ``score`` = +log10 P  (<= 0, termo sub-representado).
 
-O TXM (pacote R ``textometry``) decide o lado pela **moda** da hipergeométrica em vez da média; as duas só diferem
-para f entre a moda e a média, onde |score| < 0,5 (sempre "banal"), então as listas de específicos são iguais.
+O pacote R ``textometry`` 0.1.7 (CRAN, equipe do TXM) decide o lado pela **média**, como aqui (conferido na 12.2,
+docs/validacao_cruzada.md: scores iguais a ±5e-4, o arredondamento); se alguma versão do TXM decidir pela **moda** da
+hipergeométrica, as duas convenções só diferem para f entre a moda e a média, onde |score| < 0,5 (sempre "banal";
+máximo de 0,43 no corpus MLR por ano), então as listas de específicos são iguais.
 
 Cálculo: ``scipy.stats.hypergeom.sf``/``cdf`` (Boost, vetorizado); quando a probabilidade fica abaixo de 1e-250
 (perto do limite do ponto flutuante, ~1e-308) recalcula-se em escala logarítmica (``logsf``/``logcdf``), para não

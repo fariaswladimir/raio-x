@@ -356,3 +356,20 @@ def test_exportacao_corpus_iramuteq(client, projeto63):
     assert len(cab) == 10 and all(" *doc_" in l and " *grupo_" in l and " *ano_" in l for l in cab)
     assert any("*grupo_academica" in l and "*ano_2025" in l for l in cab)
     assert not any("*" in l for l in linhas if not l.startswith("****"))
+
+
+def test_exportacao_corpus_iramuteq_doc_unico(client, projeto63, ids63):
+    """12.2: *doc_ é único por texto. Antes, um documento sem id do estudo recebia o número do banco (ex.: 052), que
+    podia coincidir com o id do estudo de outro documento, e o IRaMuTeQ juntaria os dois na mesma modalidade."""
+    sem_id = ids63["001_2025_Alfa_Agentes.md"]
+    assert client.patch(f"/api/projetos/{projeto63}/documentos/{sem_id}", json={"id_estudo": None}).status_code == 200
+    # outro documento com id do estudo igual ao número do banco do primeiro, e um id do estudo repetido
+    assert client.patch(f"/api/projetos/{projeto63}/documentos/{ids63['002_2025_Beta_Agentes.md']}",
+                        json={"id_estudo": f"{sem_id:03d}"}).status_code == 200
+    assert client.patch(f"/api/projetos/{projeto63}/documentos/{ids63['004_2026_Delta_Economia.md']}",
+                        json={"id_estudo": "003"}).status_code == 200
+    linhas = client.get(f"/api/projetos/{projeto63}/exportar/corpus-iramuteq.txt").content.decode("utf-8").splitlines()
+    docs = [l.split()[1] for l in linhas if l.startswith("****")]
+    assert len(docs) == 10 and len(set(docs)) == 10, docs
+    assert f"*doc_id{sem_id:03d}" in docs and f"*doc_{sem_id:03d}" in docs
+    assert "*doc_003" in docs and "*doc_003_2" in docs

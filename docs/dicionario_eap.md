@@ -56,13 +56,13 @@ Onde um campo não se aplica, aparece "—". Quando algo não foi localizado no 
 | Release | Significado | Situação em 12/10/2026 |
 |---|---|---|
 | MVP (v0.1) | Frentes 1 a 6 mais comentários por regra e laudo HTML/CSV, sem LLM | 26 de 27 concluídos (falta 5.4, conferência no AntConc) |
-| v0.2 | Temático, n-gramas, OCR, DOCX, métodos, metodologia, LLM opcional e empacotamento | 22 de 24 concluídos (faltam 6.2, conferência no TXM, e 12.2, validação cruzada) |
+| v0.2 | Temático, n-gramas, OCR, DOCX, métodos, metodologia, LLM opcional e empacotamento | 23 de 24 concluídos (falta 6.2, conferência no TXM; 12.2 feita em R em 14/10/2026) |
 | v0.3 | spaCy, tópicos, planilha do corpus, .bib, análises adicionais | 21 de 21 concluídos |
 | v1.0 | Modo offline | 0 de 1 (11.2) |
 
-Pendências que dependem do usuário: 5.4 (AntConc), 6.2 (TXM), 12.2 (validação cruzada com IRaMuTeQ e AntConc) e o teste do zip em outra máquina (11.1). Princípios do sistema: rastreabilidade (todo número aponta para documento, página e trecho), transparência metodológica, reprodutibilidade, comentário automático é só sugestão até a revisão humana, e execução 100% local.
+Pendências que dependem do usuário: 5.4 (AntConc) e 6.2 (TXM), já conferidas em R na 12.2, e o teste do zip em outra máquina (11.1). Princípios do sistema: rastreabilidade (todo número aponta para documento, página e trecho), transparência metodológica, reprodutibilidade, comentário automático é só sugestão até a revisão humana, e execução 100% local.
 
-## 2. Visão geral do sistema e as 16 frentes
+## 2. Visão geral do sistema e as 17 frentes
 
 O Raio-X de Textos é um sistema local que lê uma **pasta de artigos** (PDF, DOCX, MD ou TXT), converte tudo para texto, limpa, lematiza e roda um conjunto de análises de linguística de corpus e de análise de dados textuais (frequências, concordâncias, colocações, palavras-chave entre grupos, classes de Reinert, redes, tópicos, estilometria e outras). Em seguida gera **comentários por regras**, que uma pessoa revisa (aceitar, editar, rejeitar), e produz um **laudo** (HTML e DOCX) em que cada afirmação aponta para a evidência com página. O LLM é opcional e vem desligado; nenhum dado sai do computador por padrão. Tudo roda em um servidor local (`http://localhost:8800`) com interface no navegador; a pasta de artigos nunca é alterada.
 
@@ -950,14 +950,14 @@ _Corpus de referência, validação cruzada e desempenho._
 | Campo | Descrição |
 |---|---|
 | Frente | 12. Validação |
-| Release / Status | v0.2 · ⬜ (depende do usuário: rodar AntConc, TXM e IRaMuTeQ e registrar divergências) |
+| Release / Status | v0.2 · ✅ 14/10/2026 (feita em R; AntConc, TXM, IRaMuTeQ e Voyant ficam opcionais) |
 | O que faz | Compara os resultados do Raio-X com os de outras ferramentas no mesmo corpus e explica as diferenças. É a prova externa de que os números são confiáveis. |
 | Como funciona | Roteiros prontos: `docs/validacao_antconc.md` (colocações e keyness) e `docs/validacao_iramuteq.md` (Reinert e similitude), com exportações `corpus-limpo.zip` e `corpus-iramuteq.txt`. O resultado esperado é um relatório de divergências explicadas. |
 | Entradas | Corpus MLR; exportações do Raio-X; ferramentas externas instaladas. |
-| Saídas | Relatório de divergências (pendente). |
-| Onde está | `docs/validacao_antconc.md`, `docs/validacao_iramuteq.md`; `GET /api/projetos/{slug}/exportar/corpus-limpo.zip`, `GET .../exportar/corpus-iramuteq.txt`. |
+| Saídas | `docs/validacao_cruzada.md`: resultados por análise, vereditos, relatório de divergências explicadas e parágrafo para os Métodos. |
+| Onde está | `docs/validacao_cruzada.md`, `scripts/validacao_r/` (exportação + scripts R), `docs/validacao_antconc.md`, `docs/validacao_iramuteq.md`; `GET /api/projetos/{slug}/exportar/corpus-limpo.zip`, `GET .../exportar/corpus-iramuteq.txt`. |
 | Depende de | 5.4, 6.2, 7.1, 7.2 |
-| Critério de aceite / evidência | Relatório de divergências explicadas (ainda não feito). |
+| Critério de aceite / evidência | Relatório de divergências explicadas: keyness, especificidades, AFC, colocados e similitude iguais às referências em R até o arredondamento; CHD ≈ rainette (8/10 classes pareadas com a mesma regra de folhas pequenas). |
 | Equivale a / não é igual a | — |
 | Referências | — |
 | Cuidados | Cobre também as pendências 5.4 (AntConc) e 6.2 (TXM). |
@@ -1385,6 +1385,59 @@ _Planilha por partes do artigo, extração por LLM, .bib para o bibliometrix e m
 | Equivale a / não é igual a | — |
 | Referências | — |
 | Cuidados | Consulta online envia o DOI a um serviço externo e não é permitida no modo offline (11.2). |
+
+## Frente 17 — Coleta guiada por protocolo
+
+### 17.1 — Protocolo de coleta (um item por linha, definição de até 2 frases)
+
+| Campo | Descrição |
+|---|---|
+| Frente | 17. Coleta guiada por protocolo |
+| Release / Status | v0.4 · ✅ |
+| O que faz | Permite montar o protocolo de extração de dados da revisão como uma tabela em que cada linha é um item a coletar. Cada item tem uma definição curta, de no máximo duas frases, para que a regra de coleta fique clara e verificável. |
+| Como funciona | Campos por item: id, nome, definição (máx. 2 frases), tipo (texto, categoria, múltipla, número, sim/não, data), categorias permitidas, onde procurar (seções), palavras-chave, obrigatório e máx. de trechos. A contagem de frases ignora abreviações (e.g., et al., p., n.), decimais e iniciais; com 3+ frases o item é recusado com sugestão de corte, e acima de ~40 palavras há só aviso. O protocolo é versionado no projeto. |
+| Entradas | Edição na tela; importação CSV/XLSX/Markdown (cabeçalhos em PT ou EN); modelos prontos ("Partes do artigo" = lógica da 16.1; "Revisão sistemática (genérico)", 12 itens). |
+| Saídas | `projetos/<nome>/protocolo_coleta.json` + histórico de versões; exportação do protocolo em CSV/XLSX. |
+| Onde está | `app/services/coleta/protocolo.py`, `app/services/coleta/modelos.py`; `GET/PUT /api/projetos/{slug}/coleta/protocolo`, `POST .../protocolo/validar`, `.../protocolo/modelos`, `.../protocolo/importar`, `.../protocolo/exportar.csv|.xlsx`, `.../protocolo/historico`; aba **Coleta** → Protocolo. |
+| Depende de | 3.1, 16.1 |
+| Critério de aceite / evidência | Definição com mais de 2 frases recusada com sugestão; contador da tela igual ao do servidor em 12 frases de teste; `tests/test_frente17.py`. |
+| Equivale a / não é igual a | Formulário de extração de dados de RSL (Kitchenham & Charters) — não é codificação qualitativa aberta. |
+| Referências | Kitchenham & Charters, 2007; Garousi et al., 2019 (conferir antes de citar) |
+| Cuidados | Definições curtas ajudam regras e LLM, mas não substituem um codebook detalhado quando a decisão é interpretativa. |
+
+### 17.2 — Coleta automática por item e documento
+
+| Campo | Descrição |
+|---|---|
+| Frente | 17. Coleta guiada por protocolo |
+| Release / Status | v0.4 · ✅ |
+| O que faz | Preenche, para cada documento e cada item do protocolo, um valor com o trecho e a página que o sustentam, ou marca "não encontrado". |
+| Como funciona | Candidatos das seções indicadas e de frases com as palavras-chave; extratores por tipo (número com unidade, sim/não com negação, data, categoria por palavras-chave com "ambíguo" em empate). Com o LLM ligado, só aceita frases literais do documento (mesma checagem da 16.2), com categoria dentro da lista e número presente no trecho; o protocolo vai como prefixo em cache. Execução em segundo plano, incremental, sem sobrescrever o que foi aceito (vira "revisar" se a evidência sumir). |
+| Entradas | Protocolo (17.1); texto limpo com páginas e seções; configuração do LLM (opcional). |
+| Saídas | Células com valor, trechos (texto, página, seção), origem (regra, padrão, LLM, humano), confiança e status. |
+| Onde está | `app/services/coleta/motor.py`, `extratores.py`, `termos.py`, `llm_coleta.py`, `celulas.py`, `trabalho.py`; `POST /api/projetos/{slug}/coleta/executar`, `POST /api/projetos/{slug}/coleta/llm/executar`, `GET /api/projetos/{slug}/coleta/progresso`. |
+| Depende de | 17.1, 3.1, 14.1, 16.2 |
+| Critério de aceite / evidência | Corpus MLR (51 docs × 12 itens, só regras): 612 células em 37 s; página certa em todas as células conferidas; LLM local (qwen2.5:7b): 14 trechos verificados, 0 inventados aceitos. |
+| Equivale a / não é igual a | Extração assistida com evidência; não é extração livre por LLM. |
+| Referências | — |
+| Cuidados | Regras heurísticas: amostra e contexto têm cobertura baixa e podem pegar números de estudos citados; conferência em 5 documentos apenas. Modelos pequenos escolhem mal categorias. |
+
+### 17.3 — Revisão e exportação da coleta
+
+| Campo | Descrição |
+|---|---|
+| Frente | 17. Coleta guiada por protocolo |
+| Release / Status | v0.4 · ✅ |
+| O que faz | Mostra a matriz documento × item para você aceitar, editar, rejeitar ou marcar "não se aplica", e exporta o resultado para planilhas e para a planilha de coleta da revisão. |
+| Como funciona | Matriz com cores por status, painel da célula com trechos e páginas, decisão em lote por item ou documento. Exportação larga (uma linha por documento, valor + evidência) e longa (uma linha por trecho), em versão final (aceitos, editados, "não se aplica") e de auditoria (tudo); envio à planilha de coleta (9.5) com detecção de duplicatas; kappa/alfa por item quando há codificação humana (15.1). |
+| Entradas | Células da 17.2; decisões do revisor; codificação humana opcional. |
+| Saídas | `.xlsx`/CSV largo e longo (abas Protocolo e LEIA-ME); arquivo novo para a planilha de coleta; tabela de concordância. |
+| Onde está | `app/services/coleta/revisao.py`, `exportacao.py`, `concordancia_coleta.py`; `GET /api/projetos/{slug}/coleta/matriz`, `GET /api/projetos/{slug}/coleta/celula`, `POST /api/projetos/{slug}/coleta/celula/decidir`, `POST /api/projetos/{slug}/coleta/decidir-lote`; aba **Coleta** → Matriz. |
+| Depende de | 17.2, 9.5, 15.1 |
+| Critério de aceite / evidência | Corpus MLR: larga final 51 × 28, longa auditoria 1.053 linhas, abertas com openpyxl; neutralização de fórmulas. |
+| Equivale a / não é igual a | Planilha de extração de RSL com rastreabilidade. |
+| Referências | — |
+| Cuidados | Só o que foi aceito vai para a exportação final; revise especialmente os itens numéricos. |
 
 ## 4. Glossário
 

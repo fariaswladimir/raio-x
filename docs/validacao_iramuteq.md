@@ -4,6 +4,8 @@ Roteiro para rodar o IRaMuTeQ (Ratinaud 2009; Camargo & Justo 2013) no **mesmo c
 configurações equivalentes, e comparar classes, retenção, formas características e a árvore de similitude.
 O Raio-X não distribui o texto do corpus: o arquivo é gerado na sua máquina, a partir do seu projeto.
 
+> Validação automática já feita em R (rainette, igraph) nas mesmas unidades: ver `docs/validacao_cruzada.md` (12.2); este roteiro é opcional.
+
 ## 1. Exportar o corpus no formato do IRaMuTeQ
 
 Com o pipeline executado, baixe:

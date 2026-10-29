@@ -33,7 +33,7 @@ h1{font-size:22px;margin:0 0 4px;font-weight:600}
 .it .id{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--mut);min-width:40px}
 .it .nm{flex:1}.it .nota{display:block;font-size:12px;color:var(--warn)}
 .pl{font-size:11px;padding:1px 7px;border-radius:6px;white-space:nowrap}
-.MVP{background:var(--mvpbg);color:var(--mvp)}.v02{background:var(--v2bg);color:var(--v2)}.v03{background:var(--v3bg);color:var(--v3)}.v10{background:var(--v1bg);color:var(--v1)}
+.MVP{background:var(--mvpbg);color:var(--mvp)}.v02{background:var(--v2bg);color:var(--v2)}.v03{background:var(--v3bg);color:var(--v3)}.v10{background:var(--v1bg);color:var(--v1)}.v04{background:var(--mvpbg);color:var(--v2)}
 .leg{font-size:12px;color:var(--mut);margin:14px 0 0}
 a{color:var(--mvp)}
 @media print{.filtros{display:none}.fr{break-inside:avoid}}
@@ -42,7 +42,7 @@ a{color:var(--mvp)}
 <body>
 <main>
 <h1>EAP do Raio-X de Textos</h1>
-<p class="sub">Situação em 12/10/2026 · 16 frentes · 71 entregáveis · 748 testes. Detalhes de cada item no <a href="dicionario_eap.md">dicionário da EAP</a>; plano completo em <a href="../EAP.md">EAP.md</a>.</p>
+<p class="sub">Situação em 14/10/2026 · 17 frentes · 74 entregáveis · 816 testes. Detalhes de cada item no <a href="dicionario_eap.md">dicionário da EAP</a>; plano completo em <a href="../EAP.md">EAP.md</a>.</p>
 <div class="kpis">
 <div class="kpi"><span>Concluídos</span><b id="k-ok"></b></div>
 <div class="kpi"><span>Falta conferência externa</span><b id="k-par"></b></div>
@@ -51,7 +51,7 @@ a{color:var(--mvp)}
 </div>
 <div class="rel" id="rel"></div>
 <div class="filtros">
-<span>Versão:</span><button data-f="r" data-v="all" class="on">Todas</button><button data-f="r" data-v="MVP">MVP</button><button data-f="r" data-v="v0.2">v0.2</button><button data-f="r" data-v="v0.3">v0.3</button><button data-f="r" data-v="v1.0">v1.0</button>
+<span>Versão:</span><button data-f="r" data-v="all" class="on">Todas</button><button data-f="r" data-v="MVP">MVP</button><button data-f="r" data-v="v0.2">v0.2</button><button data-f="r" data-v="v0.3">v0.3</button><button data-f="r" data-v="v0.4">v0.4</button><button data-f="r" data-v="v1.0">v1.0</button>
 <span style="margin-left:8px">Situação:</span><button data-f="s" data-v="all" class="on">Todas</button><button data-f="s" data-v="2">Concluído</button><button data-f="s" data-v="1">Falta conferir</button><button data-f="s" data-v="0">Pendente</button>
 <input id="busca" type="search" placeholder="buscar entregável…" aria-label="Buscar entregável">
 </div>
@@ -71,11 +71,12 @@ const D=[
 ["9. Laudo e exportação",[["9.1","Laudo HTML","MVP",2],["9.2","CSV e pacote .zip","MVP",2],["9.3","Laudo DOCX","v0.2",2],["9.4","Texto de Métodos para o artigo","v0.2",2],["9.5","Exportação para a planilha de coleta","v0.3",2]]],
 ["10. Interface",[["10.1","Projetos e progresso","MVP",2],["10.2","Painéis de análise","MVP",2],["10.3","Sub-abas temáticas","v0.2",2]]],
 ["11. Empacotamento",[["11.1","Pacote para outra máquina","v0.2",2,"falta testar em outra máquina"],["11.2","Modo totalmente offline","v1.0",2,"falta testar sem internet de verdade"]]],
-["12. Validação",[["12.1","Corpus de referência","MVP",2],["12.2","Validação cruzada IRaMuTeQ/AntConc","v0.2",0,"depende do usuário (ou validação por R)"],["12.3","Desempenho","MVP",2]]],
+["12. Validação",[["12.1","Corpus de referência","MVP",2],["12.2","Validação cruzada (em R: rainette, quanteda, textometry, FactoMineR, igraph)","v0.2",2],["12.3","Desempenho","MVP",2]]],
 ["13. Documentação",[["13.1","Guia de uso","MVP",2],["13.2","Nota metodológica","v0.2",2],["13.3","Tela de Metodologia (ABNT/APA/BibTeX)","v0.2",2]]],
 ["14. LLM opcional",[["14.1","Configuração (Ollama, Claude, compatível OpenAI)","v0.2",2],["14.2","Exemplos de parágrafos","v0.2",2],["14.3","Parágrafo com LLM + checagem","v0.2",2]]],
 ["15. Análises adicionais",[["15.1","Codificação LLM + kappa/alfa","v0.3",2],["15.2","Comunidades e centralidade","v0.2",2],["15.3","Legibilidade","v0.3",2],["15.4","Palavras-chave por documento","v0.3",2],["15.5","Sumarização extrativa","v0.3",2],["15.6","Estilometria (Delta)","v0.3",2],["15.7","Tópicos LSA/NMF/LDA + coerência","v0.3",2],["15.8","Keyness com corpus externo","v0.3",2],["15.9","k-means, espectral, PCA","v0.3",2],["15.10","Sentimento por léxico","v0.3",2],["15.11","Classificação zero-shot por LLM","v0.3",2],["15.12","Embeddings via Ollama","v0.3",2],["15.13","Perguntar ao corpus (BM25/RAG)","v0.3",2]]],
-["16. Planilha do corpus e .bib",[["16.1","Planilha: coluna por parte do artigo","v0.3",2],["16.2","Extração assistida por LLM","v0.3",2],["16.3",".bib para o bibliometrix","v0.3",2],["16.4","Metadados enriquecidos","v0.3",2]]]
+["16. Planilha do corpus e .bib",[["16.1","Planilha: coluna por parte do artigo","v0.3",2],["16.2","Extração assistida por LLM","v0.3",2],["16.3",".bib para o bibliometrix","v0.3",2],["16.4","Metadados enriquecidos","v0.3",2]]],
+["17. Coleta guiada por protocolo",[["17.1","Protocolo: um item por linha, até 2 frases","v0.4",2],["17.2","Coleta automática com evidência e página","v0.4",2],["17.3","Revisão da matriz e exportação","v0.4",2]]]
 ];
 const sym=["○","◐","●"], cls=r=>r.replace(".","");
 let fr="all", fs="all", q="";
@@ -85,7 +86,7 @@ document.getElementById("k-ok").textContent=`${ok} / ${all.length}`;
 document.getElementById("k-par").textContent=par;
 document.getElementById("k-pen").textContent=pen;
 document.getElementById("k-pct").textContent=Math.round(ok/all.length*100)+"%";
-document.getElementById("rel").innerHTML=["MVP","v0.2","v0.3","v1.0"].map(r=>{const it=all.filter(x=>x[2]===r),d=it.filter(x=>x[3]===2).length;return `<div><b>${r}</b> · ${d} de ${it.length}<div class="bar" style="margin-top:4px"><i style="width:${Math.round(d/it.length*100)}%"></i></div></div>`}).join("");
+document.getElementById("rel").innerHTML=["MVP","v0.2","v0.3","v0.4","v1.0"].map(r=>{const it=all.filter(x=>x[2]===r),d=it.filter(x=>x[3]===2).length;return `<div><b>${r}</b> · ${d} de ${it.length}<div class="bar" style="margin-top:4px"><i style="width:${Math.round(d/it.length*100)}%"></i></div></div>`}).join("");
 function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function render(){
   document.getElementById("grid").innerHTML=D.map(([t,its])=>{

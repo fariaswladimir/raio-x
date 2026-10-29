@@ -2,6 +2,8 @@
 
 Critério de aceite da 5.4: **ranking conferido contra o AntConc em 3 termos**. Este roteiro também serve de base para a validação cruzada da 12.2 (AntConc e IRaMuTeQ).
 
+> Conferência independente em R (mesmas convenções, contagens idênticas, e simulação da contagem por pares do AntConc): ver `docs/validacao_cruzada.md`.
+
 ## 1. O que comparar
 
 | | Raio-X | AntConc 4 |

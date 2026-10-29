@@ -90,6 +90,16 @@ def corpus_limpo_zip(slug: str, db: Session = Depends(get_db)):
                     headers={"Content-Disposition": 'attachment; filename="corpus-limpo.zip"'})
 
 
+def _modalidade_unica(base: str, usadas: set[str]) -> str:
+    """``*doc_`` tem de ser único por texto (12.2): sem id do estudo, o rótulo é ``id<id do banco>`` (antes era só o
+    número, que podia coincidir com o id do estudo de outro documento, ex.: ``052``); ids repetidos ganham ``_2``, ``_3``..."""
+    doc, n = base, 2
+    while doc in usadas:
+        doc, n = f"{base}_{n}", n + 1
+    usadas.add(doc)
+    return doc
+
+
 def _modalidade(valor) -> str:
     """Modalidade de variável estrelada do IRaMuTeQ: só letras, dígitos e _ (sem espaços nem acentos problemáticos)."""
     texto = re.sub(r"[^0-9A-Za-z]+", "_", str(valor or "").strip()).strip("_")
@@ -98,20 +108,21 @@ def _modalidade(valor) -> str:
 
 @router.get("/corpus-iramuteq.txt")
 def corpus_iramuteq(slug: str, db: Session = Depends(get_db)):
-    """Corpus no formato do IRaMuTeQ (12.2): um texto por documento ativo, com a linha de cabeçalho
-    ``**** *doc_<id> *grupo_<g> *ano_<a>`` e o mesmo texto do corpo do ``corpus-limpo.zip`` (um bloco por parágrafo).
-    Asteriscos do texto viram espaço (o IRaMuTeQ os reserva para as variáveis). Ver docs/validacao_iramuteq.md."""
+    """Corpus no formato do IRaMuTeQ (12.2): um texto por documento ativo com corpo, com a linha de cabeçalho
+    ``**** *doc_<id> *grupo_<g> *ano_<a>`` (``<id>`` único: id do estudo ou ``id<nº do banco>``) e o mesmo texto
+    do corpo do ``corpus-limpo.zip`` (um bloco por parágrafo). Asteriscos do texto viram espaço (o IRaMuTeQ os reserva para as variáveis). Ver docs/validacao_iramuteq.md."""
     pasta = pasta_do_projeto(slug)
     metas = dados.documentos_do_corpus(db, pasta)
     if not metas:
         raise HTTPException(status_code=404, detail="Nenhum documento processado: execute o pipeline primeiro.")
     partes = []
+    usadas: set[str] = set()
     for m in metas:
         blocos = dados.carregar_blocos(pasta, m["id"]) or []
         corpo = texto_do_corpo(blocos).replace("*", " ").strip()
         if not corpo:
             continue
-        doc = _modalidade(m.get("id_estudo") or f"{m['id']:03d}")
+        doc = _modalidade_unica(_modalidade(m.get("id_estudo") or f"id{m['id']:03d}"), usadas)
         cab = f"**** *doc_{doc} *grupo_{_modalidade(dados.chave_grupo(m))} *ano_{_modalidade(dados.chave_ano(m))}"
         partes.append(f"{cab}\n{corpo}\n")
     return Response(content="\n".join(partes).encode("utf-8"), media_type="text/plain; charset=utf-8",
