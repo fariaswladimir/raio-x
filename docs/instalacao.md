@@ -1,5 +1,7 @@
 # Instalação do Raio-X em outro computador
 
+> Manual completo (GitHub, .zip, offline, migração de projetos, R e Claude Code): [manual_outro_computador.md](manual_outro_computador.md).
+
 ## Requisitos
 - Windows 10 ou 11.
 - Python 3.11 ou mais novo, de [python.org](https://www.python.org/downloads/). Na instalação, marque **Add python.exe to PATH**.

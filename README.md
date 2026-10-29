@@ -43,7 +43,7 @@ Cada número e cada comentário apontam para o trecho e a **página** de onde vi
 | Similaridade **semântica** (embeddings) | `ollama pull nomic-embed-text` | Requer o Ollama. |
 | Instalar **sem internet** | `instalar_offline.bat` (pacote offline) | Gere o pacote com `scripts\preparar_offline.py`. Veja [docs/offline.md](docs/offline.md). |
 
-Instalação em outro computador, atualização e problemas comuns: [docs/instalacao.md](docs/instalacao.md).
+Instalação em outro computador, atualização e problemas comuns: [docs/instalacao.md](docs/instalacao.md). Passo a passo completo para levar o sistema e os projetos para outra máquina, inclusive pelo GitHub e com o Claude Code: [docs/manual_outro_computador.md](docs/manual_outro_computador.md).
 
 ---
 
@@ -218,6 +218,8 @@ flowchart LR
 |---|---|
 | [docs/guia_de_uso.md](docs/guia_de_uso.md) | Guia de uma página para quem não programa |
 | [docs/instalacao.md](docs/instalacao.md) | Instalação, atualização, mudança de computador, problemas comuns |
+| [docs/manual_outro_computador.md](docs/manual_outro_computador.md) | Manual para levar o Raio-X e os projetos para outro computador (GitHub, .zip, offline, R, Claude Code) |
+| [CLAUDE.md](CLAUDE.md) | Orientação para o Claude Code: regras do projeto, como testar, fluxo da EAP |
 | [docs/offline.md](docs/offline.md) | O que usa internet e como instalar e usar sem ela |
 | [docs/nota_metodologica.md](docs/nota_metodologica.md) | Convenções estatísticas e referências |
 | [docs/validacao_antconc.md](docs/validacao_antconc.md) | Como conferir colocações e keyness no AntConc |
